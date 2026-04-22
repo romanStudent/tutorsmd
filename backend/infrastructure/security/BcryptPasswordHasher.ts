@@ -1,12 +1,21 @@
 import { IPasswordHasher } from '../../application/ports/IPasswordHasher';
-import bcrypt from 'bcrypt';
+
+// bcrypt обрезает слишком длинные пароли
+// import bcrypt from 'bcrypt';
+
+import argon2 from 'argon2';
 
 export class BcryptPasswordHasher implements IPasswordHasher {
-  async hash(plain: string): Promise<string> { 
-    return bcrypt.hash(plain, 10);
+  async hash(password: string): Promise<string> {
+    return await argon2.hash(password, {
+      type: argon2.argon2id,
+      memoryCost: 65536, // 64MB
+      timeCost: 3,
+      parallelism: 4,
+    });
   }
 
   async compare(plain: string, hash: string): Promise<boolean> {
-    return await bcrypt.compare(plain, hash);
+    return await argon2.verify(hash, plain);
   }
 }
