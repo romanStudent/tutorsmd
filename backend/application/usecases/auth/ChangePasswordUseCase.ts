@@ -1,6 +1,6 @@
 // application/usecases/auth/ChangePasswordUseCase.ts
 
-import { IUserRepository } from '../../../domain/repositories/InterfaceUserRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { ITokenService } from '../../ports/ITokenService';
 import { IPasswordHasher } from '../../ports/IPasswordHasher';
 import ApiError from '../../../domain/errors/apiError';

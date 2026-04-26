@@ -1,6 +1,6 @@
 // infrastructure/database/repositories/SequelizeUserRepository.ts
 
-import { IUserRepository } from '../../../domain/repositories/InterfaceUserRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { User } from '../../../domain/entities/User';
 import Client from '../models/clientModel';
 import Tutor from '../models/tutorModel';
