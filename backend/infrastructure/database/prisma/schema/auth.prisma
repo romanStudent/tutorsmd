@@ -4,7 +4,7 @@ model User {
   name          String    @db.VarChar(255)
   surname       String    @db.VarChar(255)
   username      String    @unique @db.VarChar(40)
-  password_hash String    @db.VarChar(255)
+  password_hash String?    @db.VarChar(255)
   timezone      String    @default("UTC") @db.VarChar(64)
   languageCode String    @default("en") @db.VarChar(10)
   createdAt     DateTime  @default(now()) @db.Timestamptz()
@@ -14,6 +14,8 @@ model User {
   refreshToken       RefreshToken[]
   oauthProvider      OAuthProvider[]
   emailVerifications EmailVerification[]
+  feedbacks          Feedback[]
+  emailChange        EmailChange?
   client             Client?
   tutor              Tutor?
   admin              Admin?
@@ -81,3 +83,4 @@ model EmailVerification {
 
   @@map("email_verifications")
 }
+

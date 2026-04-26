@@ -14,8 +14,11 @@ model Client {
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   lessons   Lesson[]
   reviews   Review[]
-  materials LessonMaterial[]
+  materials LessonMaterial[] @relation("ClientMaterial")
   regularSchedules RegularSchedule[]
+  clientNotes  LessonClientNote[]
+  appeals      Appeal[]
+  quizAnswers  QuizAnswer[]
 
   @@map("clients")
 }
@@ -43,7 +46,10 @@ model Tutor {
   lessons          Lesson[]
   reviews          Review[]
   regularSchedules RegularSchedule[]
-  materials        LessonMaterial[]
+  materials        LessonMaterial[] @relation("TutorMaterial")
+  tutorReports LessonTutorReport[]
+  appeals      Appeal[]
+  quizzes      Quiz[]
 
   @@map("tutors")
 }
