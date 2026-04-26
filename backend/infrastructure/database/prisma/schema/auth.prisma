@@ -13,9 +13,9 @@ model User {
   userRoles           UserRole[]
   refreshToken       RefreshToken[]
   oauthProvider      OAuthProvider[]
-  emailVerifications EmailVerification[]
+  emailVerifications EmailVerification?
   feedbacks          Feedback[]
-  emailChanges       EmailChange?
+  emailChange        EmailChange?
   client             Client?
   tutor              Tutor?
   admin              Admin?

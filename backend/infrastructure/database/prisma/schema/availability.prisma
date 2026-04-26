@@ -31,7 +31,7 @@ model RegularSchedule {
   tutor   Tutor   @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   client  Client  @relation(fields: [clientId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
-  lessons Lesson
+  lessons Lesson[]
 
   @@map("regular_schedules")
 }
