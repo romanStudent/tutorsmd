@@ -11,11 +11,13 @@ model Client {
   createdAt    DateTime @default(now()) @db.Timestamptz()
   updatedAt    DateTime @updatedAt @db.Timestamptz()
 
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lessons   Lesson[]
-  reviews   Review[]
-  materials LessonMaterial[]
+  user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessons          Lesson[]
+  reviews          Review[]
   regularSchedules RegularSchedule[]
+  clientNotes      LessonClientNote[]
+  materials        LessonMaterial[]    @relation("ClientMaterial")
+  appeals Appeal[]
 
   @@map("clients")
 }
@@ -37,13 +39,15 @@ model Tutor {
   createdAt       DateTime       @default(now()) @db.Timestamptz()
   updatedAt       DateTime       @updatedAt @db.Timestamptz()
 
-  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   availableSubjects AvailableSubject[]
   availableSlots    AvailableSlot[]
-  lessons          Lesson[]
-  reviews          Review[]
-  regularSchedules RegularSchedule[]
-  materials        LessonMaterial[]
+  lessons           Lesson[]
+  reviews           Review[]
+  regularSchedules  RegularSchedule[]
+  tutorReports      LessonTutorReport[]
+  materials         LessonMaterial[]    @relation("TutorMaterials")
+  appeals Appeal[]
 
   @@map("tutors")
 }
