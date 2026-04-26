@@ -15,6 +15,7 @@ model User {
   oauthProvider      OAuthProvider[]
   emailVerifications EmailVerification[]
   feedbacks          Feedback[]
+  emailChanges       EmailChange?
   client             Client?
   tutor              Tutor?
   admin              Admin?
@@ -70,15 +71,27 @@ model OAuthProvider {
   @@map("oauth_providers")
 }
 
-
 model EmailVerification {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @db.Uuid
-  link     String   @unique @db.Text  // хэш ссылки
+  link      String   @unique @db.Text
   expiresAt DateTime @db.Timestamptz()
   createdAt DateTime @default(now()) @db.Timestamptz()
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("email_verifications")
+}
+
+model EmailChange {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid  // UNIQUE — один активный запрос
+  newEmail  String   @unique @db.VarChar(255)
+  link      String   @unique @db.Text
+  expiresAt DateTime @db.Timestamptz()
+  createdAt DateTime @default(now()) @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_changes")
 }

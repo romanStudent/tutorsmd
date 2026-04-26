@@ -17,7 +17,8 @@ model Client {
   regularSchedules RegularSchedule[]
   clientNotes      LessonClientNote[]
   materials        LessonMaterial[]    @relation("ClientMaterial")
-  appeals Appeal[]
+  appeals          Appeal[]
+  quizAnswers      QuizAnswer[]
 
   @@map("clients")
 }
@@ -47,7 +48,8 @@ model Tutor {
   regularSchedules  RegularSchedule[]
   tutorReports      LessonTutorReport[]
   materials         LessonMaterial[]    @relation("TutorMaterials")
-  appeals Appeal[]
+  appeals           Appeal[]
+  quizzes           Quiz[]
 
   @@map("tutors")
 }
