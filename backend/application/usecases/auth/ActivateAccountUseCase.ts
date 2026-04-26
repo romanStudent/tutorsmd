@@ -1,6 +1,6 @@
 // application/usecases/auth/ActivateAccountUseCase.ts
 
-import { IUserRepository } from '../../../domain/repositories/InterfaceUserRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 
 export class ActivateAccountUseCase {
   constructor(
@@ -16,7 +16,7 @@ export class ActivateAccountUseCase {
     }
 
     // 2. Активировать (domain logic)
-    user.activate();
+    user.acti();
 
     // 3. Сохранить изменения
     await this.userRepo.save(user);

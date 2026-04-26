@@ -1,6 +1,6 @@
 // application/usecases/auth/LoginUseCase.ts
 
-import { IUserRepository } from '../../../domain/repositories/InterfaceUserRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { ITokenService } from '../../ports/ITokenService';
 import { ITokenRepository } from '../../../domain/repositories/ITokenRepository';
 import { IPasswordHasher } from '../../ports/IPasswordHasher';
