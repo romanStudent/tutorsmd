@@ -4,7 +4,6 @@ model AvailableSlot {
   dayOfWeek Int
   startTime String   @db.VarChar(5)
   endTime   String   @db.VarChar(5)
-  timezone  String   @db.VarChar(64)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now()) @db.Timestamptz()
 
@@ -33,5 +32,6 @@ model RegularSchedule {
   subject Subject @relation(fields: [subjectId], references: [id])
   lessons Lesson[]
 
+  @@unique([clientId, tutorId, dayOfWeek, timeOfDay])
   @@map("regular_schedules")
 }
