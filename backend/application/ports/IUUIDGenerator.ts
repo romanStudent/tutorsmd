@@ -1,3 +1,3 @@
-export interface IUUIdGenerator {
+export interface IUUIDGenerator {
   generate(): string;
 }

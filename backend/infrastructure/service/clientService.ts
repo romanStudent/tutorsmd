@@ -21,7 +21,7 @@ import ClientDto from "../dto/clientDto";
 import ApiError from "../../domain/errors/apiError";
 import Tutor from "../models/tutorModel";
 import { User } from "../../domain/entities/User";
-import { IUserRepository } from "../../domain/repositories/InterfaceUserRepository";
+import { IUserRepository } from "../../domain/repositories/IUserRepository";
 
 
 class ClientService {
