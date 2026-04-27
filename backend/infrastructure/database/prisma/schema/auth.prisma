@@ -80,6 +80,7 @@ model EmailVerification {
   createdAt DateTime @default(now()) @db.Timestamptz()
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId])
 
   @@map("email_verifications")
 }

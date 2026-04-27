@@ -10,6 +10,9 @@ model Appeal {
   clientId  String?      @db.Uuid  // NULL если от тьютора
   tutorId   String?      @db.Uuid  // NULL если от клиента
   status    AppealStatus @default(open)
+  text      String       @db.Text
+  resolvedBy  String?   @db.Uuid  // adminId
+  resolvedAt  DateTime? @db.Timestamptz()
   expiresAt DateTime?    @db.Timestamptz()
   createdAt DateTime     @default(now()) @db.Timestamptz()
 

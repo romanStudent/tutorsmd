@@ -33,7 +33,7 @@ model Lesson {
   subjectId           String       @db.Uuid
   quizId              String?      @db.Uuid
   type                LessonType
-  roomId              String       @db.VarChar(255)
+  roomId              String?       @db.VarChar(255)
   status              LessonStatus @default(confirmed)
   cancellationReason  String?      @db.Text
   rescheduledFromId   String?      @db.Uuid
