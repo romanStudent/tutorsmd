@@ -2,7 +2,7 @@ import { IProfileCreator } from '../../application/ports/IProfileCreator';
 import { ITutorRepository } from '../../domain/repositories/ITutorRepository';
 import { Tutor } from '../../domain/entities/Tutor';
 
-export class TutorProfileFactory implements IProfileCreator {
+export class TutorProfileCreator implements IProfileCreator {
   readonly role = 'client' as const;
 
   constructor(private readonly tutorRepo: ITutorRepository) {}
