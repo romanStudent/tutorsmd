@@ -1,9 +1,6 @@
 // di/container.ts
 
-import { PrismaClient } from '../generated/prisma';
-
-// ========== PRISMA ==========
-const prisma = new PrismaClient();
+import { prisma } from '../infrastructure/database/prismaClient';
 
 // ========== INFRASTRUCTURE — Repositories ==========
 import { PrismaUserRepository } from '../infrastructure/database/repositories/PrismaUserRepository';
@@ -15,7 +12,7 @@ import { PrismaEmailVerificationRepository } from '../infrastructure/database/re
 // ========== INFRASTRUCTURE — Services ==========
 import { NodemailerEmailService } from '../infrastructure/email/NodemailerEmailService';
 import { JwtAccessTokenService } from '../infrastructure/service/JwtAccessTokenService';
-import { UuidGenerator } from '../infrastructure/security/UUIDGenerator';
+import { UUIDGenerator } from '../infrastructure/security/UUIDGenerator';
 import { Argon2PasswordHasher } from '../infrastructure/security/Argon2PasswordHasher';
 import { PrismaUnitOfWork } from '../infrastructure/database/PrismaUnitOfWork';
 
@@ -24,15 +21,25 @@ import { ClientProfileCreator } from '../infrastructure/profile-creators/ClientP
 import { TutorProfileCreator } from '../infrastructure/profile-creators/TutorProfileCreator';
 
 // ========== APPLICATION — Use Cases ==========
-import { RegisterUserUseCase } from '../application/usecases/auth/RegisterUserUseCase';
-import { ActivateAccountUseCase } from '../application/usecases/auth/ActivateAccountUseCase';
-import { LoginUseCase } from '../application/usecases/auth/LoginUseCase';
-import { LogoutUseCase } from '../application/usecases/auth/LogoutUseCase';
-import { RefreshTokenUseCase } from '../application/usecases/auth/RefreshTokenUseCase';
-import { ChangePasswordUseCase } from '../application/usecases/auth/ChangePasswordUseCase';
+// ======== AUTH ===============================
+import { RegisterUserUseCase } from '../application/usecases/auth/registration/RegisterUserUseCase';
+import { ActivateAccountUseCase } from '../application/usecases/auth/activation/ActivateAccountUseCase';
+import { LoginUseCase } from '../application/usecases/auth/login/LoginUseCase';
+import { LogoutUseCase } from '../application/usecases/auth/login/LogoutUseCase';
+import { RefreshTokenUseCase } from '../application/usecases/auth/token/RefreshTokenUseCase';
+import { ChangePasswordUseCase } from '../application/usecases/auth/password/ChangePasswordUseCase';
+import { SwitchRoleUseCase } from '../application/usecases/auth/login/SwitchRoleUseCase';
+import { GetActiveSessionsUseCase } from '../application/usecases/auth/token/GetActiveSessionsUseCase';
+import { RevokeSessionUseCase } from '../application/usecases/auth/token/RevokeSessionUseCase';
+import { RevokeAllSessionsUseCase } from '../application/usecases/auth/token/RevokeAllSessionsUseCase';
+import { ForgotPasswordUseCase } from '../application/usecases/auth/password/ForgotPasswordUseCase';
+import { ResetPasswordUseCase } from '../application/usecases/auth/password/ResetPasswordUseCase';
+import { RequestEmailChangeUseCase } from '../application/usecases/auth/email/RequestEmailChangeUseCase';
+import { ConfirmEmailChangeUseCase } from '../application/usecases/auth/email/ConfirmEmailChangeUseCase';
+
 
 // ========== PRESENTATION — Controllers ==========
-import { AuthController } from '../presentation/controllers/authController';
+import { AuthController } from '../presentation/controllers/auth/AuthController';
 
 // ─────────────────────────────────────────────
 // REPOSITORIES
@@ -48,7 +55,7 @@ const emailVerificationRepo = new PrismaEmailVerificationRepository(prisma);
 // ─────────────────────────────────────────────
 const emailService = new NodemailerEmailService();
 const accessTokenService = new JwtAccessTokenService();
-const idGenerator = new UuidGenerator();
+const idGenerator = new UUIDGenerator();
 const passwordHasher = new Argon2PasswordHasher();
 const unitOfWork = new PrismaUnitOfWork(prisma);
 
@@ -100,8 +107,7 @@ const logoutUseCase = new LogoutUseCase(
 const refreshTokenUseCase = new RefreshTokenUseCase(
   userRepo,
   refreshTokenRepo,
-  tokenService,
-  idGenerator,
+  accessTokenService
 );
 
 const changePasswordUseCase = new ChangePasswordUseCase(
@@ -110,10 +116,38 @@ const changePasswordUseCase = new ChangePasswordUseCase(
   passwordHasher,
 );
 
+const switchRoleUseCase = new SwitchRoleUseCase(
+  userRepo,
+  accessTokenService
+)
+
+const getActiveSessionsUseCase = new GetActiveSessionsUseCase(refreshTokenRepo);
+const revokeSessionUseCase = new RevokeSessionUseCase(refreshTokenRepo);
+const revokeAllSessionsUseCase = new RevokeAllSessionsUseCase(refreshTokenRepo);
+ 
+
+const forgotPasswordUseCase = new ForgotPasswordUseCase(
+  userRepo, 
+  passwordResetRepo,
+  emailService, 
+  idGenerator,
+);
+ 
+const resetPasswordUseCase = new ResetPasswordUseCase(
+  userRepo, refreshTokenRepo, passwordHasher,
+);
+ 
+const requestEmailChangeUseCase = new RequestEmailChangeUseCase(
+  userRepo, emailService, idGenerator,
+);
+ 
+const confirmEmailChangeUseCase = new ConfirmEmailChangeUseCase(userRepo);
+ 
+
 // ─────────────────────────────────────────────
 // CONTROLLERS
 // ─────────────────────────────────────────────
-/*
+
 const authController = new AuthController(
   registerClientUseCase,
   registerTutorUseCase,
@@ -121,13 +155,15 @@ const authController = new AuthController(
   loginUseCase,
   logoutUseCase,
   refreshTokenUseCase,
+  switchRoleUseCase,
   changePasswordUseCase,
+  forgotPasswordUseCase,
+  resetPasswordUseCase,
+  getActiveSessionsUseCase,
+  revokeSessionUseCase,
+  revokeAllSessionsUseCase,
 );
-*/
 
-const authController = new AuthController(
-  loginUseCase
-)
 
 // ─────────────────────────────────────────────
 // EXPORTS
