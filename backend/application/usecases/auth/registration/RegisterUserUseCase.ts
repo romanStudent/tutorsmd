@@ -17,6 +17,7 @@ export interface RegisterUserDto {
   surname: string;
   email: string;
   password: string;
+  languageCode?: string;
   timezone?: string;
 }
 export class RegisterUserUseCase {
@@ -33,7 +34,7 @@ export class RegisterUserUseCase {
   async execute(dto: RegisterUserDto): Promise<void> {
     // 1. Валидация пароля
     Password.validate(dto.password);
-    Email.
+    Email.create(dto.email)
 
     // 2. Проверка уникальности email
     const exists = await this.userRepo.existsByEmail(dto.email);
@@ -44,8 +45,9 @@ export class RegisterUserUseCase {
     const profileId = this.idGenerator.generate();
     const verificationToken = this.idGenerator.generate();
     const username = await this.generateUniqueUsername(dto.name, dto.surname);
-    const hashedPassword = await this.passwordHasher.hash(dto.password);
 
+    const hashedPassword = await this.passwordHasher.hash(dto.password);
+    const hashedVerificationToken = await this.passwordHasher.hash(verificationToken);
     // 4. Создание User entity — роль берётся из profileCreator
     const user = User.create({
       id: userId,
@@ -65,7 +67,7 @@ export class RegisterUserUseCase {
       await this.profileCreator.createProfile(userId, profileId);
       await this.emailVerificationRepo.upsert({
         userId,
-        link: verificationToken,
+        link: hashedVerificationToken,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 часа
       });
     });
@@ -73,7 +75,7 @@ export class RegisterUserUseCase {
     // 6. Email вне транзакции — side effect
     // Если письмо не дошло — юзер может запросить повторно
     const link = `${process.env.CLIENT_URL}/activate/${verificationToken}`;
-    await this.emailService.sendActivationLink(dto.email, link);
+    await this.emailService.sendActivationLink(dto.email, link, dto.languageCode);
   }
 
   private async generateUniqueUsername(name: string, surname: string): Promise<string> {

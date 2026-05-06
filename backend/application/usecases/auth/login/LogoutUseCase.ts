@@ -8,9 +8,9 @@ export class LogoutUseCase {
   ) {}
 
   async execute(rawToken: string): Promise<void> {
-    const token = RefreshToken.fromRaw(rawToken); // валидирует + хэширует
-    const record = await this.refreshTokenRepo.findByTokenHash(token.hash);
+    const token = RefreshToken.fromRaw(rawToken).hash;
+    const record = await this.refreshTokenRepo.findByTokenHash(token);
     if (!record) throw new DomainError('Session not found');
-    await this.refreshTokenRepo.revoke(token.hash);
+    await this.refreshTokenRepo.revoke(token);
   }
 }

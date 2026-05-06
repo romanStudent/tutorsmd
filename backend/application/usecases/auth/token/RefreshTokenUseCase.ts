@@ -20,8 +20,8 @@ export class RefreshTokenUseCase {
 
   async execute(rawToken: string, activeRole: Role): Promise<RefreshResult> {
     // 1. Хэшируем и ищем в БД
-    const incomingToken = RefreshToken.fromRaw(rawToken);
-    const record = await this.refreshTokenRepo.findByTokenHash(incomingToken.hash);
+    const incomingToken = RefreshToken.fromRaw(rawToken).hash;
+    const record = await this.refreshTokenRepo.findByTokenHash(incomingToken);
 
     if (!record) throw new DomainError('Session not found');
     if (record.revokedAt) {
@@ -43,7 +43,7 @@ export class RefreshTokenUseCase {
     }
 
     // 4. Rotation — отозвать старый, создать новый
-    await this.refreshTokenRepo.revoke(incomingToken.hash);
+    await this.refreshTokenRepo.revoke(incomingToken);
 
     const newToken = RefreshToken.generate();
     await this.refreshTokenRepo.create({
