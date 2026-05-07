@@ -7,11 +7,15 @@ enum LessonStatus {
   rescheduled
   no_show_client
   no_show_tutor
+
+  @@map("lesson_status")
 }
 
 enum LessonType {
   trial
   regular
+
+  @@map("lesson_type")
 }
 
 enum MaterialType {
@@ -19,31 +23,35 @@ enum MaterialType {
   homework_done
   lesson_file
   other
+
+  @@map("material_type")
 }
 
 enum CancelledByRole {
   client
   tutor
+
+  @@map("cancelled_by_role")
 }
 
 model Lesson {
   id                  String       @id @default(uuid()) @db.Uuid
-  clientId            String       @db.Uuid
-  tutorId             String       @db.Uuid
-  subjectId           String       @db.Uuid
-  quizId              String?      @db.Uuid
+  clientId            String       @db.Uuid @map("client_id")
+  tutorId             String       @db.Uuid @map("tutor_id")
+  subjectId           String       @db.Uuid @map("subject_id")
+  quizId              String?      @db.Uuid @map("quiz_id")
   type                LessonType
-  roomId              String?       @db.VarChar(255)
+  roomId              String?      @db.VarChar(255) @map("room_id")
   status              LessonStatus @default(confirmed)
-  cancellationReason  String?      @db.Text
-  rescheduledFromId   String?      @db.Uuid
-  recurringScheduleId String?      @db.Uuid
-  scheduledAt         DateTime     @db.Timestamptz()
-  durationMinutes     Int          @default(60)
-  startedAt           DateTime?    @db.Timestamptz()
-  completedAt         DateTime?    @db.Timestamptz()
-  createdAt           DateTime     @default(now()) @db.Timestamptz()
-  updatedAt           DateTime     @updatedAt @db.Timestamptz()
+  cancellationReason  String?      @db.Text @map("cancellation_reason")
+  rescheduledFromId   String?      @db.Uuid @map("rescheduled_from_id")
+  recurringScheduleId String?      @db.Uuid @map("recurring_schedule_id")
+  scheduledAt         DateTime     @db.Timestamptz() @map("scheduled_at")
+  durationMinutes     Int          @default(60) @map("duration_minutes")
+  startedAt           DateTime?    @db.Timestamptz() @map("started_at")
+  completedAt         DateTime?    @db.Timestamptz() @map("completed_at")
+  createdAt           DateTime     @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt           DateTime     @updatedAt @db.Timestamptz() @map("updated_at")
 
   client            Client             @relation(fields: [clientId], references: [id])
   tutor             Tutor              @relation(fields: [tutorId], references: [id])
@@ -59,57 +67,65 @@ model Lesson {
   quiz              Quiz?              @relation(fields: [quizId], references: [id])
   quizAnswers       QuizAnswer[]
 
+  @@index([tutorId, status, scheduledAt])   // Covering index(Index Only Scan). Предстоящие уроки Tutor
+  @@index([clientId, status])           // уроки студента по статусу
+  @@index([recurringScheduleId])        // все уроки серии
+  @@index([scheduledAt])                // cron job — найти уроки по времени
+  
   @@map("lessons")
 }
 
 model LessonMaterial {
   id               String       @id @default(uuid()) @db.Uuid
-  lessonId         String       @db.Uuid
-  uploadedByTutor  String?      @db.Uuid
-  uploadedByClient String?      @db.Uuid
-  materialType     MaterialType
-  fileUrl          String       @db.Text
-  fileName         String       @db.Text
-  fileSize         Int?
-  mimeType         String?      @db.VarChar(100)
-  createdAt        DateTime     @default(now()) @db.Timestamptz()
-  updatedAt        DateTime     @updatedAt @db.Timestamptz()
+  lessonId         String       @db.Uuid @map("lesson_id")
+  uploadedByTutor  String?      @db.Uuid @map("uploaded_by_tutor")
+  uploadedByClient String?      @db.Uuid @map("uploaded_by_client")
+  materialType     MaterialType @map("material_type")
+  fileUrl          String       @db.Text @map("file_url")
+  fileName         String       @db.Text @map("file_name")
+  fileSize         BigInt?      @db.BigInt @map("file_size")
+  mimeType         String?      @db.VarChar(100) @map("mime_type")
+  createdAt        DateTime     @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt        DateTime     @updatedAt @db.Timestamptz() @map("updated_at")
 
   lesson Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   tutor  Tutor?  @relation("TutorMaterial", fields: [uploadedByTutor], references: [id])
   client Client? @relation("ClientMaterial", fields: [uploadedByClient], references: [id])
 
+  @@index([lessonId])  // все материалы урока
   @@map("lesson_materials")
 }
 
 model LessonTutorReport {
   id                 String   @id @default(uuid()) @db.Uuid
-  lessonId           String   @unique @db.Uuid
-  tutorId            String   @db.Uuid
-  progressOfClass    String?  @db.Text
-  recommendedToLearn String?  @db.Text
-  createdAt          DateTime @default(now()) @db.Timestamptz()
-  updatedAt          DateTime @updatedAt @db.Timestamptz()
+  lessonId           String   @unique @db.Uuid @map("lesson_id")
+  tutorId            String   @db.Uuid @map("tutor_id")
+  progressOfClass    String?  @db.Text @map("progress_of_class")
+  recommendedToLearn String?  @db.Text @map("recommended_to_learn")
+  createdAt          DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt          DateTime @updatedAt @db.Timestamptz() @map("updated_at")
 
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   tutor  Tutor  @relation(fields: [tutorId], references: [id])
 
+  @@index([tutorId])   // tutorId для истории отчётов тьютора
   @@map("lesson_tutor_reports")
 }
 
 model LessonClientNote {
-  id          String   @id @default(uuid()) @db.Uuid
-  lessonId    String   @unique @db.Uuid
-  clientId    String   @db.Uuid
-  understand  String?  @db.Text
-  difficult   String?  @db.Text
-  question    String?  @db.Text
-  selfRating  Int?     // SMALLINT 1-5
-  createdAt   DateTime @default(now()) @db.Timestamptz()
-  updatedAt   DateTime @updatedAt @db.Timestamptz()
+  id         String   @id @default(uuid()) @db.Uuid
+  lessonId   String   @unique @db.Uuid @map("lesson_id")
+  clientId   String   @db.Uuid @map("client_id")
+  understand String?  @db.Text
+  difficult  String?  @db.Text
+  question   String?  @db.Text
+  selfRating Int?     @db.SmallInt @map("self_rating")
+  createdAt  DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt  DateTime @updatedAt @db.Timestamptz() @map("updated_at")
 
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   client Client @relation(fields: [clientId], references: [id])
 
+  @@index([clientId])    // clientId для истории заметок студента
   @@map("lesson_client_notes")
 }
