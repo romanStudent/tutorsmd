@@ -64,7 +64,7 @@ model Lesson {
   clientNotes       LessonClientNote?
   reviews           Review[]
   appeals           Appeal[]
-  quiz              Quiz?              @relation(fields: [quizId], references: [id])
+  quiz              Quiz?              @relation(fields: [quizId], references: [id], onDelete: SetNull)
   quizAnswers       QuizAnswer[]
 
   @@index([tutorId, status, scheduledAt])   // Covering index(Index Only Scan). Предстоящие уроки Tutor
