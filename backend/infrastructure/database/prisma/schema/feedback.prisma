@@ -1,8 +1,8 @@
 model Feedback {
   id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @db.Uuid
+  userId    String   @db.Uuid @map("user_id")
   text      String   @db.Text
-  createdAt DateTime @default(now()) @db.Timestamptz()
+  createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

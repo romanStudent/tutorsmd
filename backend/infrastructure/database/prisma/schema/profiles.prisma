@@ -2,62 +2,64 @@ enum ApprovalStatus {
   pending
   approved
   rejected
+
+  @@map("approval_status")
 }
 
 model Client {
-  id           String   @id @default(uuid()) @db.Uuid
-  userId       String   @unique @db.Uuid
-  avatarUrl    String?  @db.Text
-  createdAt    DateTime @default(now()) @db.Timestamptz()
-  updatedAt    DateTime @updatedAt @db.Timestamptz()
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid @map("user_id")
+  avatarUrl String?  @db.Text @map("avatar_url")
+  createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz() @map("updated_at")
 
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lessons   Lesson[]
-  reviews   Review[]
-  materials LessonMaterial[] @relation("ClientMaterial")
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessons          Lesson[]
+  reviews          Review[]
+  materials        LessonMaterial[]  @relation("ClientMaterial")
   regularSchedules RegularSchedule[]
-  clientNotes  LessonClientNote[]
-  appeals      Appeal[]
-  quizAnswers  QuizAnswer[]
+  clientNotes      LessonClientNote[]
+  appeals          Appeal[]
+  quizAnswers      QuizAnswer[]
 
   @@map("clients")
 }
 
 model Tutor {
-  id              String         @id @default(uuid()) @db.Uuid
-  userId          String         @unique @db.Uuid
-  avatarUrl       String?        @db.Text
-  fulldescribeDe  String?        @db.Text
-  fulldescribeRu  String?        @db.Text
-  highlightDe     String?        @db.Text
-  highlightRu     String?        @db.Text
-  hourlyRate      Decimal?       @db.Decimal(10, 2)
-  ratingAvg       Decimal        @default(0) @db.Decimal(3, 2)
-  ratingCount     Int            @default(0)
-  approvalStatus  ApprovalStatus @default(pending)
-  approvedAt      DateTime?      @db.Timestamptz()
-  approvedBy      String?        @db.Uuid
-  createdAt       DateTime       @default(now()) @db.Timestamptz()
-  updatedAt       DateTime       @updatedAt @db.Timestamptz()
+  id             String         @id @default(uuid()) @db.Uuid
+  userId         String         @unique @db.Uuid @map("user_id")
+  avatarUrl      String?        @db.Text @map("avatar_url")
+  fulldescribeDe String?        @db.Text @map("fulldescribe_de")
+  fulldescribeRu String?        @db.Text @map("fulldescribe_ru")
+  highlightDe    String?        @db.Text @map("highlight_de")
+  highlightRu    String?        @db.Text @map("highlight_ru")
+  hourlyRate     Decimal?       @db.Decimal(10, 2) @map("hourly_rate")
+  ratingAvg      Decimal        @default(0) @db.Decimal(3, 2) @map("rating_avg")
+  ratingCount    Int            @default(0) @map("rating_count")
+  approvalStatus ApprovalStatus @default(pending) @map("approval_status")
+  approvedAt     DateTime?      @db.Timestamptz() @map("approved_at")
+  approvedBy     String?        @db.Uuid @map("approved_by")
+  createdAt      DateTime       @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt      DateTime       @updatedAt @db.Timestamptz() @map("updated_at")
 
   user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   availableSubjects AvailableSubject[]
   availableSlots    AvailableSlot[]
-  lessons          Lesson[]
-  reviews          Review[]
-  regularSchedules RegularSchedule[]
-  materials        LessonMaterial[] @relation("TutorMaterial")
-  tutorReports LessonTutorReport[]
-  appeals      Appeal[]
-  quizzes      Quiz[]
+  lessons           Lesson[]
+  reviews           Review[]
+  regularSchedules  RegularSchedule[]
+  materials         LessonMaterial[]    @relation("TutorMaterial")
+  tutorReports      LessonTutorReport[]
+  appeals           Appeal[]
+  quizzes           Quiz[]
 
   @@map("tutors")
 }
 
 model Admin {
   id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @unique @db.Uuid
-  createdAt DateTime @default(now()) @db.Timestamptz()
+  userId    String   @unique @db.Uuid @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

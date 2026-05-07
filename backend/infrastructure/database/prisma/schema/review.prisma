@@ -1,17 +1,20 @@
 model Review {
   id        String   @id @default(uuid()) @db.Uuid
-  lessonId  String   @db.Uuid
-  clientId  String   @db.Uuid
-  tutorId   String   @db.Uuid
-  rating    Int
+  lessonId  String   @db.Uuid @map("lesson_id")
+  clientId  String   @db.Uuid @map("client_id")
+  tutorId   String   @db.Uuid @map("tutor_id")
+  rating    Int      @db.SmallInt  // 1-5
   comment   String?  @db.Text
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  tutorResponse      String?   @db.Text @map("tutor_response")
+  tutorRespondedAt   DateTime? @db.Timestamptz() @map("tutor_responded_at")
+  createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz() @map("updated_at")
 
   lesson Lesson @relation(fields: [lessonId], references: [id])
   client Client @relation(fields: [clientId], references: [id])
   tutor  Tutor  @relation(fields: [tutorId], references: [id])
 
-  @@unique([lessonId, clientId])
+  @@unique([clientId, tutorId])
+  @@index([tutorId, rating])   // Covering Index(Index Only Scan). AVG(rating)
   @@map("reviews")
 }
