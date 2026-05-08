@@ -39,7 +39,6 @@ model Lesson {
   clientId            String       @db.Uuid @map("client_id")
   tutorId             String       @db.Uuid @map("tutor_id")
   subjectId           String       @db.Uuid @map("subject_id")
-  quizId              String?      @db.Uuid @map("quiz_id")
   type                LessonType
   roomId              String?      @db.VarChar(255) @map("room_id")
   status              LessonStatus @default(confirmed)
@@ -64,9 +63,10 @@ model Lesson {
   clientNotes       LessonClientNote?
   reviews           Review[]
   appeals           Appeal[]
-  quiz              Quiz?              @relation(fields: [quizId], references: [id])
-  quizAnswers       QuizAnswer[]
+  lessonQuizzes     LessonQuiz[]
+  quizAttempts      QuizAttempt[]
 
+  @@index([clientId, tutorId, type])
   @@index([tutorId, status, scheduledAt])   // Covering index(Index Only Scan). Предстоящие уроки Tutor
   @@index([clientId, status])           // уроки студента по статусу
   @@index([recurringScheduleId])        // все уроки серии

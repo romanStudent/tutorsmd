@@ -20,9 +20,10 @@ model Client {
   regularSchedules RegularSchedule[]
   clientNotes      LessonClientNote[]
   appeals          Appeal[]
-  quizAnswers      QuizAnswer[]
 
-  @@map("clients")
+  quizAttempts     QuizAttempt[]
+
+  @@map("client")
 }
 
 model Tutor {
@@ -42,18 +43,19 @@ model Tutor {
   createdAt      DateTime       @default(now()) @db.Timestamptz() @map("created_at")
   updatedAt      DateTime       @updatedAt @db.Timestamptz() @map("updated_at")
 
-  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  availableSubjects AvailableSubject[]
-  availableSlots    AvailableSlot[]
-  lessons           Lesson[]
-  reviews           Review[]
-  regularSchedules  RegularSchedule[]
-  materials         LessonMaterial[]    @relation("TutorMaterial")
-  tutorReports      LessonTutorReport[]
-  appeals           Appeal[]
-  quizzes           Quiz[]
+  user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tutorSubjects       TutorSubject[]
+  availableSlots      AvailableSlot[]
+  lessons             Lesson[]
+  reviews             Review[]
+  regularSchedules    RegularSchedule[]
+  materials           LessonMaterial[]    @relation("TutorMaterial")
+  tutorReports        LessonTutorReport[]
+  appeals             Appeal[]
+  quizzes             Quiz[]
+  quizAnswerFeedbacks QuizAnswerFeedback[]
 
-  @@map("tutors")
+  @@map("tutor")
 }
 
 model Admin {
@@ -63,5 +65,5 @@ model Admin {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("admins")
+  @@map("admin")
 }

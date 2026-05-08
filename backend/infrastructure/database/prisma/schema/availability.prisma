@@ -11,8 +11,8 @@ model AvailableSlot {
 
   @@unique([tutorId, dayOfWeek, startTime])
   @@index([tutorId, isActive])  // активные слоты тьютора
-  
-  @@map("available_slots")
+
+  @@map("available_slot")
 }
 
 model RegularSchedule {
@@ -38,5 +38,5 @@ model RegularSchedule {
   @@index([tutorId, isActive])  // активные расписания тьютора
   @@index([clientId, isActive]) // активные расписания студента
 
-  @@map("regular_schedules")
+  @@map("regular_schedule")
 }

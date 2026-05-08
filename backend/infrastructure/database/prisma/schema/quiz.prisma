@@ -1,18 +1,3 @@
-model Quiz {
-  id        String   @id @default(uuid()) @db.Uuid
-  tutorId   String?  @db.Uuid @map("tutor_id")
-  subjectId String?  @db.Uuid @map("subject_id")
-  title     String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
-  updatedAt DateTime @updatedAt @db.Timestamptz() @map("updated_at")
-
-  tutor     Tutor?         @relation(fields: [tutorId], references: [id])
-  subject   Subject?       @relation(fields: [subjectId], references: [id])
-  questions QuizQuestion[]
-  lessons   Lesson[]
-
-  @@map("quizzes")
-}
 enum QuestionType {
   free_text
   single_choice
@@ -21,48 +6,194 @@ enum QuestionType {
   @@map("question_type")
 }
 
+model Quiz {
+  id           String   @id @default(uuid()) @db.Uuid
+
+  tutorId      String   @db.Uuid @map("tutor_id")
+  subjectId    String   @db.Uuid @map("subject_id")
+
+  title        String   @db.VarChar(255)
+  description  String?  @db.Text
+
+  createdAt    DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt    DateTime @updatedAt @db.Timestamptz() @map("updated_at")
+
+  tutor        Tutor    @relation(fields: [tutorId], references: [id])
+  subject      Subject  @relation(fields: [subjectId], references: [id])
+
+  questions     QuizQuestion[]
+  lessonQuizzes LessonQuiz[]
+  attempts      QuizAttempt[]
+
+  @@index([tutorId])
+  @@index([subjectId])
+
+  @@map("quiz")
+}
+
 model QuizQuestion {
   id           String       @id @default(uuid()) @db.Uuid
+
   quizId       String       @db.Uuid @map("quiz_id")
+
   question     String       @db.Text
+
   type         QuestionType @default(free_text)
+
+  order        Int
+
+  maxPoints    Int          @default(1) @map("max_points")
+
   createdAt    DateTime     @default(now()) @db.Timestamptz() @map("created_at")
   updatedAt    DateTime     @updatedAt @db.Timestamptz() @map("updated_at")
 
-  quiz    Quiz              @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  options QuizOption[]
-  answers QuizAnswer[]
+  quiz         Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
 
-  @@map("quiz_questions")
+  options      QuizOption[]
+  answers      QuizAnswer[]
+
+  @@index([quizId])
+
+  @@unique([quizId, order])
+
+  @@map("quiz_question")
 }
 
 model QuizOption {
-  id         String  @id @default(uuid()) @db.Uuid
-  questionId String  @db.Uuid @map("question_id")
-  text       String  @db.Text
-  isCorrect  Boolean @default(false) @map("is_correct")
+  id           String       @id @default(uuid()) @db.Uuid
 
-  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId   String       @db.Uuid @map("question_id")
 
-  @@map("quiz_options")
+  text         String       @db.Text
+
+  isCorrect    Boolean      @default(false) @map("is_correct")
+
+  createdAt    DateTime     @default(now()) @db.Timestamptz() @map("created_at")
+
+  question     QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  selectedIn   QuizAnswerOption[]
+
+  @@index([questionId])
+
+  @@map("quiz_option")
+}
+
+model LessonQuiz {
+  lessonId     String   @db.Uuid @map("lesson_id")
+  quizId       String   @db.Uuid @map("quiz_id")
+
+  assignedAt   DateTime @default(now()) @db.Timestamptz() @map("assigned_at")
+
+  lesson       Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  quiz         Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@id([lessonId, quizId])
+
+  @@index([quizId])
+
+  @@map("lesson_quiz")
 }
 
 model QuizAnswer {
-  id         String   @id @default(uuid()) @db.Uuid
-  questionId String   @db.Uuid @map("question_id")
-  lessonId   String   @db.Uuid @map("lesson_id")
-  clientId   String   @db.Uuid @map("client_id")
-  optionId   String?  @db.Uuid @map("option_id")  // для single/multiple_choice
-  answer     String?  @db.Text                     // для free_text
-  createdAt  DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  id               String   @id @default(uuid()) @db.Uuid
 
-  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  lesson   Lesson       @relation(fields: [lessonId], references: [id])
-  client   Client       @relation(fields: [clientId], references: [id])
-  option   QuizOption?  @relation(fields: [optionId], references: [id])
+  questionId       String   @db.Uuid @map("question_id")
+  attemptId        String   @db.Uuid @map("attempt_id")
 
-  @@unique([questionId, lessonId, clientId, optionId]) // optionId в unique чтобы multiple_choice работал
+  answer           String?  @db.Text
 
-  @@index([lessonId])   // все ответы по уроку
-  @@map("quiz_answers")
+  earnedPoints     Int?     @map("earned_points")
+
+  createdAt        DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt        DateTime @updatedAt @db.Timestamptz() @map("updated_at")
+
+  question         QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  attempt          QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  selectedOptions  QuizAnswerOption[]
+
+  answerFeedback   QuizAnswerFeedback?
+
+  @@unique([questionId, attemptId])
+
+  @@index([attemptId])
+  @@index([questionId])
+
+  @@map("quiz_answer")
+}
+
+model QuizAnswerOption {
+  answerId   String @db.Uuid @map("answer_id")
+  optionId   String @db.Uuid @map("option_id")
+
+  answer     QuizAnswer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+
+  option     QuizOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@id([answerId, optionId])
+
+  @@index([optionId])
+
+  @@map("quiz_answer_option")
+}
+
+model QuizAnswerFeedback {
+  id           String   @id @default(uuid()) @db.Uuid
+
+  answerId     String   @unique @db.Uuid @map("answer_id")
+
+  tutorId      String   @db.Uuid @map("tutor_id")
+
+  comment      String?  @db.Text
+
+  isCorrect    Boolean? @map("is_correct")
+
+  createdAt    DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  updatedAt    DateTime @updatedAt @db.Timestamptz() @map("updated_at")
+
+  answer       QuizAnswer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+
+  tutor        Tutor      @relation(fields: [tutorId], references: [id])
+
+  @@index([tutorId])
+
+  @@map("quiz_answer_feedback")
+}
+
+model QuizAttempt {
+  id            String   @id @default(uuid()) @db.Uuid
+
+  quizId        String   @db.Uuid @map("quiz_id")
+
+  lessonId      String?  @db.Uuid @map("lesson_id")
+
+  clientId      String   @db.Uuid @map("client_id")
+
+  startedAt     DateTime @default(now()) @db.Timestamptz() @map("started_at")
+
+  submittedAt   DateTime? @db.Timestamptz() @map("submitted_at")
+
+  totalPoints   Int?     @map("total_points")
+
+  createdAt     DateTime @default(now()) @db.Timestamptz() @map("created_at")
+
+  updatedAt     DateTime @updatedAt @db.Timestamptz() @map("updated_at")
+
+  quiz          Quiz     @relation(fields: [quizId], references: [id])
+
+  lesson        Lesson?  @relation(fields: [lessonId], references: [id])
+
+  client        Client   @relation(fields: [clientId], references: [id])
+
+  answers       QuizAnswer[]
+
+  @@index([quizId])
+
+  @@index([lessonId])
+
+  @@index([clientId])
+
+  @@map("quiz_attempt")
 }

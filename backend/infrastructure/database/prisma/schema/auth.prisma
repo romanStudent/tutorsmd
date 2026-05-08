@@ -71,6 +71,7 @@ model OAuthProvider {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@unique([provider, providerId])
   @@map("oauth_providers")
 }
