@@ -9,7 +9,6 @@ enum ApprovalStatus {
 model Client {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @unique @db.Uuid @map("user_id")
-  avatarUrl String?  @db.Text @map("avatar_url")
   createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
   updatedAt DateTime @updatedAt @db.Timestamptz() @map("updated_at")
 
@@ -23,17 +22,20 @@ model Client {
 
   quizAttempts     QuizAttempt[]
 
-  @@map("client")
+  @@map("clients")
 }
 
 model Tutor {
   id             String         @id @default(uuid()) @db.Uuid
   userId         String         @unique @db.Uuid @map("user_id")
-  avatarUrl      String?        @db.Text @map("avatar_url")
   fulldescribeDe String?        @db.Text @map("fulldescribe_de")
   fulldescribeRu String?        @db.Text @map("fulldescribe_ru")
   highlightDe    String?        @db.Text @map("highlight_de")
   highlightRu    String?        @db.Text @map("highlight_ru")
+  nameDe         String?        @db.VarChar(100) @map("name_de")
+  nameRu         String?        @db.VarChar(100) @map("name_ru")
+  surnameDe      String?        @db.VarChar(100) @map("surname_de")
+  surnameRu      String?        @db.VarChar(100) @map("surname_ru")
   hourlyRate     Decimal?       @db.Decimal(10, 2) @map("hourly_rate")
   ratingAvg      Decimal        @default(0) @db.Decimal(3, 2) @map("rating_avg")
   ratingCount    Int            @default(0) @map("rating_count")
@@ -55,7 +57,7 @@ model Tutor {
   quizzes             Quiz[]
   quizAnswerFeedbacks QuizAnswerFeedback[]
 
-  @@map("tutor")
+  @@map("tutors")
 }
 
 model Admin {
@@ -65,5 +67,5 @@ model Admin {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("admin")
+  @@map("admins")
 }

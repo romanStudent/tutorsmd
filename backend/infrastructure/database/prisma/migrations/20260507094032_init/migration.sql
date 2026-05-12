@@ -168,7 +168,6 @@ CREATE TABLE "lessons" (
     "clientId" UUID NOT NULL,
     "tutorId" UUID NOT NULL,
     "subjectId" UUID NOT NULL,
-    "quizId" UUID,
     "type" "LessonType" NOT NULL,
     "roomId" VARCHAR(255),
     "status" "LessonStatus" NOT NULL DEFAULT 'confirmed',
@@ -458,9 +457,6 @@ ALTER TABLE "lessons" ADD CONSTRAINT "lessons_rescheduledFromId_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "lessons" ADD CONSTRAINT "lessons_recurringScheduleId_fkey" FOREIGN KEY ("recurringScheduleId") REFERENCES "regular_schedules"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "lessons" ADD CONSTRAINT "lessons_quizId_fkey" FOREIGN KEY ("quizId") REFERENCES "quizzes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "lesson_materials" ADD CONSTRAINT "lesson_materials_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "lessons"("id") ON DELETE CASCADE ON UPDATE CASCADE;
