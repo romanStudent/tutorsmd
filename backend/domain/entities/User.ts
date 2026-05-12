@@ -14,6 +14,7 @@ interface UserProps {
   username: string;
   email: Email;
   hashedPassword: string | null;
+  avatarUrl: string | null;
   roles: ReadonlyArray<Role>;
   isEmailVerified: boolean;
   authProvider: AuthProvider;
@@ -21,6 +22,15 @@ interface UserProps {
   languageCode: LanguageCode;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface UpdateUserProps {
+  name?: string;
+  surname?: string;
+  username?: string;
+  timezone?: string;
+  languageCode?: LanguageCode;
+  avatarUrl?: string | null; // undefined = не менять, null = удалить
 }
 
 interface CreateUserProps {
@@ -34,6 +44,7 @@ interface CreateUserProps {
   roles: Role[];
   timezone?: string;
   languageCode?: LanguageCode;
+  avatarUrl?: string | null;
 }
 
 interface RestoreUserProps {
@@ -43,6 +54,7 @@ interface RestoreUserProps {
   username: string;
   email: string;
   hashedPassword: string | null;
+  avatarUrl: string | null;
   roles: Role[];
   isEmailVerified: boolean;
   authProvider: AuthProvider;
@@ -69,6 +81,7 @@ export class User {
   get username(): string { return this.props.username; }
   get email(): string { return this.props.email.value; }
   get hashedPassword(): string | null { return this.props.hashedPassword; }
+  get avatarUrl(): string | null { return this.props.avatarUrl; }
   get roles(): ReadonlyArray<Role> { return this.props.roles; }
   get isEmailVerified(): boolean { return this.props.isEmailVerified; }
   get authProvider(): AuthProvider { return this.props.authProvider; }
@@ -80,19 +93,28 @@ export class User {
 
   // --- Business methods ---
 
-  updateName(name: string, surname: string): User {
+  // Обновление профиля — один вызов для всех полей
+  update(props: UpdateUserProps): User {
     return new User({
       ...this.props,
-      name: User.validateName(name),
-      surname: User.validateSurname(surname),
-      updatedAt: new Date(),
-    });
-  }
-
-  changeUsername(username: string): User {
-    return new User({
-      ...this.props,
-      username: User.validateUsername(username),
+      name: props.name !== undefined
+        ? User.validateName(props.name)
+        : this.props.name,
+      surname: props.surname !== undefined
+        ? User.validateSurname(props.surname)
+        : this.props.surname,
+      username: props.username !== undefined
+        ? User.validateUsername(props.username)
+        : this.props.username,
+      timezone: props.timezone !== undefined
+        ? User.validateTimezone(props.timezone)
+        : this.props.timezone,
+      languageCode: props.languageCode !== undefined
+        ? User.validateLanguageCode(props.languageCode)
+        : this.props.languageCode,
+      avatarUrl: props.avatarUrl !== undefined
+        ? props.avatarUrl
+        : this.props.avatarUrl,
       updatedAt: new Date(),
     });
   }
@@ -131,25 +153,6 @@ export class User {
     return new User({
       ...this.props,
       hashedPassword: newHash,
-      updatedAt: new Date(),
-    });
-  }
-
-  changeTimezone(timezone: string): User {
-    return new User({
-      ...this.props,
-      timezone: User.validateTimezone(timezone),
-      updatedAt: new Date(),
-    });
-  }
-
-  changeLanguageCode(languageCode: LanguageCode): User {
-    if (!ALLOWED_LANGUAGES.includes(languageCode)) {
-      throw new DomainError(`Unsupported language code: ${languageCode}`);
-    }
-    return new User({
-      ...this.props,
-      languageCode,
       updatedAt: new Date(),
     });
   }
@@ -227,6 +230,13 @@ export class User {
     }
   }
 
+  private static validateLanguageCode(code: LanguageCode): LanguageCode {
+    if (!ALLOWED_LANGUAGES.includes(code)) {
+      throw new DomainError(`Unsupported language code: ${code}`);
+    }
+    return code;
+  }
+
   private static validateRoles(roles: Role[]): ReadonlyArray<Role> {
     if (!roles || roles.length === 0) {
       throw new DomainError('User must have at least one role');
@@ -258,6 +268,7 @@ export class User {
       username: User.validateUsername(props.username),
       email: Email.create(props.email),
       hashedPassword: props.hashedPassword,
+      avatarUrl: props.avatarUrl ?? null,
       roles: User.validateRoles(props.roles),
       isEmailVerified: false,
       authProvider: props.authProvider,
@@ -277,6 +288,7 @@ export class User {
       username: props.username,
       email: Email.fromPersistence(props.email),
       hashedPassword: props.hashedPassword,
+      avatarUrl: props.avatarUrl,
       roles: Object.freeze([...new Set(props.roles)]),
       isEmailVerified: props.isEmailVerified,
       authProvider: props.authProvider,

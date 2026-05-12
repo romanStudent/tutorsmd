@@ -1,3 +1,4 @@
+// domain/entities/Tutor.ts
 import { DomainError } from '../errors/DomainError';
 
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected';
@@ -5,7 +6,53 @@ export type ApprovalStatus = 'pending' | 'approved' | 'rejected';
 interface TutorProps {
   id: string;
   userId: string;
-  avatarUrl: string | null;
+  fulldescribeDe: string | null;
+  fulldescribeRu: string | null;
+  hourlyRate: number | null;
+  nameDe: string | null;
+  nameRu: string | null;
+  surnameDe: string | null;
+  surnameRu: string | null;
+  highlightDe: string | null;
+  highlightRu: string | null;
+  ratingAvg: number;
+  ratingCount: number;
+  approvalStatus: ApprovalStatus;
+  approvedAt: Date | null;
+  approvedBy: string | null; // userId админа
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface CreateTutorProps {
+  id: string;
+  userId: string;
+  fulldescribeDe?: string | null;
+  fulldescribeRu?: string | null;
+  hourlyRate?: number | null;
+  nameDe?: string | null;
+  nameRu?: string | null;
+  surnameDe?: string | null;
+  surnameRu?: string | null;
+  highlightDe?: string | null;
+  highlightRu?: string | null;
+}
+
+export interface UpdateTutorProps {
+  fulldescribeDe?: string | null;
+  fulldescribeRu?: string | null;
+  highlightDe?: string | null;
+  highlightRu?: string | null;
+  nameDe?: string | null;
+  nameRu?: string | null;
+  surnameDe?: string | null;
+  surnameRu?: string | null;
+  hourlyRate?: number | null;
+}
+
+interface RestoreTutorProps {
+  id: string;
+  userId: string;
   fulldescribeDe: string | null;
   fulldescribeRu: string | null;
   hourlyRate: number | null;
@@ -24,23 +71,6 @@ interface TutorProps {
   updatedAt: Date;
 }
 
-interface CreateTutorProps {
-  id: string;
-  userId: string;
-  avatarUrl?: string | null;
-  fulldescribeDe?: string | null;
-  fulldescribeRu?: string | null;
-  hourlyRate?: number | null;
-  nameDe?: string | null;
-  nameRu?: string | null;
-  surnameDe?: string | null;
-  surnameRu?: string | null;
-  highlightDe?: string | null;
-  highlightRu?: string | null;
-}
-
-interface RestoreTutorProps extends TutorProps {}
-
 export class Tutor {
   private readonly props: TutorProps;
 
@@ -52,8 +82,7 @@ export class Tutor {
 
   get id(): string { return this.props.id; }
   get userId(): string { return this.props.userId; }
-  get avatarUrl(): string | null { return this.props.avatarUrl; }
-  get fulldescribeGe(): string | null { return this.props.fulldescribeDe; }
+  get fulldescribeDe(): string | null { return this.props.fulldescribeDe; }
   get fulldescribeRu(): string | null { return this.props.fulldescribeRu; }
   get hourlyRate(): number | null { return this.props.hourlyRate; }
   get nameDe(): string | null { return this.props.nameDe; }
@@ -65,17 +94,64 @@ export class Tutor {
   get ratingAvg(): number { return this.props.ratingAvg; }
   get ratingCount(): number { return this.props.ratingCount; }
   get approvalStatus(): ApprovalStatus { return this.props.approvalStatus; }
-  get approvedAt(): Date | null { return this.props.approvedAt ? new Date(this.props.approvedAt) : null; }
+  get approvedAt(): Date | null {
+    return this.props.approvedAt ? new Date(this.props.approvedAt) : null;
+  }
   get approvedBy(): string | null { return this.props.approvedBy; }
   get createdAt(): Date { return new Date(this.props.createdAt); }
   get updatedAt(): Date { return new Date(this.props.updatedAt); }
 
+  // Computed
   get isApproved(): boolean { return this.props.approvalStatus === 'approved'; }
   get isPending(): boolean { return this.props.approvalStatus === 'pending'; }
   get isRejected(): boolean { return this.props.approvalStatus === 'rejected'; }
 
   // --- Business methods ---
 
+  // Обновление профиля — один вызов для всех полей (по аналогии с User.update)
+  update(props: UpdateTutorProps): Tutor {
+    if (props.fulldescribeDe !== undefined && props.fulldescribeDe !== null) {
+      Tutor.validateDescription(props.fulldescribeDe, 'Description DE');
+    }
+    if (props.fulldescribeRu !== undefined && props.fulldescribeRu !== null) {
+      Tutor.validateDescription(props.fulldescribeRu, 'Description RU');
+    }
+    if (props.highlightDe !== undefined && props.highlightDe !== null) {
+      Tutor.validateHighlight(props.highlightDe, 'Highlight DE');
+    }
+    if (props.highlightRu !== undefined && props.highlightRu !== null) {
+      Tutor.validateHighlight(props.highlightRu, 'Highlight RU');
+    }
+    if (props.hourlyRate !== undefined && props.hourlyRate !== null) {
+      Tutor.validateHourlyRate(props.hourlyRate);
+    }
+
+    return new Tutor({
+      ...this.props,
+      fulldescribeDe: props.fulldescribeDe !== undefined
+        ? props.fulldescribeDe
+        : this.props.fulldescribeDe,
+      fulldescribeRu: props.fulldescribeRu !== undefined
+        ? props.fulldescribeRu
+        : this.props.fulldescribeRu,
+      highlightDe: props.highlightDe !== undefined
+        ? props.highlightDe
+        : this.props.highlightDe,
+      highlightRu: props.highlightRu !== undefined
+        ? props.highlightRu
+        : this.props.highlightRu,
+      nameDe: props.nameDe !== undefined ? props.nameDe : this.props.nameDe,
+      nameRu: props.nameRu !== undefined ? props.nameRu : this.props.nameRu,
+      surnameDe: props.surnameDe !== undefined ? props.surnameDe : this.props.surnameDe,
+      surnameRu: props.surnameRu !== undefined ? props.surnameRu : this.props.surnameRu,
+      hourlyRate: props.hourlyRate !== undefined
+        ? props.hourlyRate
+        : this.props.hourlyRate,
+      updatedAt: new Date(),
+    });
+  }
+
+  // Approval flow
   approve(adminUserId: string): Tutor {
     if (this.isApproved) {
       throw new DomainError('Tutor is already approved');
@@ -113,70 +189,39 @@ export class Tutor {
     });
   }
 
-  setHourlyRate(rate: number): Tutor {
-    if (rate <= 0) throw new DomainError('Hourly rate must be positive');
-    if (rate > 10000) throw new DomainError('Hourly rate is unrealistic');
-    return new Tutor({ ...this.props, hourlyRate: rate, updatedAt: new Date() });
-  }
-
-  changeAvatar(url: string): Tutor {
-    if (!url || url.trim().length === 0) {
-      throw new DomainError('Avatar URL cannot be empty');
-    }
-    return new Tutor({ ...this.props, avatarUrl: url, updatedAt: new Date() });
-  }
-
-  removeAvatar(): Tutor {
-    return new Tutor({ ...this.props, avatarUrl: null, updatedAt: new Date() });
-  }
-
-  updateFulldescribe(de?: string | null, ru?: string | null): Tutor {
-    if (de && de.length > 5000) throw new DomainError('Description DE too long');
-    if (ru && ru.length > 5000) throw new DomainError('Description RU too long');
-    return new Tutor({
-      ...this.props,
-      fulldescribeDe: de !== undefined ? de : this.props.fulldescribeDe,
-      fulldescribeRu: ru !== undefined ? ru : this.props.fulldescribeRu,
-      updatedAt: new Date(),
-    });
-  }
-
-  updateLocalizedNames(props: {
-    nameDe?: string;
-    nameRu?: string;
-    surnameDe?: string;
-    surnameRu?: string;
-  }): Tutor {
-    return new Tutor({
-      ...this.props,
-      nameDe: props.nameDe ?? this.props.nameDe,
-      nameRu: props.nameRu ?? this.props.nameRu,
-      surnameDe: props.surnameDe ?? this.props.surnameDe,
-      surnameRu: props.surnameRu ?? this.props.surnameRu,
-      updatedAt: new Date(),
-    });
-  }
-
-  updateHighlights(de?: string | null, ru?: string | null): Tutor {
-    if (de && de.length > 500) throw new DomainError('Highlight DE too long');
-    if (ru && ru.length > 500) throw new DomainError('Highlight RU too long');
-    return new Tutor({
-      ...this.props,
-      highlightDe: de !== undefined ? de : this.props.highlightDe,
-      highlightRu: ru !== undefined ? ru : this.props.highlightRu,
-      updatedAt: new Date(),
-    });
-  }
-
+  // Rating — вызывается только из use case после сохранения нового Review
   updateRating(newAvg: number, newCount: number): Tutor {
-    if (newAvg < 0 || newAvg > 5) throw new DomainError('Rating avg must be between 0 and 5');
-    if (newCount < 0) throw new DomainError('Rating count cannot be negative');
+    if (newAvg < 0 || newAvg > 5) {
+      throw new DomainError('Rating avg must be between 0 and 5');
+    }
+    if (newCount < 0) {
+      throw new DomainError('Rating count cannot be negative');
+    }
     return new Tutor({
       ...this.props,
       ratingAvg: newAvg,
       ratingCount: newCount,
       updatedAt: new Date(),
     });
+  }
+
+  // --- Validators ---
+
+  private static validateDescription(text: string, field: string): void {
+    if (text.length > 5000) {
+      throw new DomainError(`${field} must not exceed 5000 characters`);
+    }
+  }
+
+  private static validateHighlight(text: string, field: string): void {
+    if (text.length > 500) {
+      throw new DomainError(`${field} must not exceed 500 characters`);
+    }
+  }
+
+  private static validateHourlyRate(rate: number): void {
+    if (rate <= 0) throw new DomainError('Hourly rate must be positive');
+    if (rate > 10000) throw new DomainError('Hourly rate is unrealistic');
   }
 
   // --- Factory methods ---
@@ -186,7 +231,6 @@ export class Tutor {
     return new Tutor({
       id: props.id,
       userId: props.userId,
-      avatarUrl: props.avatarUrl ?? null,
       fulldescribeDe: props.fulldescribeDe ?? null,
       fulldescribeRu: props.fulldescribeRu ?? null,
       hourlyRate: props.hourlyRate ?? null,
@@ -206,7 +250,27 @@ export class Tutor {
     });
   }
 
+  // Восстановление из БД — конвертация Decimal → number
   static restore(props: RestoreTutorProps): Tutor {
-    return new Tutor({ ...props });
+    return new Tutor({
+      id: props.id,
+      userId: props.userId,
+      fulldescribeDe: props.fulldescribeDe ?? null,
+      fulldescribeRu: props.fulldescribeRu ?? null,
+      highlightDe: props.highlightDe ?? null,
+      highlightRu: props.highlightRu ?? null,
+      nameDe: props.nameDe,
+      nameRu: props.nameRu,
+      surnameDe: props.surnameDe,
+      surnameRu: props.surnameRu,
+      hourlyRate: props.hourlyRate !== null ? Number(props.hourlyRate) : null,
+      ratingAvg: Number(props.ratingAvg),
+      ratingCount: props.ratingCount,
+      approvalStatus: props.approvalStatus,
+      approvedAt: props.approvedAt ? new Date(props.approvedAt) : null,
+      approvedBy: props.approvedBy,
+      createdAt: new Date(props.createdAt),
+      updatedAt: new Date(props.updatedAt),
+    });
   }
 }
