@@ -1,8 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
+import { uuidv7 } from 'uuidv7';
 import { IUUIDGenerator } from '../../application/ports/IUUIDGenerator';
 
 export class UUIDGenerator implements IUUIDGenerator {
   generate(): string {
-    return uuidv4();
+    return uuidv7();
   }
 }
