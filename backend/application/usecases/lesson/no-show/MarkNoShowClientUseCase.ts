@@ -24,7 +24,6 @@ export class MarkNoShowClientUseCase {
       throw new DomainError('You are not the tutor of this lesson');
     }
 
-    // Domain method проверяет временное окно (+15мин до +24ч)
     const noShow = lesson.markNoShowClient();
     await this.lessonRepo.save(noShow);
   }
