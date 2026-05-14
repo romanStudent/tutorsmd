@@ -30,13 +30,19 @@ export class CancelLessonUseCase {
       if (lesson.clientId !== clientId.value) {
         throw new DomainError('You are not the client of this lesson');
       }
-      await this.lessonRepo.save(lesson.cancelByClient(dto.reason));
+      // pending → клиент может отменить без ограничения по времени
+      // confirmed → domain method проверяет окно (< 2ч)
+      const cancelled = lesson.cancelByClient(dto.reason);
+      await this.lessonRepo.save(cancelled);
+
     } else {
       const tutorId = new TutorId(dto.cancelledByUserId);
       if (lesson.tutorId !== tutorId.value) {
         throw new DomainError('You are not the tutor of this lesson');
       }
-      await this.lessonRepo.save(lesson.cancelByTutor(dto.reason));
+      
+      const cancelled = lesson.cancelByTutor(dto.reason);
+      await this.lessonRepo.save(cancelled);
     }
   }
 }
