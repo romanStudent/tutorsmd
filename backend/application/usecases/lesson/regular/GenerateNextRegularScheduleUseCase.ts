@@ -44,6 +44,20 @@ export class GenerateNextRegularLessonUseCase {
     // 7. Вычисляем дату следующего урока — +7 дней от текущего
     const nextScheduledAt = new Date(completedLesson.scheduledAt);
     nextScheduledAt.setDate(nextScheduledAt.getDate() + 7);
+ 
+    // 6. Проверяем конфликт слотов у тьютора
+    const hasConflict = await this.lessonRepo.existsConflict(
+      completedLesson.tutorId,
+      nextScheduledAt,
+      completedLesson.durationMinutes,
+    );
+
+      if (hasConflict) {
+      // Конфликт — не генерируем автоматически
+      // TODO: уведомить тьютора и клиента что нужно выбрать новое время
+      // Это можно сделать через email service или domain event
+      return;
+    }
 
     // 8. Создаём следующий урок
     const nextLesson = Lesson.create({
