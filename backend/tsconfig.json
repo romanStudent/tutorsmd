@@ -16,6 +16,6 @@
     "lib": ["ESNext"],
 
   },
-  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.d.ts", "usersInChat.js", "infrastructure/database/db.ts", "middlewares/requireAuth.ts", "models/desk.js"],     // Включение всех файлов .ts и .tsx в проекте
+  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.d.ts", "usersInChat.js", "infrastructure/database/db.ts", "middlewares/requireAuth.ts", "models/desk.js", "application/usecases/lesson/reschedule"],     // Включение всех файлов .ts и .tsx в проекте
   "exclude": ["node_modules", "dist"]         // Исключение папок node_modules и dist
 }

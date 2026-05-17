@@ -5,36 +5,73 @@ services:
   redis:
     image: redis:7
     container_name: tutors-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks: 
+      - tutors-network
+
+  nginx:
+  image: nginx:stable-alpine
+
+  volumes:
+    - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro     # ro = read-only
+
 
   postgres:
     image: postgres:15
     container_name: tutors-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
+      POSTGRES_PASSWORD: ${POSTGRESS_PASSWORD}
       POSTGRES_DB: Website
     ports:
       - "5432:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks: 
+      - tutors-network
 
   tutors-backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: tutors-backend
-    restart: always
+    restart: unless-stopped
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+
     environment:
-      DATABASE_URL: "postgresql://postgres:12345@localhost:5432/Website?connection_limit=10&pool_timeout=30"
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/Website?connection_limit=10&pool_timeout=30"
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      UV_THREADPOOL_SIZE: 8
     ports:
       - "7898:7898"
+    networks:
+      - tutors-network
 
   tutors-frontend:
     build: ./frontend
@@ -50,7 +87,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL="postgresql://postgres:12345@localhost:5432/Website?connection_limit=10&pool_timeout=30"
+      DATABASE_URL: "postgresql://postgres:12345@postgres:5432/Website?connection_limit=10&pool_timeout=30"
 
     ports:
       - "9000:9000"
@@ -63,5 +100,8 @@ services:
       - "5173:80"
 
 volumes:
-  pg-data:
+  postgres-data:
   redis-data:
+networks: 
+  tutors-networks:
+    driver: bridge
