@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../../../../generated/prisma';
+import { Prisma, PrismaClient } from '../../../generated/prisma';
 import { IAvailableSlotRepository } from '../../../domain/repositories/IAvailableSlotRepository';
 import { AvailableSlot } from '../../../domain/entities/AvailableSlot';
 

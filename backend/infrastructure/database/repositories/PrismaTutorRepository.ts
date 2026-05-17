@@ -1,8 +1,11 @@
-// infrastructure/database/repositories/PrismaTutorRepository.ts
-
 import { PrismaClient } from '../../../../generated/prisma';
-import { ITutorRepository } from '../../../domain/repositories/ITutorRepository';
+import { ITutorRepository, PendingTutorResult } from '../../../domain/repositories/ITutorRepository';
 import { Tutor, ApprovalStatus } from '../../../domain/entities/Tutor';
+
+
+type TutorRecord = PrismaClient.TutorGetPayload<{}>
+type TutorWithUser = PrismaClient.TutorGetPayload<{ include: { user: true } }>
+
 
 export class PrismaTutorRepository implements ITutorRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -17,6 +20,27 @@ export class PrismaTutorRepository implements ITutorRepository {
     const record = await this.prisma.tutor.findUnique({ where: { userId } });
     if (!record) return null;
     return this.toDomain(record);
+  }
+
+  
+  async findPendingWithUser(): Promise<PendingTutorResult[]> {
+    const records = await this.prisma.tutor.findMany({
+      where: { approvalStatus: 'pending' },
+      include: { user: true },
+      orderBy: { createdAt: 'asc' },
+    });
+ 
+
+    return records.map((r: TutorWithUser) => ({
+      tutorId: r.id,
+      userId: r.userId,
+      name: r.user.name,
+      surname: r.user.surname,
+      email: r.user.email,
+      nameDe: r.nameDe,
+      nameRu: r.nameRu,
+      createdAt: r.createdAt,
+    }));
   }
 
   async create(tutor: Tutor): Promise<void> {
@@ -73,7 +97,7 @@ export class PrismaTutorRepository implements ITutorRepository {
     await this.prisma.tutor.delete({ where: { id } });
   }
 
-  private toDomain(record: any): Tutor {
+  private toDomain(record: TutorRecord): Tutor {
   return Tutor.restore({
     id: record.id,
     userId: record.userId,

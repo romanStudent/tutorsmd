@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../../../../generated/prisma';
+import { Prisma, PrismaClient } from '../../../generated/prisma';
 import { ILessonRepository, FindLessonsFilter } from '../../../domain/repositories/ILessonRepository';
 import { Lesson, LessonStatus, LessonType } from '../../../domain/entities/Lesson';
 import { ConflictError } from '../../../domain/errors/ConflictError';
