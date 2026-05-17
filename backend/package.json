@@ -11,19 +11,26 @@
     "@types/node": "^25.0.3",
     "@types/nodemailer": "^7.0.4",
     "@types/uuid": "^10.0.0",
+    "cross-env": "^10.1.0",
     "nodemon": "^3.1.7",
+    "prisma": "^7.8.0",
     "sequelize-cli": "^6.6.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   },
   "scripts": {
-    "start": "nodemon --exec ts-node --project tsconfig.json index.ts",
-    "dev": "set TS_NODE_FILES=true&& nodemon --exec \"ts-node --project tsconfig.json\" index.ts"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "cross-env TS_NODE_FILES=true && nodemon --exec ts-node --project tsconfig.json index.ts"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1048.0",
+    "@aws-sdk/s3-request-presigner": "^3.1048.0",
+    "@prisma/client": "^7.8.0",
+    "@socket.io/redis-adapter": "^8.3.0",
     "async-local-storage": "^2.3.1",
     "axios": "^1.7.2",
     "backed-tutors": "file:",
@@ -36,6 +43,7 @@
     "elysia": "^1.0.22",
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
+    "express-rate-limit": "^8.5.2",
     "express-validator": "^7.2.0",
     "express-ws": "^5.0.2",
     "ioredis": "^5.6.0",
@@ -52,6 +60,7 @@
     "store2": "^2.14.3",
     "typeorm-transactional": "^0.5.0",
     "uuid": "^10.0.0",
+    "uuidv7": "^1.2.1",
     "ws": "^8.18.0",
     "zod": "^4.3.6"
   }
