@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../../../generated/prisma';
+import { PrismaClient } from '../../../generated/prisma';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { User, Role, AuthProvider } from '../../../domain/entities/User';
 
