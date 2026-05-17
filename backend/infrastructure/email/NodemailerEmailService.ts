@@ -1,6 +1,7 @@
 import { IEmailService } from '../../application/ports/IEmailService';
+import { LanguageCode } from '../../domain/entities/User';
 import { NodemailerTransport } from './NodemailerTransport';
-import { EmailTemplates } from "./EmailTemplates";
+import { EmailTemplates } from './EmailTemplates';
 import { DomainError } from '../../domain/errors/DomainError';
 
 export class NodemailerEmailService implements IEmailService {
@@ -18,24 +19,55 @@ export class NodemailerEmailService implements IEmailService {
     }
   }
 
-  async sendActivationLink(email: string, link: string, language?: string): Promise<void> {
+  async sendActivationLink(
+    email: string,
+    link: string,
+    language?: LanguageCode,
+  ): Promise<void> {
     const { subject, html } = EmailTemplates.activation(link, language);
     await this.send(email, subject, html);
   }
 
-  async sendPasswordResetLink(email: string, link: string, language?: string): Promise<void> {
-    const fullUrl = `${process.env.CLIENT_URL}/password/reset/${link}`;
-    const { subject, html } = EmailTemplates.passwordReset(fullUrl, language);
+  async sendPasswordResetLink(
+    email: string,
+    link: string,
+    language?: LanguageCode,
+  ): Promise<void> {
+    const { subject, html } = EmailTemplates.passwordReset(link, language);
     await this.send(email, subject, html);
   }
 
-  async sendEmailChangeConfirmation(email: string, link: string): Promise<void> {
-    const { subject, html } = EmailTemplates.emailChange(link);
+  async sendEmailChangeConfirmation(
+    email: string,
+    link: string,
+    language?: LanguageCode,
+  ): Promise<void> {
+    const { subject, html } = EmailTemplates.emailChange(link, language);
     await this.send(email, subject, html);
   }
 
-  async sendLessonReminder(email: string, link: string, time: string): Promise<void> {
-    const { subject, html } = EmailTemplates.lessonReminder(link, time);
+  async sendLessonReminder(
+    email: string,
+    time: string,
+    language?: LanguageCode,
+  ): Promise<void> {
+    const { subject, html } = EmailTemplates.lessonReminder(time, String(language));
+    await this.send(email, subject, html);
+  }
+
+  async sendTutorApproved(
+    email: string,
+    language?: LanguageCode,
+  ): Promise<void> {
+    const { subject, html } = EmailTemplates.tutorApproved(language);
+    await this.send(email, subject, html);
+  }
+
+  async sendTutorRejected(
+    email: string,
+    language?: LanguageCode,
+  ): Promise<void> {
+    const { subject, html } = EmailTemplates.tutorRejected(language);
     await this.send(email, subject, html);
   }
 }
