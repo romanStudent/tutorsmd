@@ -9,8 +9,8 @@ enum QuestionType {
 model Quiz {
   id           String   @id @default(uuid()) @db.Uuid
 
-  tutorId      String   @db.Uuid @map("tutor_id")
-  subjectId    String   @db.Uuid @map("subject_id")
+  tutorId      String?   @db.Uuid @map("tutor_id")
+  subjectId    String?   @db.Uuid @map("subject_id")
 
   title        String   @db.VarChar(255)
   description  String?  @db.Text
@@ -18,8 +18,8 @@ model Quiz {
   createdAt    DateTime @default(now()) @db.Timestamptz() @map("created_at")
   updatedAt    DateTime @updatedAt @db.Timestamptz() @map("updated_at")
 
-  tutor        Tutor    @relation(fields: [tutorId], references: [id])
-  subject      Subject  @relation(fields: [subjectId], references: [id])
+  tutor        Tutor?    @relation(fields: [tutorId], references: [id])
+  subject      Subject?  @relation(fields: [subjectId], references: [id])
 
   questions     QuizQuestion[]
   lessonQuizzes LessonQuiz[]

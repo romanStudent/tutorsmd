@@ -1,10 +1,10 @@
-import { PrismaClient } from '../../../../generated/prisma';
+import { Prisma, PrismaClient } from '../../../generated/prisma';
 import { ITutorRepository, PendingTutorResult } from '../../../domain/repositories/ITutorRepository';
 import { Tutor, ApprovalStatus } from '../../../domain/entities/Tutor';
 
 
-type TutorRecord = PrismaClient.TutorGetPayload<{}>
-type TutorWithUser = PrismaClient.TutorGetPayload<{ include: { user: true } }>
+type TutorRecord = Prisma.TutorGetPayload<{ select: null }>
+type TutorWithUser = Prisma.TutorGetPayload<{ include: { user: true } }>
 
 
 export class PrismaTutorRepository implements ITutorRepository {
@@ -35,6 +35,8 @@ export class PrismaTutorRepository implements ITutorRepository {
       tutorId: r.id,
       userId: r.userId,
       name: r.user.name,
+      surnameDe: r.surnameDe,
+      surnameRu: r.surnameRu,
       surname: r.user.surname,
       email: r.user.email,
       nameDe: r.nameDe,
@@ -48,8 +50,7 @@ export class PrismaTutorRepository implements ITutorRepository {
       data: {
         id: tutor.id,
         userId: tutor.userId,
-        avatarUrl: tutor.avatarUrl,
-        fulldescribeDe: tutor.fulldescribeGe,
+        fulldescribeDe: tutor.fulldescribeDe,
         fulldescribeRu: tutor.fulldescribeRu,
         highlightDe: tutor.highlightDe,
         highlightRu: tutor.highlightRu,
@@ -73,8 +74,7 @@ export class PrismaTutorRepository implements ITutorRepository {
     await this.prisma.tutor.update({
       where: { id: tutor.id },
       data: {
-        avatarUrl: tutor.avatarUrl,
-        fulldescribeDe: tutor.fulldescribeGe,
+        fulldescribeDe: tutor.fulldescribeDe,
         fulldescribeRu: tutor.fulldescribeRu,
         highlightDe: tutor.highlightDe,
         highlightRu: tutor.highlightRu,
@@ -101,7 +101,6 @@ export class PrismaTutorRepository implements ITutorRepository {
   return Tutor.restore({
     id: record.id,
     userId: record.userId,
-    avatarUrl: record.avatarUrl,
     fulldescribeDe: record.fulldescribeDe,
     fulldescribeRu: record.fulldescribeRu,
     highlightDe: record.highlightDe,

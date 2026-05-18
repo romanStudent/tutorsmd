@@ -7,7 +7,7 @@ interface QuizProps {
   tutorId: string | null; // NULL = системный квиз (от админа)
   subjectId: string | null;
   title: string;
-  description?: string | null; 
+  description: string | null; 
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,7 +33,7 @@ export class Quiz {
   get tutorId(): string | null { return this.props.tutorId; }
   get subjectId(): string | null { return this.props.subjectId; }
   get title(): string { return this.props.title; }
-  get description(): string | null | undefined { return this.props.description; }
+  get description(): string | null { return this.props.description; }
   get isSystemQuiz(): boolean { return this.props.tutorId === null; }
   get createdAt(): Date { return new Date(this.props.createdAt); }
   get updatedAt(): Date { return new Date(this.props.updatedAt); }
