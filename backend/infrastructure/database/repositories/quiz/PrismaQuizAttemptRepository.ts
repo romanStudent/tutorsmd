@@ -59,16 +59,17 @@ export class PrismaQuizAttemptRepository implements IQuizAttemptRepository {
         totalPoints: data.totalPoints,
         updatedAt: new Date(),
         answers: {
-          create: data.answers.map((a: QuizAttemptRecord) => ({
+          create: data.answers.map((a) => ({
             id: a.id,
             questionId: a.questionId,
             answer: a.answer,
             earnedPoints: a.earnedPoints,
-            selectedOptions: a.selectedOptions.length > 0
-              ? {
-                  create: a.selectedOptions.map((optionId: number) => ({ optionId })),
+            ...a.selectedOptions.length > 0
+              && {
+                selectedOptions: {
+                  create: a.selectedOptions.map((optionId) => ({ optionId })),
                 }
-              : undefined,
+              }
           })),
         },
       },

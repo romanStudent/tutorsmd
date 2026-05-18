@@ -142,7 +142,7 @@ export interface BookingAttributes {
     newEmail?: string | null;
     changeEmailLink?: string | null;
     password: string;
-    availableSubjects: any;
+    tutorSubjects: any;
     rating_avg: number;
     rating_count: number;
     highlight: string;

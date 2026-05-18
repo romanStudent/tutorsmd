@@ -12,9 +12,8 @@ model User {
   createdAt       DateTime  @default(now()) @db.Timestamptz() @map("created_at")
   updatedAt       DateTime  @updatedAt @db.Timestamptz() @map("updated_at")
 
-  supportMessages SupportMessage[] @relation("SupportMessageSender")
-  supportTickets    SupportTicket[]
-  sentMessages      SupportMessage[] @relation("MessageSender")
+  supportChat     SupportChat?
+  supportMessages SupportMessage[]
 
   userRoles          UserRole[]
   refreshToken       RefreshToken[]
