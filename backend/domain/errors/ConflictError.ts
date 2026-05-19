@@ -1,9 +1,7 @@
 import { DomainError } from './DomainError';
 
 export class ConflictError extends DomainError {
-  constructor(message: string) {
+  constructor(message: string = 'Conflict') {
     super(message);
-    this.name = 'ConflictError';
-    Object.setPrototypeOf(this, ConflictError.prototype);
   }
 }
