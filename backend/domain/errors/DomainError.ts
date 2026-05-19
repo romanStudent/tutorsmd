@@ -1,9 +1,7 @@
 export class DomainError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'DomainError';
-
-    // Нужно для корректного instanceof в TypeScript
-    Object.setPrototypeOf(this, DomainError.prototype);
+    this.name = this.constructor.name ?? "DomainError";
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
