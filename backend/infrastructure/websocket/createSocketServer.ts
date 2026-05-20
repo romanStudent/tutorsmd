@@ -91,7 +91,7 @@ interface SocketServerDeps {
   tokenService:       IAccessTokenFactory;
   joinSupportChat:    JoinSupportChatUseCase;
   sendSupportMessage: SendSupportChatMessageUseCase;
-  getSupportHistory:  GetSupportChatHistoryUseCase;
+  getSupportChatHistory:  GetSupportChatHistoryUseCase;
 }
 
 // ── Фабрика ───────────────────────────────────────────────────────────────────
@@ -103,7 +103,7 @@ export const createSocketServer = ({
   tokenService,
   joinSupportChat,
   sendSupportMessage,
-  getSupportHistory,
+  getSupportChatHistory,
 }: SocketServerDeps): SocketIOServer => {
   const allowedOrigins = (process.env.CLIENT_URL ?? "")
     .split(",")
@@ -164,7 +164,7 @@ export const createSocketServer = ({
     socket.once("disconnect", () => clearTimeout(tokenTimer));
 
     try {
-      createSupportChatHandler(io, socket, joinSupportChat, sendSupportMessage, getSupportHistory, fileStorage);
+      createSupportChatHandler(io, socket, joinSupportChat, sendSupportMessage, getSupportChatHistory, fileStorage);
       createLessonHandler(io, socket, prisma);
       createBoardHandler(io, socket);
       createWebRtcHandler(io, socket);

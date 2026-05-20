@@ -1,4 +1,4 @@
-import { File, FileNamespace } from "../entities/File";
+import { File, FileNamespace } from "../entities/file/File";
 
 export interface IFileRepository {
   save(file: File): Promise<void>;
