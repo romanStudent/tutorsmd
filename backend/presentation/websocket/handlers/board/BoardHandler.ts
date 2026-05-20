@@ -1,7 +1,7 @@
 // presentation/websocket/handlers/boardHandler.ts
 //
 // Ответственность:
-//   joinBoard    — подписка на board-комнату + hydration полного состояния из Redis
+//   board:join    — подписка на board-комнату + hydration полного состояния из Redis
 //   board:action — сохранение stroke в Redis, broadcast участникам
 //   board:clear  — очистка страницы (erase all), только тьютор
 //
@@ -23,6 +23,11 @@ import type { Server, Socket } from "socket.io";
 import { safeHandler }         from "../../utils/safeHandler";
 import { isRateLimited }       from "../../middleware/socketRateLimit";
 import redis                   from "../../../../infrastructure/redis/redisClient";
+import {
+  parseIncomingAction,
+  type ValidatedBoardAction,
+  type BoardActionType,
+} from "./validate/board.schema";
  
 // ── Константы ─────────────────────────────────────────────────────────────────
  
@@ -31,17 +36,7 @@ const MAX_PAGES          = 20;           // п.4: лимит страниц на
 const MAX_ACTION_DATA_LEN = 10_000;      // п.3: 10 KB на payload одного action
 const MAX_ACTIONS_PER_PAGE = 5_000;      // п.5: порог для будущего snapshot-триггера
  
-// ── Типы ──────────────────────────────────────────────────────────────────────
- 
-export type BoardActionType =
-  | "brush"
-  | "line"
-  | "rect"
-  | "circle"
-  | "text"
-  | "erase"
-  | "image"; // вставка по R2 fileKey
- 
+
 const VALID_ACTION_TYPES = new Set<BoardActionType>([
   "brush", "line", "rect", "circle", "text", "erase", "image",
 ]);
@@ -50,9 +45,14 @@ export interface BoardAction {
   lessonId:  string;
   pageIndex: number;
   type:      BoardActionType;
-  data:      unknown; // непрозрачный payload — сервер не интерпретирует структуру
-  userId:    string; 
-  timestamp: number; 
+  data:      ValidatedBoardAction["data"],
+  userId:    string;  // проставляет сервер
+  timestamp: number;  // проставляет сервер
+}
+
+interface LessonCtx {
+  lessonId: string;
+  status:   string; // LessonStatus
 }
  
 
@@ -81,7 +81,7 @@ const clearPage = async (lessonId: string, pageIndex: number): Promise<void> => 
   await redis.sRem(pagesKey(lessonId), String(pageIndex));
 };
  
-// очистка всех данных доски после endLesson + snapshot
+// очистка всех данных доски после (endLesson + snapshot)
 export const clearBoardFromRedis = async (lessonId: string): Promise<void> => {
   const pageIndexes = await redis.sMembers(pagesKey(lessonId));
   const keysToDelete = [
@@ -94,11 +94,15 @@ export const clearBoardFromRedis = async (lessonId: string): Promise<void> => {
 };
  
 // Загрузка полного состояния для joinBoard или snapshot
+// Вызывается из joinBoard и (в будущем) из snapshot job
 export const loadBoardFromRedis = async (
   lessonId: string,
 ): Promise<Record<number, BoardAction[]>> => {
-
+  
+  // Set-индекс вместо redis.keys() — не блокирует Redis при большом числе ключей
   const pageIndexes = await redis.sMembers(pagesKey(lessonId));
+  
+  
   const fullState: Record<number, BoardAction[]> = {};
  
   for (const p of pageIndexes) {
@@ -124,91 +128,105 @@ export const createBoardHandler = (io: Server, socket: Socket): void => {
   //         шлёт board:fullState со всеми страницами из Redis
   //
   socket.on(
-    "joinBoard",
-    safeHandler("joinBoard", async (data: { lessonId: string }) => {
+    "board:join",
+    safeHandler("board:join", async (data: { lessonId: string }) => {
       const lessonId = String(data?.lessonId ?? "").trim();
-      if (!lessonId) return;
+      if (!lessonId || lessonId.length == 0) return;
  
-      const ctx = socket.data.lessonCtx as
-        | { lessonId: string; status: string }
-        | undefined;
+      const ctx = socket.data.lessonCtx as LessonCtx | undefined;
  
       // п.1: проверяем и принадлежность, и статус урока
       if (!ctx || ctx.lessonId !== lessonId) {
-        socket.emit("boardError", { code: "NOT_IN_LESSON" });
+        socket.emit("board:error", { code: "NOT_IN_LESSON" });
         return;
       }
  
       if (!["confirmed", "in_progress"].includes(ctx.status)) {
-        socket.emit("boardError", { code: "LESSON_NOT_ACTIVE" });
+        socket.emit("board:error", { code: "LESSON_NOT_ACTIVE" });
         return;
       }
- 
-      await socket.join(`board:${lessonId}`);
- 
-      // п.2: загружаем через Set-индекс, без redis.keys()
+
+      // Идемпотентность: уже в board-комнате → просто шлём fullState снова
+      // (клиент мог переподключиться и запросить повторно)
+      const boardRoom = `board:${lessonId}`;
+      const alreadyIn = socket.rooms.has(boardRoom);
+
+      if(!alreadyIn) {
+        await socket.join(boardRoom);
+      }
+
+
+      // загружаю через Set-индекс, без redis.keys()
       const fullState = await loadBoardFromRedis(lessonId);
  
       socket.emit("board:fullState", fullState);
     }),
   );
+
+
+
+
+
+
  
   // -- board:action -----------------------------------------------------------------------------
   //
   // Клиент: socket.emit("board:action", { lessonId, pageIndex, type, data })
   // Сервер: валидирует, проставляет userId/timestamp, сохраняет в Redis, broadcast
+  // Порядок проверок:
+  //   1. Rate limit (200 / 10 сек)
+  //   2. Zod: базовая структура (lessonId UUID, pageIndex int)
+  //   3. Zod: discriminatedUnion — type + data вместе
+  //   4. Авторизация: ctx.lessonId совпадает
+  //   5. pageIndex < MAX_PAGES
+  //   6. Сохранение + broadcast
   //
-  socket.on(
+socket.on(
     "board:action",
-    safeHandler("board:action", async (raw: Omit<BoardAction, "userId" | "timestamp">) => {
-      // Rate limit: 200 actions / 10 сек
+    safeHandler("board:action", async (raw: unknown) => {
+      // 1. Rate limit: 200 actions / 10 сек
       if (await isRateLimited(socket, 200, "board:action", 10_000)) return;
  
-      const lessonId = String(raw?.lessonId ?? "").trim();
-      const ctx = socket.data.lessonCtx as { lessonId: string } | undefined;
+      // 2. Zod: полная валидация — структура + discriminatedUnion по type
+      // После этой проверки lessonId, pageIndex, action строго типизированы
+      const parsed = parseIncomingAction(raw);
+      if (!parsed.success) {
+        socket.emit("board:error", { code: "INVALID_ACTION", reason: parsed.error });
+        return;
+      }
+ 
+      const { lessonId, pageIndex, action } = parsed;
+ 
+      // 3. Авторизация
+      const ctx = socket.data.lessonCtx as LessonCtx | undefined;
       if (!ctx || ctx.lessonId !== lessonId) return;
  
-      const pageIndex = Number(raw?.pageIndex);
-      if (Number.isNaN(pageIndex) || pageIndex < 0) return;
+      // 4. Статус
+      if (!["confirmed", "in_progress"].includes(ctx.status)) return;
  
+      // 5. Лимит страниц
       if (pageIndex >= MAX_PAGES) {
-        socket.emit("boardError", { code: "PAGE_LIMIT_EXCEEDED", max: MAX_PAGES });
-        return;
-      }
-
-      if (!VALID_ACTION_TYPES.has(raw?.type)) {
-        socket.emit("boardError", { code: "INVALID_ACTION_TYPE" });
+        socket.emit("board:error", { code: "PAGE_LIMIT_EXCEEDED", max: MAX_PAGES });
         return;
       }
  
-      // п.3: лимит размера payload
-      // maxHttpBufferSize=1MB защищает на уровне транспорта,
-      // этот лимит — доменное правило конкретно для board action data
-      const dataLen = JSON.stringify(raw?.data ?? null).length;
-      if (dataLen > MAX_ACTION_DATA_LEN) {
-        socket.emit("boardError", { code: "ACTION_TOO_LARGE", maxBytes: MAX_ACTION_DATA_LEN });
-        return;
-      }
- 
-      // userId и timestamp проставляет сервер — клиент не может подменить
-      const action: BoardAction = {
+      // 6. Сохранение — userId и timestamp проставляет сервер, не клиент
+      const boardAction: BoardAction = {
         lessonId,
         pageIndex,
-        type:      raw.type,
-        data:      raw.data,
+        type:      action.type,
+        data:      action.data,
         userId:    user.id,
         timestamp: Date.now(),
       };
  
-      const listLen = await saveStroke(action);
+      const listLen = await saveStroke(boardAction);
  
-      // п.5: предупреждение при достижении порога (тьютору)
-      // Полноценный snapshot-триггер — вторая волна (отдельный job)
       if (listLen >= MAX_ACTIONS_PER_PAGE && user.activeRole === "tutor") {
         socket.emit("board:snapshotRecommended", { lessonId, pageIndex, count: listLen });
       }
  
-      io.to(`board:${lessonId}`).emit("board:action", action);
+      io.to(`board:${lessonId}`).emit("board:action", boardAction);
     }),
   );
  

@@ -1,4 +1,5 @@
 import { z } from "zod";
+ 
 
 // Координата в пикселях - положительное или отрицательное (canvas может быть со смещением)
 const coord = z.number().finite().min(-10_000).max(10_000);
@@ -120,6 +121,8 @@ export const boardActionSchema = z.discriminatedUnion("type", [
 ]);
 
 export type ValidatedActionPayload = z.infer<typeof boardActionSchema>;
+export type ValidatedBoardAction = z.infer<typeof boardActionSchema>;
+export type BoardActionType      = ValidatedBoardAction["type"];
 
 
 // Схема полного входящего action (без userId/timestamp -> сервер проставляет)
@@ -133,20 +136,38 @@ export const incomingBoardActionSchema = z.object({
 
 
 
-export const parseIncomingAction = (
-  raw: unknown,
-): { success: true; type: ValidatedActionPayload["type"]; data: ValidatedActionPayload["data"] } | { success: false; error: string } => {
-  // Шаг 1: базовая структура
-  const base = incomingBoardActionSchema.safeParse(raw);
+const baseSchema = z.object({
+  lessonId:  z.string().uuid("lessonId must be UUID"),
+  pageIndex: z.number().int().nonnegative(),
+  type:      z.enum(["brush", "line", "rect", "circle", "text", "erase", "image"]),
+  data:      z.unknown(),
+});
+ 
+export type ParseResult =
+  | { success: true;  lessonId: string; pageIndex: number; action: ValidatedBoardAction }
+  | { success: false; error: string };
+ 
+export const parseIncomingAction = (raw: unknown): ParseResult => {
+  // Шаг 1: базовая структура (lessonId UUID, pageIndex int, type enum)
+  const base = baseSchema.safeParse(raw);
   if (!base.success) {
-    return { success: false, error: base.error.issues[0]?.message ?? "Invalid action" };
+    return { success: false, error: base.error.issues[0]?.message ?? "Invalid structure" };
   }
-
+ 
   // Шаг 2: type + data вместе через discriminatedUnion
-  const payload = boardActionSchema.safeParse({ type: base.data.type, data: base.data.data });
+  // Каждый type имеет строгую схему data — несоответствие = ошибка
+  const payload = boardActionSchema.safeParse({
+    type: base.data.type,
+    data: base.data.data,
+  });
   if (!payload.success) {
     return { success: false, error: payload.error.issues[0]?.message ?? "Invalid action data" };
   }
-
-  return { success: true, type: payload.data.type, data: payload.data.data };
-};
+ 
+  return {
+    success:   true,
+    lessonId:  base.data.lessonId,
+    pageIndex: base.data.pageIndex,
+    action:    payload.data,
+  };
+}
