@@ -1,4 +1,4 @@
-import { ILessonRepository } from '../../../domain/repositories/ILessonRepository';
+import { ILessonRepository } from '../../../domain/repositories/lesson/ILessonRepository';
 import { IUUIDGenerator } from '../../ports/IUUIDGenerator';
 import { ClientId, TutorId, LessonId } from '../../../domain/value-objects/EntityId';
 import { NotFoundError } from '../../../domain/errors/NotFoundError';

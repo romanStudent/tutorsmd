@@ -1,5 +1,5 @@
 import { Lesson } from '../../../../domain/entities/Lesson';
-import { ILessonRepository } from '../../../../domain/repositories/ILessonRepository';
+import { ILessonRepository } from '../../../../domain/repositories/lesson/ILessonRepository';
 import { IUnitOfWork } from '../../../ports/IUnitOfWork';
 import { IUUIDGenerator } from '../../../ports/IUUIDGenerator';
 import { ClientId, LessonId } from '../../../../domain/value-objects/EntityId';
