@@ -68,6 +68,7 @@ model Lesson {
   reviews           Review[]
   appeals           Appeal[]
   lessonQuizzes     LessonQuiz[]
+  lessonMessages    LessonMessage[]
   quizAttempts      QuizAttempt[]
 
   @@index([clientId, tutorId, type])
@@ -132,4 +133,20 @@ model LessonClientNote {
 
   @@index([clientId])    // clientId для истории заметок студента
   @@map("lesson_client_notes")
+}
+
+model LessonMessage {
+  id         String   @id @default(uuid()) @db.Uuid
+  lessonId   String   @db.Uuid @map("lesson_id")
+  senderId   String   @db.Uuid @map("sender_id")
+  senderRole String   @db.VarChar(20) @map("sender_role")
+  text       String?  @db.Text
+  fileKey    String?  @db.Text @map("file_key")
+  createdAt  DateTime @default(now()) @db.Timestamptz() @map("created_at")
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  sender User   @relation(fields: [senderId], references: [id])
+
+  @@index([lessonId, createdAt])
+  @@map("lesson_messages")
 }

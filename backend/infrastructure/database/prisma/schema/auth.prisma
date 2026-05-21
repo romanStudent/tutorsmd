@@ -21,6 +21,8 @@ model User {
   emailVerifications EmailVerification?
   passwordResets     PasswordReset?
   feedbacks          Feedback[]
+  lessonMessages     LessonMessage[]
+
   emailChange        EmailChange?
   client             Client?
   tutor              Tutor?
