@@ -1,7 +1,7 @@
 import { DomainError } from "../../../../domain/errors/DomainError";
 import { NotFoundError } from "../../../../domain/errors/NotFoundError";
-import { ILessonRepository } from "../../../../domain/repositories/ILessonRepository";
-import { IRegularScheduleRepository } from "../../../../domain/repositories/IRegularScheduleRepository";
+import { ILessonRepository } from "../../../../domain/repositories/lesson/ILessonRepository";
+import { IRegularScheduleRepository } from "../../../../domain/repositories/lesson/IRegularScheduleRepository";
 import { ClientId, RecurringScheduleId, TutorId } from "../../../../domain/value-objects/EntityId";
 import { IUnitOfWork } from "../../../ports/IUnitOfWork";
 import { CancelLessonUseCase } from "../CancelLessonUseCase";

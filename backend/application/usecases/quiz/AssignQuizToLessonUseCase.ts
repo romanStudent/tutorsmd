@@ -1,5 +1,5 @@
 import { IQuizRepository } from '../../../domain/repositories/quiz/IQuizRepository';
-import { ILessonRepository } from '../../../domain/repositories/ILessonRepository';
+import { ILessonRepository } from '../../../domain/repositories/lesson/ILessonRepository';
 import { ILessonQuizRepository } from '../../../domain/repositories/quiz/ILessonQuizRepository';
 
 import { TutorId, LessonId, QuizId } from '../../../domain/value-objects/EntityId';

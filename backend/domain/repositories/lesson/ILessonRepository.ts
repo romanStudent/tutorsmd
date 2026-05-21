@@ -1,4 +1,4 @@
-import { Lesson, LessonStatus, LessonType } from '../entities/Lesson';
+import { Lesson, LessonStatus, LessonType } from '../../entities/Lesson';
 
 export interface FindLessonsFilter {
   clientId?: string;

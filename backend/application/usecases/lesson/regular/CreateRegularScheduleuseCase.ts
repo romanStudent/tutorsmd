@@ -1,7 +1,7 @@
 import { Lesson } from '../../../../domain/entities/Lesson';
 import { RegularSchedule } from '../../../../domain/entities/RegularSchedule';
-import { IRegularScheduleRepository } from '../../../../domain/repositories/IRegularScheduleRepository';
-import { ILessonRepository } from '../../../../domain/repositories/ILessonRepository';
+import { IRegularScheduleRepository } from '../../../../domain/repositories/lesson/IRegularScheduleRepository';
+import { ILessonRepository } from '../../../../domain/repositories/lesson/ILessonRepository';
 import { IClientRepository } from '../../../../domain/repositories/IClientRepository';
 import { ITutorRepository } from '../../../../domain/repositories/ITutorRepository';
 import { IUnitOfWork } from '../../../ports/IUnitOfWork';

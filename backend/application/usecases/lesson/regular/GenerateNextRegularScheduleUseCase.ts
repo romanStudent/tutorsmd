@@ -1,6 +1,6 @@
 import { Lesson } from '../../../../domain/entities/Lesson';
-import { IRegularScheduleRepository } from '../../../../domain/repositories/IRegularScheduleRepository';
-import { ILessonRepository } from '../../../../domain/repositories/ILessonRepository';
+import { IRegularScheduleRepository } from '../../../../domain/repositories/lesson/IRegularScheduleRepository';
+import { ILessonRepository } from '../../../../domain/repositories/lesson/ILessonRepository';
 import { IUUIDGenerator } from '../../../ports/IUUIDGenerator';
 import { LessonId, RecurringScheduleId } from '../../../../domain/value-objects/EntityId';
 import { NotFoundError } from '../../../../domain/errors/NotFoundError';

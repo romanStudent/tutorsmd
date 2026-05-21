@@ -1,6 +1,6 @@
 import { QuizAttempt } from '../../../domain/entities/quiz/QuizAttempt';
 import { IQuizRepository } from '../../../domain/repositories/quiz/IQuizRepository';
-import { ILessonRepository } from '../../../domain/repositories/ILessonRepository';
+import { ILessonRepository } from '../../../domain/repositories/lesson/ILessonRepository';
 import { IQuizAttemptRepository } from '../../../domain/repositories/quiz/IQuizAttemptRepository';
 import { IUUIDGenerator } from '../../ports/IUUIDGenerator';
 import { ClientId, LessonId, QuizId } from '../../../domain/value-objects/EntityId';

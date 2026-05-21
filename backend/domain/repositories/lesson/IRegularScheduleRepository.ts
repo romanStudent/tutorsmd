@@ -1,4 +1,4 @@
-import { RegularSchedule } from '../entities/RegularSchedule';
+import { RegularSchedule } from '../../entities/RegularSchedule';
 
 export interface IRegularScheduleRepository {
   findById(id: string): Promise<RegularSchedule | null>;

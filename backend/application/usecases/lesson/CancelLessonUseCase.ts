@@ -1,4 +1,4 @@
-import { ILessonRepository } from '../../../domain/repositories/ILessonRepository';
+import { ILessonRepository } from '../../../domain/repositories/lesson/ILessonRepository';
 import { DomainError } from '../../../domain/errors/DomainError';
 import { NotFoundError } from '../../../domain/errors/NotFoundError';
 import { ClientId, LessonId, TutorId } from '../../../domain/value-objects/EntityId';
