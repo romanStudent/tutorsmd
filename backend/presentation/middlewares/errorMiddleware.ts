@@ -1,5 +1,3 @@
-// presentation/middlewares/errorMiddleware.ts
-
 import { NextFunction, Request, Response } from 'express';
 import { DomainError } from '../../domain/errors/DomainError';
 import { ValidationError } from '../../domain/errors/ValidationError';
