@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { IReviewController } from './IReviewController';
 import { SubmitReviewUseCase } from '../../../application/usecases/reviews/SubmitReviewUseCase';
 import { GetTutorReviewsUseCase } from '../../../application/usecases/reviews/GetTutorReviewsUseCase';
+import { SubmitReviewBody } from './review.schema';
 
 export class ReviewController implements IReviewController {
   constructor(
@@ -12,7 +13,7 @@ export class ReviewController implements IReviewController {
   // POST /reviews
   // body: { lessonId, rating, comment? }
   // JWT: clientId
-  async submit(req: Request, res: Response): Promise<void> {
+  async submit(req: Request<{}, {}, SubmitReviewBody>, res: Response): Promise<void> {
     const clientId = req.user!.userId;
     const { lessonId, rating, comment } = req.body;
 

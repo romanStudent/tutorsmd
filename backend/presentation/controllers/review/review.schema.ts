@@ -6,4 +6,4 @@ export const SubmitReviewSchema = z.object({
   comment:  z.string().max(2000).optional(),
 });
 
-export type SubmitReviewDto = z.infer<typeof SubmitReviewSchema>;
+export type SubmitReviewBody = z.infer<typeof SubmitReviewSchema>;

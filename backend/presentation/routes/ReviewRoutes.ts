@@ -1,7 +1,7 @@
 import { Router } from 'express';
 const router = Router();
 
-import { requireAuth } from '../middlewares/requireAuth';
+import { requireAuth } from '../middlewares/auth/requireAuth';
 import { ReviewController } from '../controllers/reviewController';
 
 
