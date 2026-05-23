@@ -2,7 +2,7 @@ import { Router } from "express";
 const TutorRouter = Router();
 
 import { TutorController } from '../controllers/tutorController';
-import { requireAuth } from "../middlewares/requireAuth";
+import { requireAuth } from "../middlewares/auth/requireAuth";
 
 
 // TutorRouter.get('/clients', ClientController.getClients);

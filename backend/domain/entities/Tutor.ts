@@ -1,4 +1,3 @@
-// domain/entities/Tutor.ts
 import { DomainError } from '../errors/DomainError';
 
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected';
@@ -78,7 +77,7 @@ export class Tutor {
     this.props = props;
   }
 
-  // --- Getters ---
+
 
   get id(): string { return this.props.id; }
   get userId(): string { return this.props.userId; }
@@ -106,7 +105,7 @@ export class Tutor {
   get isPending(): boolean { return this.props.approvalStatus === 'pending'; }
   get isRejected(): boolean { return this.props.approvalStatus === 'rejected'; }
 
-  // --- Business methods ---
+ 
 
   // Обновление профиля — один вызов для всех полей (по аналогии с User.update)
   update(props: UpdateTutorProps): Tutor {
@@ -151,7 +150,7 @@ export class Tutor {
     });
   }
 
-  // Approval flow
+  
   approve(adminUserId: string): Tutor {
     if (this.isApproved) {
       throw new DomainError('Tutor is already approved');
@@ -205,7 +204,7 @@ export class Tutor {
     });
   }
 
-  // --- Validators ---
+  
 
   private static validateDescription(text: string, field: string): void {
     if (text.length > 5000) {
