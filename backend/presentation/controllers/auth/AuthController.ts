@@ -18,6 +18,21 @@ import { ConfirmEmailChangeUseCase } from '../../../application/usecases/auth/em
 import { ResendVerificationUseCase } from '../../../application/usecases/auth/activation/ResendVerificationUseCase';
 
 
+import {
+  RegisterBody,
+  LoginBody,
+  ResendVerificationBody,
+  SwitchRoleBody,
+  RefreshBody,
+  ChangePasswordBody,
+  ForgotPasswordBody,
+  ResetPasswordBody,
+  RequestEmailChangeBody,
+  RevokeSessionParams,
+  ActivateAccountParams,
+} from './auth.schema';
+
+
 const REFRESH_COOKIE_OPTIONS = {
   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
   httpOnly: true,
@@ -47,9 +62,9 @@ export class AuthController implements IAuthController {
   ) {}
 
   
-  // ─── Registration ────────────────────────────────────────────
 
-  async registerClient(req: Request, res: Response): Promise<void> {
+
+  async registerClient(req: Request<{}, {}, RegisterBody>, res: Response): Promise<void> {
     const { name, surname, email, password, timezone } = req.body;
 
     await this.registerClientUseCase.execute({
@@ -65,7 +80,7 @@ export class AuthController implements IAuthController {
     });
   }
 
-  async registerTutor(req: Request, res: Response): Promise<void> {
+  async registerTutor(req: Request<{}, {}, RegisterBody>, res: Response): Promise<void> {
     const { name, surname, email, password, timezone } = req.body;
 
     await this.registerTutorUseCase.execute({
@@ -83,7 +98,7 @@ export class AuthController implements IAuthController {
 
   // ─── Email Verification ──────────────────────────────────────
 
-  async activateAccount(req: Request, res: Response): Promise<void> {
+  async activateAccount(req: Request<ActivateAccountParams>, res: Response): Promise<void> {
     const { token } = req.params;
 
     await this.activateAccountUseCase.execute(token);
@@ -91,9 +106,9 @@ export class AuthController implements IAuthController {
     res.status(200).json({ message: 'Account activated successfully.' });
   }
 
-  // ─── Login / Logout ──────────────────────────────────────────
+ 
 
-  async login(req: Request, res: Response): Promise<void> {
+  async login(req: Request<{}, {}, LoginBody>, res: Response): Promise<void> {
     const { email, password, activeRole, deviceInfo } = req.body;
 
     const result = await this.loginUseCase.execute({
@@ -126,7 +141,7 @@ export class AuthController implements IAuthController {
 
   // ─── Tokens ──────────────────────────────────────────────────
 
-  async refresh(req: Request, res: Response): Promise<void> {
+  async refresh(req: Request<{}, {}, RefreshBody>, res: Response): Promise<void> {
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       res.status(401).json({ message: 'No refresh token provided' });
@@ -145,7 +160,7 @@ export class AuthController implements IAuthController {
     res.status(200).json({ accessToken: result.accessToken });
   }
 
-  async switchRole(req: Request, res: Response): Promise<void> {
+  async switchRole(req: Request<{}, {}, SwitchRoleBody>, res: Response): Promise<void> {
     const userId = req.user!.userId;
     const { newRole } = req.body;
 
@@ -159,7 +174,7 @@ export class AuthController implements IAuthController {
 
   // ─── Password ────────────────────────────────────────────────
 
-  async changePassword(req: Request, res: Response): Promise<void> {
+  async changePassword(req: Request<{}, {}, ChangePasswordBody>, res: Response): Promise<void> {
     const userId = req.user!.userId;
     const { oldPassword, newPassword } = req.body;
 
@@ -170,7 +185,7 @@ export class AuthController implements IAuthController {
     res.status(200).json({ message: 'Password changed. Please login again.' });
   }
 
-  async forgotPassword(req: Request, res: Response): Promise<void> {
+  async forgotPassword(req: Request<{}, {}, ForgotPasswordBody>, res: Response): Promise<void> {
     const { email } = req.body;
 
     await this.forgotPasswordUseCase.execute({ email });
@@ -181,7 +196,7 @@ export class AuthController implements IAuthController {
     });
   }
 
-  async resetPassword(req: Request, res: Response): Promise<void> {
+  async resetPassword(req: Request<ActivateAccountParams, {}, ResetPasswordBody>, res: Response): Promise<void> {
     const { newPassword } = req.body;
     const { token } = req.params;
 
@@ -190,9 +205,9 @@ export class AuthController implements IAuthController {
     res.status(200).json({ message: 'Password reset successfully. Please login.' });
   }
 
-  // ─── Email Change ────────────────────────────────────────────
+ 
 
-  async requestEmailChange(req: Request, res: Response): Promise<void> {
+  async requestEmailChange(req: Request<{}, {}, RequestEmailChangeBody>, res: Response): Promise<void> {
   const userId = req.user!.userId;
   const { newEmail, password } = req.body;
 
@@ -203,7 +218,7 @@ export class AuthController implements IAuthController {
   });
 }
 
-async confirmEmailChange(req: Request, res: Response): Promise<void> {
+async confirmEmailChange(req: Request<ActivateAccountParams>, res: Response): Promise<void> {
   const { token } = req.params;   
 
   await this.confirmEmailChangeUseCase.execute(token);
@@ -211,7 +226,7 @@ async confirmEmailChange(req: Request, res: Response): Promise<void> {
   res.status(200).json({ message: 'Email changed successfully.' });
 }
 
-async resendVerification(req: Request, res: Response): Promise<void> {
+async resendVerification(req: Request<{}, {}, ResendVerificationBody>, res: Response): Promise<void> {
   const { email } = req.body;
 
   await this.resendVerificationUseCase.execute(email);
@@ -219,7 +234,7 @@ async resendVerification(req: Request, res: Response): Promise<void> {
   res.status(200).json({ message: 'Verification link sent' })
 }
 
-  // ─── Sessions ────────────────────────────────────────────────
+  // ---= Sessions ---------------------------------------------------------
 
  async getActiveSessions(req: Request, res: Response): Promise<void> {
     const userId = req.user!.userId;
@@ -227,7 +242,7 @@ async resendVerification(req: Request, res: Response): Promise<void> {
     res.status(200).json({ sessions });
   }
 
-  async revokeSession(req: Request, res: Response): Promise<void> {
+  async revokeSession(req: Request<RevokeSessionParams>, res: Response): Promise<void> {
     const userId = req.user!.userId;
     const { tokenHash } = req.params;
     await this.revokeSessionUseCase.execute(userId, tokenHash);

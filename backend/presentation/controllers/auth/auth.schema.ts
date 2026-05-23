@@ -62,13 +62,16 @@ export const RevokeSessionSchema = z.object({
   tokenHash: z.string().min(1, 'Token hash is required'),
 });
 
-// ─── Types ────────────────────────────────────────────────────
-export type RegisterDto = z.infer<typeof RegisterSchema>;
-export type LoginDto = z.infer<typeof LoginSchema>;
-export type ResendVerificationBody = z.infer<typeof ResendVerificationSchema>;
-export type SwitchRoleBody = z.infer<typeof SwitchRoleSchema>;
-export type RefreshBody = z.infer<typeof RefreshSchema>;
-export type ChangePasswordDto = z.infer<typeof ChangePasswordSchema>;
-export type ForgotPasswordDto = z.infer<typeof ForgotPasswordSchema>;
-export type ResetPasswordDto = z.infer<typeof ResetPasswordSchema>;
-export type RequestEmailChangeDto = z.infer<typeof RequestEmailChangeSchema>;
+
+
+export type RegisterBody             = z.infer<typeof RegisterSchema>;
+export type ResendVerificationBody   = z.infer<typeof ResendVerificationSchema>;
+export type LoginBody                = z.infer<typeof LoginSchema>;
+export type SwitchRoleBody           = z.infer<typeof SwitchRoleSchema>;
+export type RefreshBody              = z.infer<typeof RefreshSchema>;
+export type ChangePasswordBody       = z.infer<typeof ChangePasswordSchema>;
+export type ForgotPasswordBody       = z.infer<typeof ForgotPasswordSchema>;
+export type ResetPasswordBody        = z.infer<typeof ResetPasswordSchema>;
+export type RequestEmailChangeBody   = z.infer<typeof RequestEmailChangeSchema>;
+export type RevokeSessionParams      = z.infer<typeof RevokeSessionSchema>;
+export type ActivateAccountParams    = z.infer<typeof ActivateAccountSchema>;

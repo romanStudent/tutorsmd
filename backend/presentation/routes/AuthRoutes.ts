@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { IAuthController } from '../controllers/auth/IAuthController';
-import { requireAuth } from '../middlewares/requireAuth';
+import { requireAuth } from '../middlewares/auth/requireAuth';
 import { validate } from '../middlewares/validate';
 import {
   RegisterSchema,
