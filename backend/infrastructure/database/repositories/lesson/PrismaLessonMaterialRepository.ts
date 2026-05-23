@@ -22,7 +22,7 @@ export class PrismaLessonMaterialRepository implements ILessonMaterialRepository
       where:   { lessonId },
       orderBy: { createdAt: 'asc' },
     });
-    return records.map(this.toRecord);
+    return records.map(r => this.toRecord(r));
   }
 
   async create(data: CreateLessonMaterialData): Promise<LessonMaterialRecord> {
