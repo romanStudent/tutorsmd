@@ -37,7 +37,7 @@ export class PrismaRefreshTokenRepository implements IRefreshTokenRepository {
       },
       orderBy: { createdAt: 'desc' },
     });
-    return records.map(this.toRecord);
+    return records.map(r => this.toRecord(r));
   }
 
   // Все сессии включая revoked — для истории входов
@@ -46,7 +46,7 @@ export class PrismaRefreshTokenRepository implements IRefreshTokenRepository {
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
-    return records.map(this.toRecord);
+    return records.map(r => this.toRecord(r));
   }
 
   async revoke(tokenHash: string): Promise<boolean> {
