@@ -10,6 +10,23 @@ import { PrismaPasswordResetRepository }     from '../infrastructure/database/re
 import { PrismaEmailChangeRepository }       from '../infrastructure/database/repositories/PrismaEmailChangeRepository';
 import { PrismaSupportChatRepository }       from '../infrastructure/database/repositories/PrismaSupportChatRepository';
 import { PrismaLessonRepository }            from '../infrastructure/database/repositories/lesson/PrismaLessonRepository';
+import { PrismaLessonMaterialRepository } from '../infrastructure/database/repositories/lesson/PrismaLessonMaterialRepository';
+
+
+import { PrismaAppealRepository } from '../infrastructure/database/repositories/PrismaAppealRepository';
+import { PrismaAvailableSlotRepository } from '../infrastructure/database/repositories/PrismaAvailableSlotRepository';
+
+import { PrismaQuizRepository } from '../infrastructure/database/repositories/quiz/PrismaQuizRepository';
+import { PrismaLessonQuizRepository } from '../infrastructure/database/repositories/quiz/PrismaLessonQuizRepository';
+import { PrismaQuizAttemptRepository } from '../infrastructure/database/repositories/quiz/PrismaQuizAttemptRepository';
+import { PrismaQuizQuestionRepository } from '../infrastructure/database/repositories/quiz/PrismaQuizQuestionRepository';
+import { PrismaQuizAnswerFeedbackRepository } from '../infrastructure/database/repositories/quiz/PrismaQuizAnswerFeedbackRepository'; 
+import { PrismaQuizAnswerRepository } from '../infrastructure/database/repositories/quiz/PrismaQuizAnswerRepository'; 
+
+import { PrismaReviewRepository } from '../infrastructure/database/repositories/PrismaReviewRepository'; 
+
+
+
 
 
 // ─── Services ─────────────────────────────────────────────────
@@ -23,6 +40,9 @@ import { R2FileStorage }          from '../infrastructure/storage/R2FileStorage'
 import { SecureTokenFactory }    from '../infrastructure/token/SecureTokenFactory';
 import { RefreshTokenFactory }   from '../infrastructure/token/RefreshTokenFactory';
 import { JwtAccessTokenFactory } from '../infrastructure/token/JwtAccessTokenFactory';
+
+import { appEvents, AppEvents } from '../infrastructure/events/AppEventEmitter';
+
 
 // ─── Profile Creators ─────────────────────────────────────────
 import { ClientProfileCreator } from '../infrastructure/profile-creators/ClientProfileCreator';
@@ -51,11 +71,71 @@ import { SendSupportChatMessageUseCase } from '../application/usecases/support-c
 
 // --- Use Cases: Lesson ---------------------------------------------------------------------------------------------
 import { CompleteLessonUseCase } from '../application/usecases/lesson/CompleteLessonUseCase';
-
-// ─── Controllers ──────────────────────────────────────────────
-import { AuthController } from '../presentation/controllers/auth/AuthController';
 import { GetSupportChatHistoryUseCase } from '../application/usecases/support-chat/GetSupportChatHistoryUsecase';
+import { AutoCompleteLessonsJob } from '../infrastructure/queue/jobs/AutoCompleteLessonsJob';
+import { AutoCancelPendingJob } from '../infrastructure/queue/jobs/AutoCancelPendingJob';
+import { AutoExpireRescheduleJob } from '../infrastructure/queue/jobs/AutoExpireRescheduleJob';
+import { SendLessonRemindersJob } from '../infrastructure/queue/jobs/SendLessonRemindersJob';
+import { GenerateNextRegularLessonUseCase } from '../application/usecases/lesson/regular/GenerateNextRegularScheduleUseCase';
+import { PrismaRegularScheduleRepository } from '../infrastructure/database/repositories/lesson/PrismaRegularScheduleRepository';
+import { ProfileController } from '../presentation/controllers/profile/ProfileController';
+import { TutorController } from '../presentation/controllers/tutor/TutorController';
+import { RejectTutorUseCase } from '../application/usecases/tutor/RejectTutorUseCase';
+import { ApproveTutorUseCase } from '../application/usecases/tutor/ApproveTutorUseCase';
+import { GetPendingTutorsUseCase } from '../application/usecases/tutor/GetPendingTutorUseCase';
+import { CancelLessonUseCase } from '../application/usecases/lesson/CancelLessonUseCase';
+import { ConfirmLessonUseCase } from '../application/usecases/lesson/ConfirmLessonUseCase';
+import { RejectLessonUseCase } from '../application/usecases/lesson/RejectLessonUseCase';
+import { StartLessonUseCase } from '../application/usecases/lesson/StartLessonUseCase';
+import { GetLessonMaterialUseCase } from '../application/usecases/lesson/material/GetLessonMaterialUseCase';
+import { DeleteLessonMaterialUseCase } from '../application/usecases/lesson/material/DeleteLessonMaterialUseCase';
+import { UploadLessonMaterialUseCase } from '../application/usecases/lesson/material/UploadLessonMaterialUseCase';
+import { MarkNoShowClientUseCase } from '../application/usecases/lesson/no-show/MarkNoShowClientUseCase';
+import { MarkNoShowTutorUseCase } from '../application/usecases/lesson/no-show/MarkNoShowTutorUseCase';
+import { CancelRegularScheduleUseCase } from '../application/usecases/lesson/regular/CancelRegularScheduleUseCase';
+import { CancelSingleLessonUseCase } from '../application/usecases/lesson/regular/CancelSingleLessonUseCase';
+import { CreateRegularScheduleUseCase } from '../application/usecases/lesson/regular/CreateRegularScheduleUseCase';
+import { AcceptRescheduleProposalUseCase } from '../application/usecases/lesson/reschedule/AcceptRescheduleProposalUseCase';
+import { DeclineRescheduleProposalUseCase } from '../application/usecases/lesson/reschedule/DeclineRescheduleProposalUseCase';
+import { ProposeLessonRescheduleUseCase } from '../application/usecases/lesson/reschedule/ProposeLessonRescheduleUseCase';
+import { RescheduleLessonByClientUseCase } from '../application/usecases/lesson/reschedule/RescheduleLessonByClientUseCase';
+import { CreateTrialLessonUseCase } from '../application/usecases/lesson/trial/CreateTrialLessonUseCase';
+import { GetUserLessonUseCase } from '../application/usecases/lesson/GetUserLessonUseCase';
+ 
+// Use Cases: Profile
+import { GetUserProfileUseCase } from '../application/usecases/profile/GetUserProfileUseCase';
+import { UpdateUserProfileUseCase } from '../application/usecases/profile/UpdateUserProfileUseCase'; 
 
+//////////////// Controllers //////////////////////////////////////////////////////////////////////////////////////////////// 
+import { AuthController } from '../presentation/controllers/auth/AuthController';
+import { AppealController } from '../presentation/controllers/appeal/AppealController';
+import { QuizController } from '../presentation/controllers/quiz/QuizController';
+import { ReviewController } from '../presentation/controllers/review/ReviewController';
+import { SupportChatController } from '../presentation/controllers/support-chat/SupportChatController';
+import { LessonController } from '../presentation/controllers/lesson/LessonController';
+import { AvailableSlotController } from '../presentation/controllers/available-slot/AvailableSlotController';
+import { FeedbackController } from '../presentation/controllers/feedback/FeedbackController';
+import { CreateAvailableSlotUseCase } from '../application/usecases/available-slot/CreateAvailableSlotUseCase';
+import { GetAppealsUseCase } from '../application/usecases/appeal/GetAppealUseCase';
+import { RejectAppealUseCase } from '../application/usecases/appeal/RejectAppealUseCase';
+import { ResolveAppealUseCase } from '../application/usecases/appeal/ResolveAppealUseCase';
+import { DeleteAvailableSlotUseCase } from '../application/usecases/available-slot/DeleteAvailableUseCase';
+import { GetTutorOwnSlotsUseCase } from '../application/usecases/available-slot/GetTutorOwnSlotsUseCase';
+import { GetTutorPublicSlotsUseCase } from '../application/usecases/available-slot/GetTutorPublicSlotsUseCase';
+import { GetTutorSlotsUseCase } from '../application/usecases/available-slot/GetTutorSlotsUseCase';
+import { CreateAppealUseCase } from '../application/usecases/appeal/CreateAppealUseCase';
+import { SubmitFeedbackUseCase } from '../application/usecases/feedback/SubmitFeedbackUseCase';
+import { CreateQuizUseCase } from '../application/usecases/quiz/CreateQuizUseCase';
+import { ProvideAnswerFeedbackUseCase } from '../application/usecases/quiz/ProvideAnswerFeedbackUseCase';
+import { GetTutorReviewsUseCase } from '../application/usecases/reviews/GetTutorReviewsUseCase';
+import { SubmitReviewUseCase } from '../application/usecases/reviews/SubmitReviewUseCase';
+import { StartQuizAttemptUseCase } from '../application/usecases/quiz/StartQuizAttemptUseCase';
+import { SubmitQuizAttemptUseCase } from '../application/usecases/quiz/SubmitQuizAttemptUsecase';
+import { AssignQuizToLessonUseCase } from '../application/usecases/quiz/AssignQuizToLessonUseCase';
+import { AddQuizQuestionUseCase } from '../application/usecases/quiz/AddQuizQuetionUseCase';
+import { PrismaFeedbackRepository } from '../infrastructure/database/repositories/PrismaFeedbackRepository';
+import { GetTutorProfileUseCase } from '../application/usecases/tutor/GetTutorProfileUseCase';
+import { UpdateTutorProfileUseCase } from '../application/usecases/tutor/UpdateTutorProfileUseCase';
 
 
 // ─── Token Infrastructure ─────────────────────────────────────
@@ -77,14 +157,34 @@ const tutorRepo             = new PrismaTutorRepository(prisma);
 const refreshTokenRepo      = new PrismaRefreshTokenRepository(prisma);
 const emailVerificationRepo = new PrismaEmailVerificationRepository(prisma);
 const passwordResetRepo     = new PrismaPasswordResetRepository(prisma);
-const emailChangeRepo       = new PrismaEmailChangeRepository(prisma);
-const supportChatRepo       = new PrismaSupportChatRepository(prisma, fileStorage);
-const lessonRepo            = new PrismaLessonRepository(prisma);
+const emailChangeRepo = new PrismaEmailChangeRepository(prisma);
+const supportChatRepo = new PrismaSupportChatRepository(prisma, fileStorage);
+const lessonRepo = new PrismaLessonRepository(prisma);
+const scheduleRepo = new PrismaRegularScheduleRepository(prisma);
+const materialRepo = new PrismaLessonMaterialRepository(prisma);
+
+const slotRepo = new PrismaAvailableSlotRepository(prisma);
+const appealRepo = new PrismaAppealRepository(prisma);
+
+// Quiz
+const quizRepo = new PrismaQuizRepository(prisma);
+const questionRepo = new PrismaQuizQuestionRepository(prisma);
+const lessonQuizRepo = new PrismaLessonQuizRepository(prisma);
+const attemptRepo = new PrismaQuizAttemptRepository(prisma);
+const answerRepo = new PrismaQuizAnswerRepository(prisma);
+const quizFeedbackRepo = new PrismaQuizAnswerFeedbackRepository(prisma);
+
+// Review
+const reviewRepo = new PrismaReviewRepository(prisma);
 
 
 // ─── Profile Creators ─────────────────────────────────────────
 const clientProfileCreator = new ClientProfileCreator(clientRepo);
 const tutorProfileCreator  = new TutorProfileCreator(tutorRepo);
+
+// feedback
+const feedbackRepo = new PrismaFeedbackRepository(prisma);
+
 
 // ══════════════════════════════════════════════════════════════
 // USE CASES
@@ -197,13 +297,171 @@ const confirmEmailChangeUseCase = new ConfirmEmailChangeUseCase(
   secureTokenFactory,
 );
 
-// ─── Support ──────────────────────────────────────────────────
-const joinSupportChatUseCase    = new JoinSupportChatUseCase(supportChatRepo);
+
+// LESSON
+const cancelLessonUseCase = new CancelLessonUseCase(lessonRepo);
+const completeLessonUseCase = new CompleteLessonUseCase(lessonRepo);
+const generateNextRegularLessonUseCase = new GenerateNextRegularLessonUseCase(scheduleRepo, lessonRepo, idGenerator);
+const createTrialUseCase = new CreateTrialLessonUseCase(
+  lessonRepo, 
+  clientRepo, 
+  tutorRepo, 
+  unitOfWork, 
+  idGenerator
+);
+const getLessonUseCase = new GetUserLessonUseCase(lessonRepo);
+const confirmLessonUseCase = new ConfirmLessonUseCase(lessonRepo, tutorRepo);
+const rejectLessonUseCase = new RejectLessonUseCase(lessonRepo);
+const proposeRescheduleUseCase = new ProposeLessonRescheduleUseCase(lessonRepo);
+const acceptRescheduleUseCase = new AcceptRescheduleProposalUseCase(
+  lessonRepo, 
+  unitOfWork, 
+  idGenerator
+);
+const declineRescheduleUseCase = new DeclineRescheduleProposalUseCase(lessonRepo);
+const rescheduleLessonUseCase = new RescheduleLessonByClientUseCase(
+  lessonRepo, 
+  unitOfWork, 
+  idGenerator
+);
+const markNoShowClientUseCase = new MarkNoShowClientUseCase(lessonRepo);
+const markNoShowTutorUseCase = new MarkNoShowTutorUseCase(lessonRepo);
+const uploadMaterialUseCase = new UploadLessonMaterialUseCase(
+  lessonRepo, 
+  materialRepo, 
+  fileStorage, 
+  idGenerator
+);
+const getMaterialUseCase = new GetLessonMaterialUseCase(
+  lessonRepo,
+  materialRepo, 
+  fileStorage
+);
+const deleteMaterialUseCase = new DeleteLessonMaterialUseCase(
+  materialRepo, 
+  fileStorage
+); 
+const createRegularScheduleUseCase = new CreateRegularScheduleUseCase(
+  scheduleRepo, 
+  lessonRepo, 
+  clientRepo, 
+  tutorRepo, 
+  unitOfWork, 
+  idGenerator
+);
+const cancelRegularScheduleUseCase = new CancelRegularScheduleUseCase(
+  scheduleRepo, 
+  lessonRepo, 
+  cancelLessonUseCase,
+  unitOfWork
+);
+const cancelSingleLessonUseCase = new CancelSingleLessonUseCase(lessonRepo);
+const startLessonUseCase = new StartLessonUseCase(
+  lessonRepo,
+  idGenerator
+);
+
+
+// PERSON
+const getProfileUseCase = new GetUserProfileUseCase(userRepo, clientRepo, tutorRepo);
+const updateProfileUseCase = new UpdateUserProfileUseCase(userRepo);
+
+// TUTOR
+const getPendingTutorsUseCase = new GetPendingTutorsUseCase(tutorRepo);
+const approveTutorUseCase = new ApproveTutorUseCase(tutorRepo, userRepo, emailService);
+const rejectTutorUseCase = new RejectTutorUseCase(tutorRepo, userRepo, emailService);
+const getTutorProfileUseCase = new GetTutorProfileUseCase(tutorRepo);
+const updateTutorProfileUseCase = new UpdateTutorProfileUseCase(tutorRepo);
+
+// AVAILABLE
+const createSlotUseCase = new CreateAvailableSlotUseCase(
+  slotRepo, 
+  tutorRepo, 
+  idGenerator
+)
+const deleteSlotUseCase = new DeleteAvailableSlotUseCase(slotRepo);
+const getOwnSlotsUseCase = new GetTutorOwnSlotsUseCase(slotRepo);
+const getPublicSlotsUseCase = new GetTutorPublicSlotsUseCase(slotRepo);
+
+// APPEAL
+const createAppealUseCase = new CreateAppealUseCase(
+  appealRepo, 
+  lessonRepo, 
+  idGenerator
+);
+const getAppealsUseCase = new GetAppealsUseCase(appealRepo);
+const resolveAppealUseCase = new ResolveAppealUseCase(appealRepo);
+const rejectAppealUseCase = new RejectAppealUseCase(appealRepo);
+
+// QUIZ
+const createQuizUseCase = new CreateQuizUseCase(
+  quizRepo, 
+  tutorRepo, 
+  idGenerator
+);
+
+
+const addQuestionUseCase = new AddQuizQuestionUseCase(
+  quizRepo, 
+  questionRepo, 
+  idGenerator
+); 
+const assignToLessonUseCase = new AssignQuizToLessonUseCase(
+  quizRepo, 
+  lessonRepo, 
+  lessonQuizRepo
+);
+const startAttemptUseCase = new StartQuizAttemptUseCase(
+  quizRepo, 
+  lessonRepo, 
+  attemptRepo, 
+  idGenerator
+);
+const submitAttemptUseCase = new SubmitQuizAttemptUseCase(
+  attemptRepo, 
+  questionRepo, 
+  idGenerator
+);
+const provideAnswerFeedbackUseCase = new ProvideAnswerFeedbackUseCase(
+  attemptRepo, 
+  quizFeedbackRepo, 
+  answerRepo, 
+  idGenerator, 
+  unitOfWork
+);
+
+// SUPPORT CHAT
+const joinSupportChatUseCase = new JoinSupportChatUseCase(supportChatRepo);
 const sendSupportMessageUseCase = new SendSupportChatMessageUseCase(supportChatRepo);
 const getSupportChatHistoryUseCase = new GetSupportChatHistoryUseCase(supportChatRepo);
 
-// LESSON
-const completeLessonUseCase = new CompleteLessonUseCase(lessonRepo);
+// REVIEW 
+const submitReviewUseCase = new SubmitReviewUseCase(
+  reviewRepo, 
+  lessonRepo, 
+  idGenerator
+);
+const getTutorReviewsUseCase = new GetTutorReviewsUseCase(reviewRepo);
+
+// FEEDBACK
+const submitFeedbackUseCase = new SubmitFeedbackUseCase(
+  feedbackRepo,
+  idGenerator
+);
+
+// JOBS /////////////////////////////////////////
+const autoCompleteLesson = new AutoCompleteLessonsJob(
+  prisma,
+  completeLessonUseCase,
+  generateNextRegularLessonUseCase,
+  (lessonId: string) => appEvents.emit(AppEvents.LESSON_COMPLETED, lessonId),
+);
+const autoCancelPending    = new AutoCancelPendingJob(prisma);
+const autoExpireReschedule = new AutoExpireRescheduleJob(prisma);
+const sendLessonReminders  = new SendLessonRemindersJob(prisma, emailService);
+//////////////////////////////////////////////////
+
+
 
 
 // ══════════════════════════════════════════════════════════════
@@ -229,19 +487,85 @@ const authController = new AuthController(
   resendVerificationUseCase
 );
 
-// ══════════════════════════════════════════════════════════════
-// EXPORTS
-// ══════════════════════════════════════════════════════════════
+const profileController = new ProfileController(getProfileUseCase, updateProfileUseCase);
+const tutorController = new TutorController(
+  getTutorProfileUseCase, 
+  updateTutorProfileUseCase, 
+  getPendingTutorsUseCase, 
+  approveTutorUseCase, 
+  rejectTutorUseCase
+);
+const lessonController = new LessonController(
+  createTrialUseCase, 
+  getLessonUseCase, 
+  confirmLessonUseCase, 
+  rejectLessonUseCase, 
+  startLessonUseCase, 
+  completeLessonUseCase, 
+  cancelLessonUseCase, 
+  proposeRescheduleUseCase, 
+  acceptRescheduleUseCase, 
+  declineRescheduleUseCase, 
+  rescheduleLessonUseCase, 
+  markNoShowClientUseCase,
+  markNoShowTutorUseCase, 
+  uploadMaterialUseCase, 
+  getMaterialUseCase, 
+  deleteMaterialUseCase, 
+  createRegularScheduleUseCase, 
+  cancelRegularScheduleUseCase, 
+  cancelSingleLessonUseCase
+);
+const availableSlotController = new AvailableSlotController(
+  createSlotUseCase, 
+  deleteSlotUseCase, 
+  getOwnSlotsUseCase,
+  getPublicSlotsUseCase
+);
+const appealController = new AppealController(
+  createAppealUseCase, 
+  getAppealsUseCase, 
+  resolveAppealUseCase, 
+  rejectAppealUseCase
+);
+const feedbackController = new FeedbackController(submitFeedbackUseCase);
+const quizController = new QuizController(
+  createQuizUseCase, 
+  addQuestionUseCase, 
+  assignToLessonUseCase, 
+  startAttemptUseCase, 
+  submitAttemptUseCase, 
+  provideAnswerFeedbackUseCase
+);
+const supportChatController = new SupportChatController(
+  joinSupportChatUseCase,
+  getSupportChatHistoryUseCase,
+  sendSupportMessageUseCase,
+);
+const reviewController = new ReviewController(
+  submitReviewUseCase, 
+  getTutorReviewsUseCase
+);
+
 
 export {
   prisma,
   accessTokenFactory,
   fileStorage,
 
-  // Controllers
+  // CONTROLLERS
   authController,
+  profileController,
+  tutorController,
+  lessonController,
+  availableSlotController,
+  reviewController,
+  quizController,
+  appealController,
+  feedbackController,
+  supportChatController,
 
-  // Auth use cases — нужны в роутерах и WebSocket
+  // AUTH
   registerClientUseCase,
   registerTutorUseCase,
   activateAccountUseCase,
@@ -253,9 +577,18 @@ export {
   requestEmailChangeUseCase,
   confirmEmailChangeUseCase,
 
-  // Support use cases — нужны в WebSocket
+  // SUPPORT CHAT
   joinSupportChatUseCase,
   sendSupportMessageUseCase,
   getSupportChatHistoryUseCase,
+
+  // LESSON
   completeLessonUseCase,
+  generateNextRegularLessonUseCase,
+
+  // JOBS
+  autoCancelPending,
+  autoExpireReschedule,
+  autoCompleteLesson,
+  sendLessonReminders,
 };
