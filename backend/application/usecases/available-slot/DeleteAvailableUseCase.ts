@@ -1,4 +1,3 @@
-// application/usecases/availability/DeleteAvailableSlotUseCase.ts
 import { IAvailableSlotRepository } from '../../../domain/repositories/IAvailableSlotRepository';
 import { TutorId, AvailableSlotId } from '../../../domain/value-objects/EntityId';
 import { NotFoundError } from '../../../domain/errors/NotFoundError';
