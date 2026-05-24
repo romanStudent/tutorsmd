@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from '../../generated/prisma';
 import { IUnitOfWork, ITransactionClient } from '../../application/ports/IUnitOfWork';
 
 export class PrismaUnitOfWork implements IUnitOfWork {

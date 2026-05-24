@@ -51,7 +51,6 @@ export class PrismaUserRepository implements IUserRepository {
         surname: user.surname,
         username: user.username,
         passwordHash: user.hashedPassword,
-        authProvider: user.authProvider,
         timezone: user.timezone,
         isEmailVerified: user.isEmailVerified,
         createdAt: user.createdAt,
@@ -84,6 +83,11 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   private toDomain(record: any): User {
+
+     const authProvider = record.oauthProvider?.length > 0
+    ? record.oauthProvider[0].provider as AuthProvider
+    : 'local';
+
     return User.restore({
       id: record.id,
       email: record.email,
@@ -93,7 +97,7 @@ export class PrismaUserRepository implements IUserRepository {
       avatarUrl: record.avatarUrl,
       languageCode: record.languageCode,
       hashedPassword: record.passwordHash,
-      authProvider: record.authProvider as AuthProvider,
+      authProvider,
       roles: record.userRoles.map((r: any) => r.role as Role),
       isEmailVerified: record.isEmailVerified,
       timezone: record.timezone,

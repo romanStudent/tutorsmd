@@ -5,6 +5,7 @@ model User {
   surname         String    @db.VarChar(255)
   username        String    @unique @db.VarChar(40)
   passwordHash    String?   @db.VarChar(255) @map("password_hash")
+  authProvider    String    @default("local") @db.VarChar(20) @map("auth_provider")
   timezone        String    @default("UTC") @db.VarChar(64)
   languageCode    String    @default("ru") @db.VarChar(10) @map("language_code")
   avatarUrl       String?   @db.Text @map("avatar_url")
