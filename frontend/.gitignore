@@ -2,6 +2,11 @@
 
 # dependencies
 /node_modules
+node_modules/
+.env
+generated/
+dist/
+build/
 /.pnp
 .pnp.js
 .yarn/install-state.gz

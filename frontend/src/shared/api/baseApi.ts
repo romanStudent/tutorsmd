@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery, type BaseQueryFn, type FetchArgs, type FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
-import { tokenManager } from '@shared/lib/tokenManager';
-import { setCredentials, clearCredentials } from '@entities/user/model/authSlice';
+import { tokenManager } from '../lib/TokenManager';
+import { clearCredentials } from '@entities/user/model/authSlice';
 import type { RootState } from '@app/store';
 
 // Базовый запрос с accessToken из памяти
@@ -55,6 +55,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['User', 'Tutor', 'Lesson', 'Review', 'Slot', 'Quiz', 'Appeal'],
+  tagTypes: ['User', 'Tutor', 'Lesson', 'Review', 'Slot', 'Quiz', 'Appeal', 'Session'],
   endpoints: () => ({}),
 });
