@@ -1,10 +1,10 @@
 // Бывший CabinetPage
 import { useSelector } from 'react-redux';
 import { selectActiveRole } from '@entities/user/model/selectors';
-import { ClientDashboard } from '@widgets/dashboard/ClientDashboard';
-import { TutorDashboard }  from '@widgets/dashboard/TutorDashboard';
-import { AdminDashboard }  from '@widgets/dashboard/AdminDashboard';
-import { Layout }          from '@widgets/layout/Layout';
+import { ClientDashboard } from './ClientDashboard';
+import { TutorDashboard }  from './TutorDashboard';
+import { AdminDashboard }  from './AdminDashboard';
+import { Layout }          from '@widgets/layout/index';
 
 export default function DashboardPage() {
   const role = useSelector(selectActiveRole);
