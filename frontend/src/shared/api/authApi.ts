@@ -1,5 +1,5 @@
 import { baseApi } from './baseApi';
-import { tokenManager } from '@shared/lib/tokenManager';
+import { tokenManager } from '@shared/lib/TokenManager';
 import { setCredentials, clearCredentials } from '@entities/user/model/authSlice';
 import type { Role, AuthResponse } from '@entities/user/model/types';
 
@@ -159,6 +159,14 @@ export const authApi = baseApi.injectEndpoints({
         }),
     }),
 
+    requestEmailChange: build.mutation<void, { newEmail: string; password: string }>({
+        query: (body) => ({ 
+            url: '/auth/email/change', 
+            method: 'POST', 
+            body 
+        }),
+    }),
+
 // Добавить в экспорты:
 // useResendVerificationMutation,
 
@@ -204,6 +212,7 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useChangePasswordMutation,
+  useRequestEmailChangeMutation,
   useSwitchRoleMutation,
   useActivateAccountMutation,
   useGetSessionsQuery,

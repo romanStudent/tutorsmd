@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRefreshMutation } from '@shared/api/authApi';
 import { setCredentials, clearCredentials } from '@entities/user/model/authSlice';
-import { tokenManager } from '@shared/lib/tokenManager';
+import { tokenManager } from '@shared/lib/TokenManager';
 import { jwtDecode } from 'jwt-decode';
 import type { Role } from '@entities/user/model/types';
 
