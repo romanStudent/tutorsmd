@@ -4,7 +4,7 @@ import { useGetTutorByIdQuery, useGetTutorSlotsQuery } from '@shared/api/tutorPu
 import { useSelector } from 'react-redux';
 import { selectIsAuthenticated, selectActiveRole } from '@entities/user/model/selectors';
 import { Layout } from '@widgets/layout/ui/Layout';
-import { Spinner } from '@shared/ui/Spinner';
+import { Spinner } from '@shared/ui/index';
 import { BookTrialButton } from './components/BookTrialButton';
 import { TutorSchedule }  from './components/TutorSchedule';
 
@@ -13,7 +13,7 @@ const DAY_NAMES = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 export default function TutorPage() {
   const { tutorId } = useParams<{ tutorId: string }>();
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const activeRole      = useSelector(selectActiveRole);
+  const activeRole = useSelector(selectActiveRole);
 
   const { data: tutor, isLoading } = useGetTutorByIdQuery(tutorId ?? '', { skip: !tutorId });
   const { data: slotsData }        = useGetTutorSlotsQuery(tutorId ?? '', { skip: !tutorId });
