@@ -2,7 +2,7 @@
 # BUILD STAGE
 # =========================
 
-FROM node:18-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
@@ -23,7 +23,8 @@ RUN npm run build
 FROM nginx:1.25-alpine
 
 # frontend build
-COPY --from=build /app/build /usr/share/nginx/html
+# Vite пишет в dist, а не в build
+COPY --from=build /app/dist /usr/share/nginx/html    
 
 # nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf

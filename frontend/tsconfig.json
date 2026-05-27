@@ -18,7 +18,7 @@
     "types": ["vite/client"],
 
     "baseUrl": ".",
-    "ignoreDeprecations": "6.0",   // baseUrl теперь принимается на 6-й версии
+    "ignoreDeprecations": "5.0",   // baseUrl теперь принимается на 5-й версии
 
     "paths": {
       "@app/*":      ["src/app/*"],
