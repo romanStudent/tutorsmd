@@ -1,5 +1,5 @@
 // Обёртка для всех страниц — Header сверху, footer снизу
-import { Header } from '@widgets/header';
+import { Header } from '../../header';
 
 interface Props {
   children: React.ReactNode;
