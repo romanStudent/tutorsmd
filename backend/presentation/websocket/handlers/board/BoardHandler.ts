@@ -252,4 +252,38 @@ socket.on(
       io.to(`board:${lessonId}`).emit("board:pageCleared", { lessonId, pageIndex });
     }),
   );
+
+  socket.on(
+    "board:undo",
+      safeHandler("board:undo", async (data: { lessonId: string; pageIndex: number }) => {
+        const lessonId  = String(data?.lessonId ?? "").trim();
+        const pageIndex = Number(data?.pageIndex ?? 0);
+
+        const ctx = socket.data.lessonCtx as LessonCtx | undefined;
+        if (!ctx || ctx.lessonId !== lessonId) return;
+        if (!["confirmed", "in_progress"].includes(ctx.status)) return;
+        if (pageIndex < 0 || pageIndex >= MAX_PAGES) return;
+
+        const k = pageKey(lessonId, pageIndex);
+
+        // Удаляем последний action из Redis List
+        const removed = await redis.rPop(k);
+        if (!removed) return; // история пуста — нечего отменять
+
+        // Загружаем оставшуюся историю
+        const raw = await redis.lRange(k, 0, -1);
+        const pageActions = raw.map(x => JSON.parse(x) as BoardAction);
+
+        // Broadcast всем в комнате — все перерисовывают страницу
+        io.to(`board:${lessonId}`).emit("board:pageState", {
+          lessonId,
+          pageIndex,
+          actions: pageActions,
+        });
+      }),
+  );
+
+// board:redo не нужен как отдельный обработчик —
+// клиент шлёт действие из redoStack как обычный board:action.
+// Сервер сохраняет в Redis и broadcast — как любой другой action.
 };
