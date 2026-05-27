@@ -13,6 +13,13 @@ type Tab = 'chat' | 'whiteboard';
 
 export default function LessonPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
+  const { data: lesson, isLoading } = useGetLessonQuery(lessonId ?? '', { skip: !lessonId });
+
+  // WebRTC state — только локальный, не нужен глобально
+  const [localStream, setLocalStream]   = useState<MediaStream | null>(null);
+  const [peers, setPeers]               = useState<Map<string, RTCPeerConnection>>(new Map());
+  const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());
+  const [activeTab, setActiveTab]       = useState<'chat' | 'whiteboard'>('chat');
 
   const { data: lesson, isLoading } = useGetLessonQuery(
     lessonId ?? '',

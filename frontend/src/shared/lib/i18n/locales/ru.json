@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "tutors": "Учителя",
+    "subjects": "Предметы",
+    "prices": "Цены",
+    "faq": "Вопросы",
+    "dashboard": "Мой кабинет",
+    "lessons": "Уроки",
+    "schedule": "Расписание",
+    "messages": "Сообщения"
+  },
+  "auth": {
+    "login": "Войти",
+    "logout": "Выйти",
+    "register": "Зарегистрироваться",
+    "email": "Эл. почта",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "forgotPassword": "Забыли пароль?",
+    "resetPassword": "Сбросить пароль",
+    "student": "Ученик",
+    "tutor": "Репетитор"
+  },
+  "lesson": {
+    "status": {
+      "pending": "Запрос",
+      "pending_reschedule": "Перенос",
+      "confirmed": "Подтверждён",
+      "in_progress": "Идёт",
+      "completed": "Завершён",
+      "cancelled_by_client": "Отменён (ученик)",
+      "cancelled_by_tutor": "Отменён (учитель)",
+      "no_show_client": "Ученик не пришёл",
+      "no_show_tutor": "Учитель не пришёл"
+    },
+    "type": {
+      "trial": "Пробный",
+      "regular": "Регулярный"
+    },
+    "join": "Присоединиться",
+    "cancel": "Отменить",
+    "confirm": "Подтвердить",
+    "leave": "Выйти"
+  },
+  "settings": {
+    "title": "Настройки",
+    "profile": "Профиль",
+    "tutorProfile": "Профиль учителя",
+    "security": "Безопасность",
+    "sessions": "Сеансы",
+    "save": "Сохранить",
+    "saving": "Сохраняется..."
+  },
+  "dashboard": {
+    "welcome": "Добро пожаловать",
+    "nextLesson": "Ближайшие уроки",
+    "findTutor": "Найти учителя",
+    "allLessons": "Все уроки",
+    "newRequests": "Новые запросы"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "retry": "Повторить",
+    "notFound": "Не найдено",
+    "back": "Назад",
+    "close": "Закрыть",
+    "send": "Отправить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "search": "Поиск",
+    "noResults": "Нет результатов"
+  }
+}
