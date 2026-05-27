@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import type { Lesson } from '@shared/api/lessonApi';
-import type { Role } from '@entities/user/model/types';
 
 const STATUS_LABELS: Record<string, string> = {
   pending:              'Anfrage',
