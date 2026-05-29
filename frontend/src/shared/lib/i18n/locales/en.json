@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "tutors": "Tutors",
+    "subjects": "Subjects",
+    "prices": "Prices",
+    "faq": "FAQ",
+    "dashboard": "Dashboard",
+    "lessons": "Lessons",
+    "schedule": "Schedule",
+    "messages": "Messages"
+  },
+  "auth": {
+    "login": "Sign in",
+    "logout": "Sign out",
+    "register": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset password",
+    "student": "Student",
+    "tutor": "Tutor"
+  },
+  "lesson": {
+    "status": {
+      "pending": "Pending",
+      "pending_reschedule": "Reschedule pending",
+      "confirmed": "Confirmed",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "cancelled_by_client": "Cancelled by student",
+      "cancelled_by_tutor": "Cancelled by tutor",
+      "no_show_client": "Student no-show",
+      "no_show_tutor": "Tutor no-show"
+    },
+    "type": {
+      "trial": "Trial",
+      "regular": "Regular"
+    },
+    "join": "Join",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "leave": "Leave"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "tutorProfile": "Tutor profile",
+    "security": "Security",
+    "sessions": "Sessions",
+    "save": "Save",
+    "saving": "Saving..."
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "nextLesson": "Upcoming lessons",
+    "findTutor": "Find a tutor",
+    "allLessons": "All lessons",
+    "newRequests": "New requests"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "notFound": "Not found",
+    "back": "Back",
+    "close": "Close",
+    "send": "Send",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "noResults": "No results"
+  }
+}

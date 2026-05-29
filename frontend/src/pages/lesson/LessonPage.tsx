@@ -12,15 +12,11 @@ type Tab = 'chat' | 'whiteboard';
 
 export default function LessonPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
+  const { data: lesson, isLoading } = useGetLessonQuery(lessonId ?? '', { skip: !lessonId });
 
-  const { data: lesson, isLoading } = useGetLessonQuery(
-    lessonId ?? '',
-    { skip: !lessonId },
-  );
-
-  // VideoRoom props
-  const [localStream,   setLocalStream]   = useState<MediaStream | null>(null);
-  const [remoteStreams, setRemoteStreams]  = useState<Map<string, MediaStream>>(new Map());
+  // WebRTC state — только локальный, не нужен глобально
+  const [localStream, setLocalStream]   = useState<MediaStream | null>(null);
+  const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());
 
   // Sidebar tab
   const [activeTab, setActiveTab] = useState<Tab>('chat');

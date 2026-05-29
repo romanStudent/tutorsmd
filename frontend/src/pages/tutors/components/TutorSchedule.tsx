@@ -1,4 +1,4 @@
-import type { AvailableSlot } from '@shared/api/tutor/tutorPublicApi';
+import type { AvailableSlot } from '@entities/available-slot/model/types';
 
 const DAY_NAMES = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 
