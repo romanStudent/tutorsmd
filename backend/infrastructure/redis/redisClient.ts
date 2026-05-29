@@ -3,12 +3,17 @@ import { createClient, RedisClientType } from "redis";
 // ── Фабрика клиента ───────────────────────────────────────────────────────────
 
 const createRedisClient = (): RedisClientType => {
+  
+  if (!process.env.REDIS_URL) {
+  throw new Error("REDIS_URL is not defined");
+}
+
   const client = createClient({
-    url: process.env.REDIS_URL ?? "redis://localhost:6379",
+    url: process.env.REDIS_URL,
 
     socket: {
       // TCP keepalive — обнаруживает "мёртвые" соединения быстрее чем таймаут ОС.
-      keepAlive: 10_000,
+      keepAlive: true,    // delay-time контролирует OS
 
       // Reconnect-стратегия: экспоненциальный backoff, максимум 30 сек.
       reconnectStrategy: (retries: number) => {

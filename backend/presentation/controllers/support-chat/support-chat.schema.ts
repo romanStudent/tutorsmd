@@ -2,6 +2,10 @@
 
 import { z } from 'zod';
 
+export const ChatIdParamsSchema = z.object({
+  chatId: z.string().uuid(),
+});
+
 export const SupportAttachmentSchema = z.object({
   name: z.string().min(1).max(255),
   key: z.string().min(1).max(2000),
@@ -9,39 +13,32 @@ export const SupportAttachmentSchema = z.object({
   size: z.number().int().positive(),
 });
 
-export const SendSupportMessageSchema = z.object({
-  text: z
-    .string()
-    .max(5000)
-    .nullable()
-    .optional(),
+export const SendSupportChatMessageSchema = z.object({
+  text: z.string().max(5000).optional(),
+  attachments: z.array(z.object({
+    key:      z.string().min(1).max(500),
+    name:     z.string().min(1).max(255),
+    mimeType: z.string().min(1).max(100),
+    size:     z.number().int().positive().max(5 * 1024 * 1024),
+  })).max(5).optional(),
+}).refine(
+  (d) => d.text?.trim() || (d.attachments && d.attachments.length > 0),
+  { message: "Message must contain text or attachments" },
+);
 
-  attachments: z
-    .array(SupportAttachmentSchema)
-    .max(10)
-    .optional(),
-});
 
 export const GetSupportHistoryQuerySchema = z.object({
-  limit: z.coerce
-    .number()
-    .int()
-    .min(1)
-    .max(100)
-    .optional(),
-
-  before: z
-    .string()
-    .datetime()
-    .optional(),
+  limit:  z.coerce.number().int().min(1).max(100).optional(),
+  before: z.string().datetime().optional(),
 });
 
-export type ChatIdParams = {
-  chatId: string;
-};
+
+
 
 export type SendSupportChatMessageBody =
-  z.infer<typeof SendSupportMessageSchema>;
+  z.infer<typeof SendSupportChatMessageSchema>;
 
 export type GetSupportHistoryQueryDto =
   z.infer<typeof GetSupportHistoryQuerySchema>;
+
+export type ChatIdParams               = z.infer<typeof ChatIdParamsSchema>;

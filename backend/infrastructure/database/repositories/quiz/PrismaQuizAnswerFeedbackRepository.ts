@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { IQuizAnswerFeedbackRepository, CreateFeedbackData, UpdateFeedbackData} from '../../../../domain/repositories/quiz/IQuizAnswerFeedbackRepository';
 
 export class PrismaQuizAnswerFeedbackRepository implements IQuizAnswerFeedbackRepository {

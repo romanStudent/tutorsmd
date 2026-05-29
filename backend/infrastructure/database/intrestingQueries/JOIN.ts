@@ -1,3 +1,4 @@
+/*
 // Aufgabe 1
 SELECT m.firstname || ' ' || m.surname AS member, f.name AS facility FROM cd.members m JOIN cd.bookings b ON m.memid=b.memid JOIN cd.facilities f ON f.facid=b.facid WHERE f.name LIKE 'Tennis Court%' GROUP BY member, facility;  
 // OR
@@ -35,3 +36,4 @@ SELECT companies.category_code,
  WHERE founded_at_clean IS NOT NULL
  GROUP BY 1
  ORDER BY 5 DESC
+ */

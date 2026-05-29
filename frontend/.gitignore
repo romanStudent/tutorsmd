@@ -6,6 +6,7 @@ node_modules/
 .env
 .env.production
 .env.development
+ssl/
 generated/
 dist/
 build/

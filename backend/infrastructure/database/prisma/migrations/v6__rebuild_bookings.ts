@@ -1,9 +1,9 @@
-import { QueryInterface } from 'sequelize';
+import { QueryInterface, DataTypes } from 'sequelize';
 
 export default {
   async up(queryInterface: QueryInterface) {
     // Удаляем поля которые теперь в users
-    await queryInterface.addColumn('bookings', 'email');
+    await queryInterface.addColumn('bookings', 'email', { type: DataTypes.STRING });
     await queryInterface.removeColumn('clients', 'password');
     await queryInterface.removeColumn('clients', 'name');
     await queryInterface.removeColumn('clients', 'surname');

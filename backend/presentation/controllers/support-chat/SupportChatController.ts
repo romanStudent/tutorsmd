@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { ISupportChatController } from './ISupportChatController';
 
 import { JoinSupportChatUseCase } from '../../../application/usecases/support-chat/JoinSupportChatUseCase';
-import { GetSupportChatHistoryUseCase } from '../../../application/usecases/support-chat/GetSupportChatHistoryUsecase';
+import { GetSupportChatHistoryUseCase } from '../../../application/usecases/support-chat/GetSupportChatHistoryUseCase';
 import { SendSupportChatMessageUseCase } from '../../../application/usecases/support-chat/SendSupportChatMessageUseCase';
 
 import {

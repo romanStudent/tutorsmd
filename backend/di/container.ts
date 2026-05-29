@@ -71,7 +71,7 @@ import { SendSupportChatMessageUseCase } from '../application/usecases/support-c
 
 // --- Use Cases: Lesson ---------------------------------------------------------------------------------------------
 import { CompleteLessonUseCase } from '../application/usecases/lesson/CompleteLessonUseCase';
-import { GetSupportChatHistoryUseCase } from '../application/usecases/support-chat/GetSupportChatHistoryUsecase';
+import { GetSupportChatHistoryUseCase } from '../application/usecases/support-chat/GetSupportChatHistoryUseCase';
 import { AutoCompleteLessonsJob } from '../infrastructure/queue/jobs/AutoCompleteLessonsJob';
 import { AutoCancelPendingJob } from '../infrastructure/queue/jobs/AutoCancelPendingJob';
 import { AutoExpireRescheduleJob } from '../infrastructure/queue/jobs/AutoExpireRescheduleJob';
@@ -560,8 +560,6 @@ const tutorController = new TutorController(
   getTutorPublicProfileUseCase, updateTutorProfileUseCase,
   getPendingTutorsUseCase, approveTutorUseCase, rejectTutorUseCase,
 );
-
-// Новый:
 const tutorPublicController = new TutorPublicController(
   getTutorPublicListUseCase,
   getTutorPublicProfileUseCase,
@@ -577,6 +575,7 @@ export {
   authController,
   profileController,
   tutorController,
+  tutorPublicController,
   lessonController,
   availableSlotController,
   reviewController,

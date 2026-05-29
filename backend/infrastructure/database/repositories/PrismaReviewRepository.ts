@@ -1,6 +1,6 @@
 import { IReviewRepository, ReviewRecord, GetTutorReviewsOptions } from '../../../domain/repositories/IReviewRepository';
 import { Review } from '../../../domain/entities/Review';
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 export class PrismaReviewRepository implements IReviewRepository {
   constructor(private readonly prisma: PrismaClient) {}

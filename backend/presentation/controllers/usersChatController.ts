@@ -1,3 +1,4 @@
+/*
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 import TokenService from "../../infrastructure/service/tokenService";
@@ -50,3 +51,4 @@ export class UsersChatController {
     }
   }
 }
+*/

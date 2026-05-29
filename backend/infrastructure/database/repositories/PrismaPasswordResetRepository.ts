@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { IPasswordResetRepository } from '../../../domain/repositories/IPasswordResetRepository';
 
 export class PrismaPasswordResetRepository implements IPasswordResetRepository {

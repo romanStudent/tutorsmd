@@ -1,4 +1,6 @@
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
 import { ITransactionClient, IUnitOfWork } from '../../../application/ports/IUnitOfWork';
 
 export class PrismaUnitOfWork implements IUnitOfWork {

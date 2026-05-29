@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { ILessonQuizRepository } from '../../../../domain/repositories/quiz/ILessonQuizRepository';
 
 export class PrismaLessonQuizRepository implements ILessonQuizRepository {

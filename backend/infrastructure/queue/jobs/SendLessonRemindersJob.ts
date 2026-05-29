@@ -2,7 +2,7 @@
 // Напоминания за 24ч и за 1ч до урока
 // Запускается каждые 15 минут — окно ±15 минут от точного времени
 
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { IEmailService } from '../../../application/ports/IEmailService';
 import { LanguageCode } from '../../../domain/entities/User';
 

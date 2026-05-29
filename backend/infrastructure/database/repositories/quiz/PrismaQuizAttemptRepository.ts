@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../../../../generated/prisma';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { IQuizAttemptRepository, SubmitQuizAttemptData } from '../../../../domain/repositories/quiz/IQuizAttemptRepository';
 import { QuizAttempt } from '../../../../domain/entities/quiz/QuizAttempt';
 

@@ -1,13 +1,12 @@
+/*
 import { RequestHandler } from 'express';
-import bcrypt from "bcrypt";
-
 import Gast from "../../infrastructure/database/models/gastModel";
 import Client from "../../infrastructure/database/models/clientModel";
 import Tutor from "../../infrastructure/database/models/tutorModel";
 import ClientToken from "../../infrastructure/database/models/tokenModel";
 import TutorToken from "../../infrastructure/database/models/tokenTutorModel";
 
-import { encrypt } from "../../infrastructure/encryption/encryption";
+import { encrypt } from "../../infrastructure/security/Aes256GcmDataEncrypt";
 
 import ApiError from "../../domain/errors/apiError";
 
@@ -104,7 +103,7 @@ export class AdminController {
         email: t.email,
         chatid: encrypt(t.email),
         messages: t.messages,
-        availableSubjects: t.availableSubjects,
+        tutorSubjects: t.tutorSubjects,
         tokens: t.tokens
       }));
 
@@ -152,32 +151,9 @@ export class AdminController {
     }
   }
 
-  /*
-  // ---------- DECRYPT ----------
-  private decrypt(req: Request, res: Response) {
-    const { id } = req.body;
 
-    if (!id || typeof id !== "string") {
-      throw ApiError.BadRequest("Invalid encrypted value");
-    }
-
-    const [ivHex, encrypted] = id.split(":");
-    if (!ivHex || !encrypted) {
-      throw ApiError.BadRequest("Invalid encrypted format");
-    }
-
-    const ivBuf = Buffer.from(ivHex, "hex");
-    const iv = new Uint8Array(ivBuf.buffer, ivBuf.byteOffset, ivBuf.byteLength);
-
-    const decipher = createDecipheriv(this.algorithm, this.secretKey, iv);
-
-    let decrypted = decipher.update(encrypted, "hex", "utf8");
-    decrypted += decipher.final("utf8");
-
-    return res.status(200).json({ decrypted });
-  }
-    */
 }
+*/
 
 
 

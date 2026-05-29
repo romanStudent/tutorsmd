@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../../../generated/prisma';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { IAvailableSlotRepository } from '../../../domain/repositories/IAvailableSlotRepository';
 import { AvailableSlot } from '../../../domain/entities/AvailableSlot';
 
@@ -21,7 +21,7 @@ export class PrismaAvailableSlotRepository implements IAvailableSlotRepository {
       },
       orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
     });
-    return records.map(r => this.toDomain(r));
+    return records.map((r: any) => this.toDomain(r));
   }
 
   async existsConflict(

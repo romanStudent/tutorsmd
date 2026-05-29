@@ -1,8 +1,12 @@
-import { PrismaClient } from "../../generated/prisma";
-import { PrismaPg } from "@prisma/adapter-pg";
+// infrastructure/database/prismaClient.ts
+// Prisma 7: PrismaClient импортируется из generated/prisma, не из @prisma/client
+// adapter обязателен для Prisma 7 с PostgreSQL
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg }    from '@prisma/adapter-pg';
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;

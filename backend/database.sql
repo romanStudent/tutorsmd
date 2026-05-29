@@ -40,7 +40,7 @@ CREATE TABLE tutors (
     email VARCHAR(255),
     password VARCHAR(255),
     reviews JSONB,
-    availablesubjects JSONB,
+    tutorsubjects JSONB,
     highlight VARCHAR(255),
     highlightgerman VARCHAR(255),
     fulldescribe VARCHAR(8000),
@@ -142,11 +142,11 @@ CREATE INDEX idx_lessons_cts          ON lessons (client_email, tutor_email, sta
 );
 
               
-INSERT INTO tutors (name, email, password, reviews, availableSubjects, highlight, fullDescribe) VALUES ('Roman', 'ra.ivanov1405@gmail.com', crypt('!Qwedcxzaqwsx123321', gen_salt('bf')), ARRAY[('John', 4, convert_to('Уроки великолепны. Не хватает иногда практики', 'UTF-8'))::Review], ARRAY['Математика', 'Немецкий'], 'Со мной математика - игра', 'Я готовлю к экзаменам и преподаю школьную программу') RETURNING *;
-INSERT INTO tutors (name, email, password, reviews, availableSubjects, highlight, fullDescribe) VALUES ('Roman', 'pavlokabyn@gmail.com', crypt('pavlohallo', gen_salt('bf')), ARRAY[('Ivan', 5, convert_to('Все прекрасно!', 'UTF-8'))::Review], ARRAY['Немецкий'], 'Немецкий - игра', 'Я готовлю к экзаменам и преподаю школьную программу') RETURNING *;
+INSERT INTO tutors (name, email, password, reviews, tutorSubjects, highlight, fullDescribe) VALUES ('Roman', 'ra.ivanov1405@gmail.com', crypt('!Qwedcxzaqwsx123321', gen_salt('bf')), ARRAY[('John', 4, convert_to('Уроки великолепны. Не хватает иногда практики', 'UTF-8'))::Review], ARRAY['Математика', 'Немецкий'], 'Со мной математика - игра', 'Я готовлю к экзаменам и преподаю школьную программу') RETURNING *;
+INSERT INTO tutors (name, email, password, reviews, tutorSubjects, highlight, fullDescribe) VALUES ('Roman', 'pavlokabyn@gmail.com', crypt('pavlohallo', gen_salt('bf')), ARRAY[('Ivan', 5, convert_to('Все прекрасно!', 'UTF-8'))::Review], ARRAY['Немецкий'], 'Немецкий - игра', 'Я готовлю к экзаменам и преподаю школьную программу') RETURNING *;
 
                 // SET TUTOR_ENCODING TO 'UTF8';
-        // INSERT INTO tutors (name, email, reviews, availableSubjects, highlight, fullDescribe) VALUES ('Pavlo', 'pavlokabin@gmail.com', ARRAY[ROW('John', 4, 'Уроки великолепны. Не хватает иногда практики')::Review], ARRAY['Математика', 'Немецкий'], 'Со мной математика - игра', 'Я готовлю к экзаменам и преподаю школьную программу') RETURNING *;
+        // INSERT INTO tutors (name, email, reviews, tutorSubjects, highlight, fullDescribe) VALUES ('Pavlo', 'pavlokabin@gmail.com', ARRAY[ROW('John', 4, 'Уроки великолепны. Не хватает иногда практики')::Review], ARRAY['Математика', 'Немецкий'], 'Со мной математика - игра', 'Я готовлю к экзаменам и преподаю школьную программу') RETURNING *;
             
 
 INSERT INTO tutors (
@@ -154,7 +154,7 @@ INSERT INTO tutors (
   email, 
   password, 
   reviews, 
-  availablesubjects, 
+  tutorsubjects, 
   highlight, 
   fulldescribe, 
   messages, 
@@ -181,7 +181,7 @@ INSERT INTO tutors (
   email,
   password,
   reviews,
-  availablesubjects,
+  tutorsubjects,
   highlight,
   fulldescribe,
   messages,
@@ -213,8 +213,8 @@ ALTER TABLE tokens ALTER COLUMN "refreshToken" TYPE VARCHAR(2048);
 
 
 
-            INSERT INTO tutors (name, email, password, reviews, availableSubjects, highlight, fullDescribe, isActivated, "createdAt", "updatedAt") VALUES ('Roman', 'ra.ivanov1405@gmail.com', crypt('!Qwedcxzaqwsx123321', gen_salt('bf')), ARRAY[(name: 'John', grade: 4, comment: 'Teaching is perfect. But more practice is needed')::Review], ARRAY['Math', 'German'], 'Math and German with me - a game', 'I prepare for the exams and teach the school program', false, NOW(), NOW()) RETURNING *;
-            INSERT INTO tutors (name, email, password, reviews, availableSubjects, highlight, fullDescribe, "createdAt", "updatedAt") VALUES ('Roman', 'ra.ivanov1405@gmail.com', crypt('!Qwedcxzaqwsx123321', gen_salt('bf')), ARRAY[('John', 4, 'Unterrichten sind perfekt. Aber es wird mehr Praktik gebraucht')::Review], ARRAY['Mathe', 'Deutsch'], 'Math and German with me - a game', 'I prepare for the exams and teach the school program', NOW(), NOW()) RETURNING *;
+            INSERT INTO tutors (name, email, password, reviews, tutorSubjects, highlight, fullDescribe, isActivated, "createdAt", "updatedAt") VALUES ('Roman', 'ra.ivanov1405@gmail.com', crypt('!Qwedcxzaqwsx123321', gen_salt('bf')), ARRAY[(name: 'John', grade: 4, comment: 'Teaching is perfect. But more practice is needed')::Review], ARRAY['Math', 'German'], 'Math and German with me - a game', 'I prepare for the exams and teach the school program', false, NOW(), NOW()) RETURNING *;
+            INSERT INTO tutors (name, email, password, reviews, tutorSubjects, highlight, fullDescribe, "createdAt", "updatedAt") VALUES ('Roman', 'ra.ivanov1405@gmail.com', crypt('!Qwedcxzaqwsx123321', gen_salt('bf')), ARRAY[('John', 4, 'Unterrichten sind perfekt. Aber es wird mehr Praktik gebraucht')::Review], ARRAY['Mathe', 'Deutsch'], 'Math and German with me - a game', 'I prepare for the exams and teach the school program', NOW(), NOW()) RETURNING *;
 SELECT convert_from('Роман'::bytea, 'UTF-8');
 
 
@@ -238,8 +238,8 @@ SELECT convert_from('Роман'::bytea, 'UTF-8');
 
 
 // ЭТО ПРАВИЛЬНО. Нужно вставить правильно 'isActivated' в базу данных
-INSERT INTO tutors (id, name, namegerman, surname, surnamegerman, email, "newEmail", "changeEmailLink", password, reviews, availablesubjects, highlight, highlightgerman, fulldescribe, fulldescribegerman, "createdAt", "updatedAt") VALUES (2, 'Роман', 'Roman', 'Иванов', 'Ivanov', 'ra.ivanov1405@gmail.com', '', '', crypt('!Qwedcxzaqwsx123321', gen_salt('bf')), '[{"name": "John", "grade": 4, "comment": "Преподавание прекрасно. Но нужно больше практики"}]'::jsonb, '{"ru": ["Математика", "Немецкий"], "de": ["Mathe", "Deutsch"]}'::jsonb, 'Математика и немецкий со мной - игра', 'Mathe und Deutsch mit mir – wie ein Spiel', 'Я готовлю к экзаменам и преподаю школьную программу', 'Ich bereite auf Prüfungen vor und unterrichte das Schulprogramm',  NOW(), NOW()) RETURNING *;
-INSERT INTO tutors (id, name, namegerman, surname, surnamegerman, email, "newEmail", "changeEmailLink", password, reviews, availablesubjects, highlight, highlightgerman, fulldescribe, fulldescribegerman, "createdAt", "updatedAt") VALUES (1, 'Павло', 'Pavlo', 'Кабын', 'Kabyn', 'pavlokabyn@gmail.com', '', '', crypt('pavlohallo', gen_salt('bf')), '[]'::jsonb, '{"ru": ["Немецкий"], "de": ["Deutsch"]}'::jsonb, 'Немецкий со мной - игра', 'Deutsch mit mir - wie ein Spiel', 'Я готовлю к экзаменам и преподаю школьную программу', 'Ich bereite auf Prüfungen vor und unterrichte das Schulprogramm', NOW(), NOW()) RETURNING *;
+INSERT INTO tutors (id, name, namegerman, surname, surnamegerman, email, "newEmail", "changeEmailLink", password, reviews, tutorsubjects, highlight, highlightgerman, fulldescribe, fulldescribegerman, "createdAt", "updatedAt") VALUES (2, 'Роман', 'Roman', 'Иванов', 'Ivanov', 'ra.ivanov1405@gmail.com', '', '', crypt('!Qwedcxzaqwsx123321', gen_salt('bf')), '[{"name": "John", "grade": 4, "comment": "Преподавание прекрасно. Но нужно больше практики"}]'::jsonb, '{"ru": ["Математика", "Немецкий"], "de": ["Mathe", "Deutsch"]}'::jsonb, 'Математика и немецкий со мной - игра', 'Mathe und Deutsch mit mir – wie ein Spiel', 'Я готовлю к экзаменам и преподаю школьную программу', 'Ich bereite auf Prüfungen vor und unterrichte das Schulprogramm',  NOW(), NOW()) RETURNING *;
+INSERT INTO tutors (id, name, namegerman, surname, surnamegerman, email, "newEmail", "changeEmailLink", password, reviews, tutorsubjects, highlight, highlightgerman, fulldescribe, fulldescribegerman, "createdAt", "updatedAt") VALUES (1, 'Павло', 'Pavlo', 'Кабын', 'Kabyn', 'pavlokabyn@gmail.com', '', '', crypt('pavlohallo', gen_salt('bf')), '[]'::jsonb, '{"ru": ["Немецкий"], "de": ["Deutsch"]}'::jsonb, 'Немецкий со мной - игра', 'Deutsch mit mir - wie ein Spiel', 'Я готовлю к экзаменам и преподаю школьную программу', 'Ich bereite auf Prüfungen vor und unterrichte das Schulprogramm', NOW(), NOW()) RETURNING *;
 ////////////////////////////////////////////////////////////////
 
 
@@ -250,7 +250,7 @@ ADD COLUMN namegerman VARCHAR(255) NOT NULL DEFAULT '',
 ADD COLUMN surnamegerman VARCHAR(255) NOT NULL DEFAULT '',
 ADD COLUMN highlightgerman VARCHAR(255),
 ADD COLUMN fulldescribegerman VARCHAR(255),
-ADD COLUMN availablesubjects JSONB NOT NULL DEFAULT '{"ru": [], "de": []}';
+ADD COLUMN tutorsubjects JSONB NOT NULL DEFAULT '{"ru": [], "de": []}';
 
 
 
