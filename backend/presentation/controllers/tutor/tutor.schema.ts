@@ -16,9 +16,9 @@ export const UpdateTutorProfileSchema = z.object({
   hourlyRate: z.number().positive().max(10000).nullable().optional(),
 });
 
-export type TutorIdParams = {
-  tutorId: string;
-};
+export const TutorIdParamsSchema = z.object({
+  tutorId: z.string().uuid(),
+});
 
 export const RejectTutorSchema = z.object({
   reason: z.string().min(1).max(500).optional(),
@@ -29,3 +29,6 @@ export type UpdateTutorProfileDto =
 
 export type RejectTutorDto =
   z.infer<typeof RejectTutorSchema>;
+
+export type TutorIdParams =
+  z.infer<typeof TutorIdParamsSchema>;

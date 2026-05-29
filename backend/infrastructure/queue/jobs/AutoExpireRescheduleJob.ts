@@ -1,7 +1,7 @@
 
 // pending_reschedule уроки у которых proposedExpiresAt < now
 // возвращаем в confirmed (предложение истекло)
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 export class AutoExpireRescheduleJob {
   constructor(private readonly prisma: PrismaClient) {}

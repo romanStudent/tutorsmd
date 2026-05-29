@@ -13,7 +13,7 @@ export const ChangePasswordForm = () => {
   const [logout] = useLogoutMutation();
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 

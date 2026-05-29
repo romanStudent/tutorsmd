@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { IEmailChangeRepository } from '../../../domain/repositories/email/IEmailChangeRepository';
 
 export class PrismaEmailChangeRepository implements IEmailChangeRepository {

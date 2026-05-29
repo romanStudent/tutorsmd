@@ -1,5 +1,6 @@
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useRegisterClientMutation, useRegisterTutorMutation } from '@shared/api/authApi';
@@ -10,7 +11,6 @@ interface Props {
 }
 
 export default function RegisterPage({ role = 'client' }: Props) {
-  const navigate = useNavigate();
   const [registerClient, { isLoading: loadingClient }] = useRegisterClientMutation();
   const [registerTutor,  { isLoading: loadingTutor }]  = useRegisterTutorMutation();
   const isLoading = loadingClient || loadingTutor;
@@ -23,7 +23,7 @@ export default function RegisterPage({ role = 'client' }: Props) {
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerSchema) as Resolver<RegisterFormData>,   // заглушка
     defaultValues: {
       languageCode: 'de',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,

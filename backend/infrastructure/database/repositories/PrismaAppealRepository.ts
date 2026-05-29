@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../../../generated/prisma';
+import { PrismaClient, Prisma } from '@prisma/client';
 import {
   IAppealRepository,
   AppealRecord,
@@ -22,7 +22,7 @@ export class PrismaAppealRepository implements IAppealRepository {
       where:   { lessonId },
       orderBy: { createdAt: 'desc' },
     });
-    return records.map(r => this.toRecord(r));
+    return records.map((r: any) => this.toRecord(r));
   }
 
   async findAllOpen(): Promise<AppealRecord[]> {
@@ -30,14 +30,14 @@ export class PrismaAppealRepository implements IAppealRepository {
       where:   { status: 'open' },
       orderBy: { createdAt: 'asc' },
     });
-    return records.map(r => this.toRecord(r));
+    return records.map((r: any) => this.toRecord(r));
   }
 
   async findAll(): Promise<AppealRecord[]> {
     const records = await this.prisma.appeal.findMany({
       orderBy: { createdAt: 'desc' },
     });
-    return records.map(r => this.toRecord(r));
+    return records.map((r: any) => this.toRecord(r));
   }
 
   async create(data: CreateAppealData): Promise<AppealRecord> {

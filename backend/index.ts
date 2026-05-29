@@ -8,7 +8,6 @@ import type { IncomingMessage, ServerResponse } from "http";
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import http from 'http';
-import cron from 'node-cron';
 import { rateLimit } from "express-rate-limit";
 
 
@@ -23,7 +22,7 @@ import { rateLimit } from "express-rate-limit";
 // import FileRouter from './presentation/routes/FileRoutes';
 import { createAuthRouter }         from './presentation/routes/AuthRoutes';
 import { createProfileRouter }      from './presentation/routes/ProfileRoutes';
-import { createTutorRouter }        from './presentation/routes/TutorRoutes';
+import { createTutorRouter }        from './presentation/routes/tutor/TutorRoutes';
 import { createLessonRouter }       from './presentation/routes/LessonRoutes';
 import { createAvailableSlotRouter } from './presentation/routes/AvailableSlotRoutes';
 import { createReviewRouter }       from './presentation/routes/ReviewRoutes';
@@ -70,7 +69,11 @@ async function bootstrap() {
 // ============================
 //   REDIS ИНИЦИАЛИЗАЦИЯ
 // ============================
-await connectRedis();
+try {
+  await connectRedis();
+} catch (e) {
+  console.error("Redis failed, starting without it");
+}
 
 
 // Запускаем воркер
@@ -120,6 +123,12 @@ app.use('/api/quiz',    createQuizRouter(quizController));
 app.use('/api/appeals', createAppealRouter(appealController));
 app.use('/api/feedback', createFeedbackRouter(feedbackController));
 ///////////////////////////////////
+
+///////////// HEALTH ///////////////////////////////////////////////////////////
+app.get('/api/health', (_req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+/////////////////////////////////////////////////////////////////////////////////
 
 // Статика
 // app.use(express.static(path.join(__dirname, 'public')));

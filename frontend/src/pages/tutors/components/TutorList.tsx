@@ -1,7 +1,7 @@
 
 import { useSearchParams, Link } from 'react-router-dom';
-import { useGetTutorsQuery } from '@shared/api/tutorPublicApi';
-import { Spinner } from '@shared/ui/Spinner';
+import { useGetTutorsQuery } from '@shared/api/tutor/tutorPublicApi';
+import { Spinner } from '@shared/index';
 
 export const TutorList = () => {
   const [params] = useSearchParams();

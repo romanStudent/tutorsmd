@@ -1,3 +1,4 @@
+/*
 import { Button, Input } from "@mui/material";
 import React, { useState, useRef, FunctionComponent, useEffect, RefObject } from "react";
 import './BetterSchoolToDo.css';
@@ -152,3 +153,4 @@ const BetterSchoolToDo: FunctionComponent<Props> = ({ isOfferModalOpened, setIsO
 };
 
 export default React.memo(BetterSchoolToDo);
+*/

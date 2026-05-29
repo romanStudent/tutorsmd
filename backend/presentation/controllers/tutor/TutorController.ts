@@ -12,7 +12,7 @@ import { GetTutorByUserIdUseCase } from '../../../application/usecases/tutor/Get
 import {
   UpdateTutorProfileDto,
   RejectTutorDto,
-  TutorIdParams,
+  TutorIdParamsSchema,
 } from './tutor.schema';
 
 export class TutorController implements ITutorController {
@@ -41,7 +41,7 @@ export class TutorController implements ITutorController {
 
   // PUT /tutor/profile - тьютор обновляет СВОЙ профиль
   async updateProfile(
-    req: Request<{}, {}, UpdateTutorProfileDto>,
+    req: Request,
     res: Response,
   ): Promise<void> {
     
@@ -54,19 +54,11 @@ export class TutorController implements ITutorController {
       return;
     }
 
-    const {
-      nameDe, nameRu, surnameDe, surnameRu,
-      highlightDe, highlightRu,
-      fulldescribeDe, fulldescribeRu,
-      hourlyRate,
-    } = req.body;
+     const body = req.body as UpdateTutorProfileDto;
 
     await this.updateProfileUseCase.execute({
       tutorId,
-      nameDe, nameRu, surnameDe, surnameRu,
-      highlightDe, highlightRu,
-      fulldescribeDe, fulldescribeRu,
-      hourlyRate,
+      ...body,
     });
 
     res.status(200).json({ message: 'Profile updated.' });
@@ -80,11 +72,11 @@ export class TutorController implements ITutorController {
 
   // POST /tutor/:tutorId/approve - только admin
   async approve(
-    req: Request<TutorIdParams>,
+    req: Request,
     res: Response,
   ): Promise<void> {
     const adminUserId = req.user!.userId;
-    const { tutorId } = req.params;
+    const { tutorId } = req.params as { tutorId: string };
 
     await this.approveTutorUseCase.execute({ tutorId, adminUserId });
     res.status(200).json({ message: 'Tutor approved.' });
@@ -92,11 +84,11 @@ export class TutorController implements ITutorController {
 
   // POST /tutor/:tutorId/reject - только admin
   async reject(
-    req: Request<TutorIdParams, {}, RejectTutorDto>,
+    req: Request,
     res: Response,
   ): Promise<void> {
-    const { tutorId } = req.params;
-    const { reason }  = req.body;
+    const { tutorId } = req.params as { tutorId: string };;
+    const { reason }  = req.body as RejectTutorDto;
 
     await this.rejectTutorUseCase.execute({ tutorId, reason });
     res.status(200).json({ message: 'Tutor rejected.' });

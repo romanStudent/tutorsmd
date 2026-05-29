@@ -8,7 +8,7 @@
 //   • Presigned URL истекает → при компрометации ссылки данные не утекут навсегда
 //   • При смене CDN/бакета достаточно поменять IFileStorageFactory — данные в БД не трогаем
 
-import type { Prisma, PrismaClient }        from "../../../generated/prisma";
+import { PrismaClient, Prisma } from '@prisma/client';
 import type { IFileStorageFactory }          from "../../../application/ports/file/IFileStorageFactory";
 import type {
   ISupportChatRepository,
@@ -106,7 +106,7 @@ export class PrismaSupportChatRepository implements ISupportChatRepository {
     });
 
     // .reverse() - Конвертируем все сообщения обратно в asc
-    return Promise.all(messages.reverse().map((m) => this.messageToDto(m)));
+    return Promise.all(messages.reverse().map((m: any) => this.messageToDto(m)));
   }
 
   async findChatById(chatId: string): Promise<SupportChatDto | null> {
@@ -122,7 +122,7 @@ export class PrismaSupportChatRepository implements ISupportChatRepository {
       orderBy: { createdAt: "desc" },
       select:  chatSelect,
     });
-    return chats.map((c) => this.chatToDto(c));
+    return chats.map((c: any) => this.chatToDto(c));
   }
 
   // ── Mappers ───────────────────────────────────────────────────────────────

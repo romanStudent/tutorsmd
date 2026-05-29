@@ -1,1 +1,1 @@
-export * from './middleware/socketAuth';
+export * from '../../infrastructure/websocket/middleware/socketAuth';

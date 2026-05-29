@@ -1,5 +1,5 @@
 import { baseApi } from './baseApi';
-import type { User, LanguageCode } from '@entities/user/model/types';
+import type { LanguageCode } from '@entities/user/model/types';
 
 export interface UpdateProfileDto {
   name?:         string;

@@ -1,5 +1,5 @@
 import { IFeedbackRepository } from '../../../domain/repositories/IFeedbackRepository';
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 export class PrismaFeedbackRepository implements IFeedbackRepository {
   constructor(private readonly prisma: PrismaClient) {}

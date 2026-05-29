@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../../../../generated/prisma';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { ILessonRepository, FindLessonsFilter } from '../../../../domain/repositories/lesson/ILessonRepository';
 import { Lesson, LessonStatus, LessonType } from '../../../../domain/entities/Lesson';
 import { ConflictError } from '../../../../domain/errors/ConflictError';
@@ -26,7 +26,7 @@ export class PrismaLessonRepository implements ILessonRepository {
       orderBy: { scheduledAt: 'asc' },
     });
 
-    return records.map(r => this.toDomain(r));
+    return records.map((r: any) => this.toDomain(r));
   }
 
   async existsConflict(

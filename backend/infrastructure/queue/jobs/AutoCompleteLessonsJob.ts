@@ -1,5 +1,4 @@
-// infrastructure/queue/jobs/AutoCompleteLessonsJob.ts
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { CompleteLessonUseCase } from '../../../application/usecases/lesson/CompleteLessonUseCase';
 import { GenerateNextRegularLessonUseCase } from '../../../application/usecases/lesson/regular/GenerateNextRegularScheduleUseCase';
 

@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../../../../generated/prisma';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { IQuizRepository } from '../../../../domain/repositories/quiz/IQuizRepository';
 import { Quiz } from '../../../../domain/entities/quiz/Quiz';
 
@@ -18,7 +18,7 @@ export class PrismaQuizRepository implements IQuizRepository {
       where: { tutorId },
       orderBy: { createdAt: 'desc' },
     });
-    return records.map(r => this.toDomain(r));
+    return records.map((r: any) => this.toDomain(r));
   }
 
   async create(quiz: Quiz): Promise<void> {

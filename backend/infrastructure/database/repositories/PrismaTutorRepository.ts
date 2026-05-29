@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../../../generated/prisma';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { ITutorRepository, PendingTutorResult } from '../../../domain/repositories/ITutorRepository';
 import type { TutorPublicListFilters, TutorPublicListItem } from '../../../domain/repositories/ITutorRepository';
 import { Tutor, ApprovalStatus } from '../../../domain/entities/Tutor';
@@ -82,7 +82,7 @@ async findPublicList(
   ]);
 
   return {
-    tutors: records.map((r) => ({
+    tutors: records.map((r: any) => ({
       id:             r.id,
       userId:         r.userId,
       name:           r.user.name,

@@ -124,7 +124,6 @@ export default function AdminMessagesPage() {
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
                   {messages.map((msg) => {
-                    const isAdmin = msg.senderRole === 'admin';
                     const isOwn   = msg.senderId === userId;
                     return (
                       <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>

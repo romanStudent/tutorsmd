@@ -101,10 +101,7 @@ web_modules/
 # dot environment variable files
 
 .env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+.env.*
 
 # parcel-bundler cache (https://parceljs.org/)
 
@@ -173,3 +170,10 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
+
+
+"backend старая копия/"
+chatForUsers/
+*.sql
+*.docx
+ssl/

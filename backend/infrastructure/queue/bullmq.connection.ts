@@ -4,7 +4,12 @@
 
 import IORedis from 'ioredis';
 
-const REDIS_URL = process.env.REDIS_URL ?? 'redis://localhost:6379';
+if (!process.env.REDIS_URL) {
+  throw new Error("REDIS_URL is not defined");
+}
+
+const REDIS_URL = process.env.REDIS_URL;
+
 
 // BullMQ рекомендует maxRetriesPerRequest: null - иначе воркер падает при временной недоступности Redis
 export const bullmqConnection = new IORedis(REDIS_URL, {

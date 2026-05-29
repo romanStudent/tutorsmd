@@ -1,11 +1,10 @@
-
-// Заменяет старый Language компонент
 import { useTranslation } from 'react-i18next';
+import LOCALES from '@shared/locales/Locales';
 
 const LANGUAGES = [
-  { code: 'de', label: 'DE' },
-  { code: 'ru', label: 'RU' },
-  { code: 'en', label: 'EN' },
+  { code: LOCALES.GERMAN,  label: 'DE' },
+  { code: LOCALES.RUSSIAN, label: 'RU' },
+  { code: LOCALES.ENGLISH, label: 'EN' },
 ] as const;
 
 export const LanguageSwitcher = () => {

@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../../../../generated/prisma';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { IRegularScheduleRepository } from '../../../../domain/repositories/lesson/IRegularScheduleRepository';
 import { RegularSchedule, CancelledByRole } from '../../../../domain/entities/RegularSchedule';
 
@@ -21,7 +21,7 @@ export class PrismaRegularScheduleRepository implements IRegularScheduleReposito
       where: { clientId, tutorId },
       orderBy: { createdAt: 'desc' },
     });
-    return records.map(r => this.toDomain(r));
+    return records.map((r: any) => this.toDomain(r));
   }
 
   async findActiveByTutor(tutorId: string): Promise<RegularSchedule[]> {
@@ -29,7 +29,7 @@ export class PrismaRegularScheduleRepository implements IRegularScheduleReposito
       where:   { tutorId, isActive: true },
       orderBy: { dayOfWeek: 'asc' },
     });
-    return records.map(r => this.toDomain(r));
+    return records.map((r: any) => this.toDomain(r));
   }
 
   async findActiveByClient(clientId: string): Promise<RegularSchedule[]> {
@@ -37,7 +37,7 @@ export class PrismaRegularScheduleRepository implements IRegularScheduleReposito
       where:   { clientId, isActive: true },
       orderBy: { dayOfWeek: 'asc' },
     });
-    return records.map(r => this.toDomain(r));
+    return records.map((r: any) => this.toDomain(r));
   }
 
   async create(schedule: RegularSchedule): Promise<void> {

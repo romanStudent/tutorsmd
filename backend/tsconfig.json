@@ -1,24 +1,37 @@
 {
   "compilerOptions": {
-    "target": "ES2022",                      // Версия ECMAScript для выхода (последняя версия)
-    "module": "node16",                      // Использование модулей ECMAScript
-    "moduleResolution": "node16",              // Разрешение модулей в стиле Node.js
-    "esModuleInterop": true,                 // Совместимость с CommonJS модулями
-    "skipLibCheck": true,                    // Пропуск проверки типов библиотек для ускорения компиляции
-    "forceConsistentCasingInFileNames": true, // Обязательная согласованность регистров в именах файлов
-    "strict": true,                          // Включение строгого режима для более безопасного TypeScript
-    // "noEmit": true,                          // Отключение вывода файлов компилятором
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
     "outDir": "./dist",
     "rootDir": "./",
-    "resolveJsonModule": true,               // Разрешение импорта JSON файлов
+    "resolveJsonModule": true,
     "lib": ["ES2022"],
     "types": ["node"],
     "typeRoots": ["./types", "./node_modules/@types"]
-
   },
-  "include": ["./**/*.ts", "./types/**/*.d.ts"],    
-  "exclude": ["node_modules", "dist"],        // Исключение папок node_modules и dist
+  "include": [
+    "./**/*.ts",
+    "./types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "infrastructure/database/prisma/migrations/v0__create_users.ts",
+    "infrastructure/database/prisma/migrations/v1__create_user_roles.ts",
+    "infrastructure/database/prisma/migrations/v2__migrate_clients_to_users.ts",
+    "infrastructure/database/prisma/migrations/v3__migrate_tutors_to_users.ts",
+    "infrastructure/database/prisma/migrations/v4__remove_duplicate_fields_from_clients.ts",
+    "infrastructure/database/prisma/migrations/v5__remove-duplicate_from_tutors.ts",
+    "infrastructure/database/prisma/migrations/v6__rebuild_bookings.ts",
+    "prisma.config.ts"
+  ],
   "ts-node": {
-    "files": true    // заставляет ts-node читать "include" и typeRoots
+    "files": true,
+    "esm": false
   }
 }

@@ -4,7 +4,7 @@ services:
     image: redis:7
     container_name: tutors-redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy noeviction  # allkeys-lru удаляет ключи при нехватке памяти — BullMQ задания могут потеряться. noeviction — возвращает ошибку вместо удаления.
 
     expose:
       - "6379"
@@ -99,7 +99,7 @@ services:
       redis:
         condition: service_healthy
     env_file:
-      - .env
+      - ./backend/.env
     environment:
       NODE_ENV: production
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?connection_limit=10&pool_timeout=30"
@@ -135,6 +135,8 @@ services:
       - "80"
     networks:
       - tutors-network
+    env_file:
+      - ./frontend/.env.production
     deploy:
       resources:
         limits:

@@ -2,10 +2,10 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
+// generator + datasource — модели в отдельных файлах рядом
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../../../../generated/prisma"
 }
 
 datasource db {

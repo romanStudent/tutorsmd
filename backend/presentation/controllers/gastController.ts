@@ -1,6 +1,7 @@
+/*
 import { Request, Response } from "express";
 import { Op } from "sequelize";
-import { encrypt } from "../../infrastructure/encryption/encryption";
+import { encrypt } from "../../infrastructure/security/Aes256GcmDataEncrypt";
 import { v4 as uuidv4 } from "uuid";
 import Gast from '../../models/gastModel';
 import ApiError from "../../domain/errors/apiError";
@@ -123,3 +124,4 @@ export class GastController {
         }
     }
 }
+*/

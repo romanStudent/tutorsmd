@@ -1,0 +1,20 @@
+{
+  "title": "Support",
+  "subtitle": "We usually respond within 24 hours.",
+  "emptyState": "Write to us — we are happy to help!",
+  "loadMore": "Load older messages",
+  "loading": "Loading...",
+  "senderLabel": {
+    "support": "Support"
+  },
+  "input": {
+    "placeholder": "Message...",
+    "attachTitle": "Attach file",
+    "send": "↑",
+    "sending": "..."
+  },
+  "file": {
+    "done": "✓",
+    "error": "✗"
+  }
+}

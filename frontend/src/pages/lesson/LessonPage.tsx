@@ -1,7 +1,6 @@
 // Бывший LessonLive
 import { useParams, Navigate } from 'react-router-dom';
 import { useState }  from 'react';
-import { useSelector } from 'react-redux';
 import { useGetLessonQuery } from '@shared/api/lessonApi';
 import { Spinner } from '@shared/index';
 import { VideoRoom }      from '@widgets/lesson/VideoRoom';
@@ -17,18 +16,7 @@ export default function LessonPage() {
 
   // WebRTC state — только локальный, не нужен глобально
   const [localStream, setLocalStream]   = useState<MediaStream | null>(null);
-  const [peers, setPeers]               = useState<Map<string, RTCPeerConnection>>(new Map());
   const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());
-  const [activeTab, setActiveTab]       = useState<'chat' | 'whiteboard'>('chat');
-
-  const { data: lesson, isLoading } = useGetLessonQuery(
-    lessonId ?? '',
-    { skip: !lessonId },
-  );
-
-  // VideoRoom props
-  const [localStream,   setLocalStream]   = useState<MediaStream | null>(null);
-  const [remoteStreams, setRemoteStreams]  = useState<Map<string, MediaStream>>(new Map());
 
   // Sidebar tab
   const [activeTab, setActiveTab] = useState<Tab>('chat');

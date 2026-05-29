@@ -1,2 +1,15 @@
+node_modules/
+.env
+.env.*
+dist/
+generated/
+ssl/
+*.key
+*.pem
 
-.codegpt
+backend старая копия/
+chatForUsers/
+
+*.docx
+*.zip
+.codegpt/
