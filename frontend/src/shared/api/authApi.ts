@@ -167,9 +167,6 @@ export const authApi = baseApi.injectEndpoints({
         }),
     }),
 
-// Добавить в экспорты:
-// useResendVerificationMutation,
-
     // GET /auth/sessions
     getSessions: build.query<{ sessions: Session[] }, void>({
       query: () => '/auth/sessions',
@@ -218,4 +215,5 @@ export const {
   useGetSessionsQuery,
   useRevokeAllSessionsMutation,
   useRevokeSessionMutation,
+  useResendVerificationMutation
 } = authApi;

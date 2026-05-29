@@ -1,0 +1,21 @@
+{
+  "status": {
+    "pending":             "Pending",
+    "pending_reschedule":  "Reschedule pending",
+    "confirmed":           "Confirmed",
+    "in_progress":         "In progress",
+    "completed":           "Completed",
+    "cancelled_by_client": "Cancelled by student",
+    "cancelled_by_tutor":  "Cancelled by tutor",
+    "no_show_client":      "Student no-show",
+    "no_show_tutor":       "Tutor no-show"
+  },
+  "type": {
+    "trial":   "Trial",
+    "regular": "Regular"
+  },
+  "join":    "Join",
+  "cancel":  "Cancel",
+  "confirm": "Confirm",
+  "leave":   "Leave"
+}

@@ -1,0 +1,21 @@
+{
+  "status": {
+    "pending":             "Запрос",
+    "pending_reschedule":  "Перенос",
+    "confirmed":           "Подтверждён",
+    "in_progress":         "Идёт",
+    "completed":           "Завершён",
+    "cancelled_by_client": "Отменён (ученик)",
+    "cancelled_by_tutor":  "Отменён (учитель)",
+    "no_show_client":      "Ученик не пришёл",
+    "no_show_tutor":       "Учитель не пришёл"
+  },
+  "type": {
+    "trial":   "Пробный",
+    "regular": "Регулярный"
+  },
+  "join":    "Присоединиться",
+  "cancel":  "Отменить",
+  "confirm": "Подтвердить",
+  "leave":   "Выйти"
+}

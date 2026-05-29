@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormData } from "./schema";
-import { useGetTutorProfileQuery, useUpdateTutorProfileMutation } from '@shared/api/index';
-import { Spinner } from '@shared/ui/index';
+import { FormData, schema } from "./schema";
+import { useGetTutorProfileQuery, useUpdateTutorProfileMutation } from '@shared/api/tutor/tutorApi';
+import { Spinner } from '@shared/index';
 
 
 export const TutorProfileForm = () => {

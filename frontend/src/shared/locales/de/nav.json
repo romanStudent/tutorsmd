@@ -1,0 +1,12 @@
+{
+  "tutors":    "Lehrer",
+  "subjects":  "Fächer",
+  "prices":    "Preise",
+  "faq":       "Fragen",
+  "dashboard": "Mein Bereich",
+  "lessons":   "Unterrichte",
+  "schedule":  "Stundenplan",
+  "messages":  "Nachrichten",
+  "support":   "Support",
+  "settings":  "Einstellungen"
+}

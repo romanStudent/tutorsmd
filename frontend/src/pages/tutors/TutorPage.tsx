@@ -1,14 +1,13 @@
 
 import { useParams, Link } from 'react-router-dom';
-import { useGetTutorByIdQuery, useGetTutorSlotsQuery } from '@shared/api/tutorPublicApi';
+import { useGetTutorByIdQuery, useGetTutorSlotsQuery } from '@shared/api/tutor/tutorPublicApi';
 import { useSelector } from 'react-redux';
 import { selectIsAuthenticated, selectActiveRole } from '@entities/user/model/selectors';
 import { Layout } from '@widgets/layout/ui/Layout';
-import { Spinner } from '@shared/ui/index';
+import { Spinner } from '@shared/index';
 import { BookTrialButton } from './components/BookTrialButton';
 import { TutorSchedule }  from './components/TutorSchedule';
 
-const DAY_NAMES = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 
 export default function TutorPage() {
   const { tutorId } = useParams<{ tutorId: string }>();
@@ -67,29 +66,7 @@ export default function TutorPage() {
         )}
 
         {/* Расписание */}
-        {slots.length > 0 && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="font-semibold text-gray-900 mb-4">Verfügbarkeit</h2>
-            <div className="grid grid-cols-7 gap-1 text-center">
-              {DAY_NAMES.map((d) => (
-                <div key={d} className="text-xs font-medium text-gray-400 py-1">{d}</div>
-              ))}
-              {DAY_NAMES.map((_, day) => {
-                const daySlots = slots.filter(s => s.dayOfWeek === day && s.isActive);
-                return (
-                  <div key={day} className="space-y-1">
-                    {daySlots.map(s => (
-                      <div key={s.id} className="text-xs bg-blue-50 text-blue-700
-                        rounded px-1 py-0.5">
-                        {s.startTime}
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        <TutorSchedule slots={slots} />
 
         {/* CTA */}
         <div className="bg-blue-600 rounded-2xl p-6 text-white text-center">

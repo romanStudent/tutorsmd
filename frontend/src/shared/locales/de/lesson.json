@@ -1,0 +1,21 @@
+{
+  "status": {
+    "pending":             "Anfrage",
+    "pending_reschedule":  "Umplanung",
+    "confirmed":           "Bestätigt",
+    "in_progress":         "Läuft",
+    "completed":           "Abgeschlossen",
+    "cancelled_by_client": "Storniert (Schüler)",
+    "cancelled_by_tutor":  "Storniert (Lehrer)",
+    "no_show_client":      "Nicht erschienen",
+    "no_show_tutor":       "Lehrer nicht erschienen"
+  },
+  "type": {
+    "trial":   "Probestunde",
+    "regular": "Regulär"
+  },
+  "join":    "Beitreten",
+  "cancel":  "Absagen",
+  "confirm": "Bestätigen",
+  "leave":   "Verlassen"
+}

@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 export const TutorFilters = () => {
   const [params, setParams] = useSearchParams();

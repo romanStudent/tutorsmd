@@ -7,21 +7,20 @@
 import { Server as SocketIOServer, Socket } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
 import http from "http";
-import { PrismaClient } from "../../generated/prisma";
+import { PrismaClient } from '@prisma/client';
 import { IFileStorageFactory } from "../../application/ports/file/IFileStorageFactory";
 import { IAccessTokenFactory }               from "../../application/ports/token/IAccessTokenFactory";
 import { SendSupportChatMessageUseCase }     from "../../application/usecases/support-chat/SendSupportChatMessageUseCase";
-// import { GetSupportChatHistoryUseCase }      from "../../application/usecases/chat/GetSupportChatHistoryUseCase";
+import { GetSupportChatHistoryUseCase }      from "../../application/usecases/support-chat/GetSupportChatHistoryUseCase";
+import { JoinSupportChatUseCase } from "../../application/usecases/support-chat/JoinSupportChatUseCase";
 
-import { socketAuthMiddleware }  from "../../presentation/websocket/middleware/socketAuth";
-import { createSupportChatHandler } from "../../presentation/websocket/handlers/support-chat/supportChatHandler";
-import { createLessonHandler }   from "../../presentation/websocket/handlers/lesson/LessonHandler";
-import { createBoardHandler }    from "../../presentation/websocket/handlers/board/BoardHandler";
-import { createWebRtcHandler }   from "../../presentation/websocket/handlers/web-rtc/WebRtcHandler";
+import { socketAuthMiddleware }  from "./middleware/socketAuth";
+import { createSupportChatHandler } from "./handlers/support-chat/supportChatHandler";
+import { createLessonHandler }   from "./handlers/lesson/LessonHandler";
+import { createBoardHandler }    from "./handlers/board/BoardHandler";
+import { createWebRtcHandler }   from "./handlers/web-rtc/WebRtcHandler";
 
 import redis, { subClient } from "../redis/redisClient";
-import { GetSupportChatHistoryUseCase } from "../../application/usecases/support-chat/GetSupportChatHistoryUsecase";
-import { JoinSupportChatUseCase } from "../../application/usecases/support-chat/JoinSupportChatUseCase";
 import { CompleteLessonUseCase } from "../../application/usecases/lesson/CompleteLessonUseCase";
 
 // ── Конфиг из env ─────────────────────────────────────────────────────────────
@@ -64,7 +63,7 @@ const resolveIp = (
  * Redis-based rate limit для WS handshake (per IP).
  * INCR + EXPIRE — атомарно, работает в кластере.
  *
- * @returns true — лимит превышен, соединение нужно отклонить.
+ * return true — лимит превышен, соединение нужно отклонить.
  */
 const checkHandshakeLimit = async (ip: string): Promise<boolean> => {
   

@@ -1,0 +1,24 @@
+import { z } from 'zod';
+export const loginSchema = z.object({
+    email: z.string().email('Ungültige E-Mail-Adresse'),
+    password: z.string().min(1, 'Passwort ist erforderlich'),
+    activeRole: z.enum(['client', 'tutor']),
+});
+export const registerSchema = z.object({
+    name: z.string().min(2, 'Name zu kurz').max(100),
+    surname: z.string().min(2, 'Nachname zu kurz').max(100),
+    email: z.string().email('Ungültige E-Mail-Adresse'),
+    password: z.string()
+        .min(15, 'Mindestens 15 Zeichen')
+        .max(64, 'Maximal 64 Zeichen'),
+    confirmPassword: z.string(),
+    timezone: z.string().optional(),
+    languageCode: z.enum(['en', 'de', 'ru']).default('de'),
+}).refine((data) => data.password === data.confirmPassword, { message: 'Passwörter stimmen nicht überein', path: ['confirmPassword'] });
+export const forgotPasswordSchema = z.object({
+    email: z.string().email('Ungültige E-Mail-Adresse'),
+});
+export const resetPasswordSchema = z.object({
+    newPassword: z.string().min(15).max(64),
+    confirmPassword: z.string(),
+}).refine((d) => d.newPassword === d.confirmPassword, { message: 'Passwörter stimmen nicht überein', path: ['confirmPassword'] });

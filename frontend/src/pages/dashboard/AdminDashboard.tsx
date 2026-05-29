@@ -5,15 +5,16 @@ import { LessonCard } from '@widgets/lesson-card/index';
 import { Link } from 'react-router-dom';
 
 export const AdminDashboard = () => {
-  const { data, isLoading } = useGetPendingTutorsQuery();
+  const { data: tutorsData, isLoading: tutorsLoading } = useGetPendingTutorsQuery();
   const { data: lessonsData, isLoading: lessonsLoading } = useGetUserLessonsQuery({});
 
   const [approve, { isLoading: approving }] = useApproveTutorMutation();
   const [reject,  { isLoading: rejecting }] = useRejectTutorMutation();
 
-  const pending = data?.tutors ?? [];
-  const allLessons       = lessonsData?.lessons ?? [];
-  const pendingLessons   = allLessons.filter((l: Lesson) => l.status === 'pending');
+  const pendingTutors = tutorsData?.tutors ?? [];
+  const allLessons = lessonsData?.lessons ?? [];
+
+  const pendingLessons = allLessons.filter((l: Lesson) => l.status === 'pending');
   const confirmedLessons = allLessons.filter((l: Lesson) => l.status === 'confirmed');
 
 
@@ -24,18 +25,18 @@ export const AdminDashboard = () => {
 
       <section>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Nachhilfelehrer zur Prüfung ({pending.length})
+          Nachhilfelehrer zur Prüfung ({pendingTutors.length})
         </h2>
 
-        {isLoading ? (
+        {tutorsLoading ? (
           <Spinner />
-        ) : pending.length === 0 ? (
+        ) : pendingTutors.length === 0 ? (
           <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-8 text-center">
             <p className="text-gray-400 text-sm">Keine ausstehenden Anträge.</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {pending.map((tutor) => (
+            {pendingTutors.map((tutor) => (
               <div
                 key={tutor.tutorId}
                 className="bg-white rounded-2xl border border-gray-100 p-5
@@ -113,7 +114,7 @@ export const AdminDashboard = () => {
              </Link>
            </div>
    
-           {isLoading ? (
+           {lessonsLoading ? (
              <Spinner />
            ) : confirmedLessons.length === 0 ? (
              <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-8 text-center">

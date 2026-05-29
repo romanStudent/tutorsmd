@@ -7,6 +7,8 @@ import { Layout } from '@widgets/layout/ui/Layout';
 import { Spinner } from '@shared/index';
 import { io, Socket } from 'socket.io-client';
 import type { SupportMessage, SupportAttachment } from '@shared/api/supportApi';
+import { useTranslation } from 'react-i18next';
+
 
 
 interface PendingFile {
@@ -61,6 +63,8 @@ export default function SupportChatPage() {
   const [sending, setSending] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  const { t } = useTranslation('support');
 
   // ─── Заполняем историю из БД ───────────────────────────────
   useEffect(() => {
@@ -227,22 +231,21 @@ export default function SupportChatPage() {
   if (isLoading) return <Layout><Spinner /></Layout>;
 
   return (
+    
     <Layout>
-      <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col"
-        style={{ height: 'calc(100vh - 80px)' }}>
-
+      <div
+        className="max-w-2xl mx-auto px-4 py-8 flex flex-col"
+        style={{ height: 'calc(100vh - 80px)' }}
+      >
         {/* Header */}
         <div className="bg-white rounded-t-2xl border border-gray-100 px-5 py-4 flex-shrink-0">
-          <h1 className="font-semibold text-gray-900">Support</h1>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Wir antworten in der Regel innerhalb von 24 Stunden.
-          </p>
+          <h1 className="font-semibold text-gray-900">{t('title')}</h1>
+          <p className="text-xs text-gray-400 mt-0.5">{t('subtitle')}</p>
         </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto bg-white border-x border-gray-100 px-4 py-3 space-y-3">
 
-          {/* Load more */}
           {hasMore && (
             <div className="text-center">
               <button
@@ -250,14 +253,14 @@ export default function SupportChatPage() {
                 disabled={loadingMore}
                 className="text-xs text-blue-600 hover:underline disabled:opacity-50"
               >
-                {loadingMore ? 'Laden...' : 'Ältere Nachrichten laden'}
+                {loadingMore ? t('loading') : t('loadMore')}
               </button>
             </div>
           )}
 
           {messages.length === 0 && (
             <p className="text-center text-sm text-gray-400 py-8">
-              Schreiben Sie uns — wir helfen Ihnen gerne!
+              {t('emptyState')}
             </p>
           )}
 
@@ -271,15 +274,17 @@ export default function SupportChatPage() {
                     ? 'bg-blue-600 text-white rounded-br-sm'
                     : isAdmin
                       ? 'bg-orange-50 text-gray-900 border border-orange-200 rounded-bl-sm'
-                      : 'bg-gray-100 text-gray-900 rounded-bl-sm'}`}>
-
+                      : 'bg-gray-100 text-gray-900 rounded-bl-sm'}`}
+                >
                   {!isOwn && (
                     <p className="text-xs font-medium opacity-60">
-                      {isAdmin ? 'Support' : msg.senderRole}
+                      {isAdmin ? t('senderLabel.support') : msg.senderRole}
                     </p>
                   )}
 
-                  {msg.text && <p className="whitespace-pre-wrap break-words">{msg.text}</p>}
+                  {msg.text && (
+                    <p className="whitespace-pre-wrap break-words">{msg.text}</p>
+                  )}
 
                   {msg.attachments?.length > 0 && (
                     <div className="space-y-1 mt-1">
@@ -306,17 +311,27 @@ export default function SupportChatPage() {
         {pendingFiles.length > 0 && (
           <div className="bg-white border-x border-gray-100 px-4 py-2 flex flex-wrap gap-2">
             {pendingFiles.map((pf, i) => (
-              <div key={i}
-                className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2 py-1 text-xs">
+              <div
+                key={i}
+                className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2 py-1 text-xs"
+              >
                 <span className="truncate max-w-[120px]">{pf.file.name}</span>
                 {pf.status === 'uploading' && (
                   <span className="text-blue-600">{pf.progress}%</span>
                 )}
-                {pf.status === 'done' && <span className="text-green-600">✓</span>}
-                {pf.status === 'error' && <span className="text-red-500">✗</span>}
+                {pf.status === 'done' && (
+                  <span className="text-green-600">{t('file.done')}</span>
+                )}
+                {pf.status === 'error' && (
+                  <span className="text-red-500">{t('file.error')}</span>
+                )}
                 {pf.status === 'pending' && (
-                  <button onClick={() => removePending(i)}
-                    className="text-gray-400 hover:text-gray-600 ml-0.5">✕</button>
+                  <button
+                    onClick={() => removePending(i)}
+                    className="text-gray-400 hover:text-gray-600 ml-0.5"
+                  >
+                    ✕
+                  </button>
                 )}
               </div>
             ))}
@@ -327,12 +342,11 @@ export default function SupportChatPage() {
         <div className="bg-white rounded-b-2xl border border-gray-100 px-4 py-3
           flex items-end gap-2 flex-shrink-0">
 
-          {/* File button */}
           <button
             onClick={() => fileInputRef.current?.click()}
             className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100
               transition flex-shrink-0"
-            title="Datei anhängen"
+            title={t('input.attachTitle')}
           >
             📎
           </button>
@@ -345,14 +359,13 @@ export default function SupportChatPage() {
             accept="image/*,.pdf,.doc,.docx,.txt"
           />
 
-          {/* Text input */}
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
             }}
-            placeholder="Nachricht..."
+            placeholder={t('input.placeholder')}
             rows={1}
             className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm
               focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none
@@ -360,17 +373,15 @@ export default function SupportChatPage() {
             style={{ minHeight: '40px' }}
           />
 
-          {/* Send button */}
           <button
             onClick={send}
             disabled={(!text.trim() && !pendingFiles.length) || sending}
             className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300
               text-white px-4 py-2 rounded-xl transition text-sm font-medium flex-shrink-0"
           >
-            {sending ? '...' : '↑'}
+            {sending ? t('input.sending') : t('input.send')}
           </button>
         </div>
-
       </div>
     </Layout>
   );

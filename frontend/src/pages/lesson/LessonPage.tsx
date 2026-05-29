@@ -1,7 +1,6 @@
 // Бывший LessonLive
 import { useParams, Navigate } from 'react-router-dom';
 import { useState }  from 'react';
-import { useSelector } from 'react-redux';
 import { useGetLessonQuery } from '@shared/api/lessonApi';
 import { Spinner } from '@shared/index';
 import { VideoRoom }      from '@widgets/lesson/VideoRoom';

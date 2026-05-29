@@ -1,0 +1,17 @@
+{
+  "loading":   "Wird geladen...",
+  "error":     "Fehler",
+  "retry":     "Erneut versuchen",
+  "notFound":  "Nicht gefunden",
+  "back":      "Zurück",
+  "close":     "Schließen",
+  "send":      "Senden",
+  "cancel":    "Abbrechen",
+  "confirm":   "Bestätigen",
+  "save":      "Speichern",
+  "saving":    "Wird gespeichert...",
+  "edit":      "Bearbeiten",
+  "delete":    "Löschen",
+  "search":    "Suchen",
+  "noResults": "Keine Ergebnisse"
+}
