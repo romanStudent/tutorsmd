@@ -1,62 +1,17 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-const SUBJECTS = {
-  de: [
-    {
-      name:  'Mathematik',
-      icon:  '📐',
-      levels: ['Klassen 1–13', 'Klausuren', 'Abitur'],
-      desc:  'Von Grundschulmathematik bis zum Abitur — klare Erklärungen und praktische Übungen.',
-    },
-    {
-      name:  'Deutsch',
-      icon:  '📖',
-      levels: ['A0–B2', 'Telc', 'DSH', 'Goethe'],
-      desc:  'Grammatik, Konversation und Prüfungsvorbereitung — für alle Niveaus.',
-    },
-  ],
-  ru: [
-    {
-      name:  'Математика',
-      icon:  '📐',
-      levels: ['1–13 класс', 'Экзамены', 'Абитур'],
-      desc:  'От школьной математики до абитура — понятные объяснения и практика.',
-    },
-    {
-      name:  'Немецкий язык',
-      icon:  '📖',
-      levels: ['A0–B2', 'Telc', 'DSH', 'Goethe'],
-      desc:  'Грамматика, разговорная практика и подготовка к экзаменам.',
-    },
-  ],
-  en: [
-    {
-      name:  'Mathematics',
-      icon:  '📐',
-      levels: ['Grades 1–13', 'Exams', 'Abitur'],
-      desc:  'From school math to Abitur — clear explanations and practice.',
-    },
-    {
-      name:  'German',
-      icon:  '📖',
-      levels: ['A0–B2', 'Telc', 'DSH', 'Goethe'],
-      desc:  'Grammar, conversation and exam preparation — for all levels.',
-    },
-  ],
-};
-
-const TITLES = {
-  de: { title: 'Fächer', cta: 'Jetzt Probestunde buchen' },
-  ru: { title: 'Предметы', cta: 'Записаться на пробный урок' },
-  en: { title: 'Subjects', cta: 'Book a trial lesson' },
-};
+interface SubjectItem {
+  name:   string;
+  icon:   string;
+  levels: string[];
+  desc:   string;
+}
 
 export const SubjectsSection = () => {
-  const { i18n } = useTranslation();
-  const lang     = i18n.language as 'de' | 'ru' | 'en';
-  const subjects = SUBJECTS[lang] ?? SUBJECTS.de;
-  const t        = TITLES[lang] ?? TITLES.de;
+  const { t } = useTranslation('home');
+
+  const subjects = t('subjects.items', { returnObjects: true }) as SubjectItem[];
 
   return (
     <section
@@ -68,22 +23,22 @@ export const SubjectsSection = () => {
       }}
     >
       <div className="max-w-5xl mx-auto px-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">{t.title}</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-8 text-center">
+          {t('subjects.title')}
+        </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {subjects.map((subject) => (
             <div
               key={subject.name}
-              className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
+              className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm"
             >
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-4xl">{subject.icon}</span>
-                <h3 className="text-xl font-bold text-gray-900">{subject.name}</h3>
+                <h3 className="text-lg font-semibold text-slate-900">{subject.name}</h3>
               </div>
 
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                {subject.desc}
-              </p>
+              <p className="text-slate-500 text-sm leading-relaxed mb-4">{subject.desc}</p>
 
               <div className="flex flex-wrap gap-2">
                 {subject.levels.map((level) => (
@@ -103,10 +58,11 @@ export const SubjectsSection = () => {
         <div className="text-center mt-10">
           <Link
             to="/tutors"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white
-              font-semibold px-8 py-3 rounded-xl transition text-sm"
+            className="inline-block bg-orange-500 hover:bg-orange-600 text-white
+              font-semibold px-8 py-3 rounded-xl transition text-sm
+              shadow-lg shadow-orange-200"
           >
-            {t.cta}
+            {t('subjects.cta')}
           </Link>
         </div>
       </div>
