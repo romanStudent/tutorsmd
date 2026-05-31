@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import type { Resolver } from 'react-hook-form';
@@ -5,25 +6,26 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useRegisterClientMutation, useRegisterTutorMutation } from '@shared/api/authApi';
 import { registerSchema, type RegisterFormData } from '@features/auth/schemas';
+import AuthLayout from '@widgets/auth/ui/AuthLayout';
+import { authInputClass, authButtonClass } from '@shared/ui/auth/styles';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   role?: 'client' | 'tutor';
 }
 
 export default function RegisterPage({ role = 'client' }: Props) {
+  const { t } = useTranslation('auth');
+
   const [registerClient, { isLoading: loadingClient }] = useRegisterClientMutation();
   const [registerTutor,  { isLoading: loadingTutor }]  = useRegisterTutorMutation();
   const isLoading = loadingClient || loadingTutor;
 
   const [serverError, setServerError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess]         = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema) as Resolver<RegisterFormData>,   // заглушка
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema) as Resolver<RegisterFormData>,
     defaultValues: {
       languageCode: 'de',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -41,157 +43,176 @@ export default function RegisterPage({ role = 'client' }: Props) {
       }
       setSuccess(true);
     } catch (err: any) {
-      setServerError(
-        err?.data?.message ?? 'Registrierung fehlgeschlagen.',
-      );
+      setServerError(err?.data?.message ?? t('errors.registerFailed'));
     }
   };
 
+  const isTutor = role === 'tutor';
+
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8 text-center">
-          <div className="text-5xl mb-4">✉️</div>
-          <h2 className="text-xl font-bold mb-2">Bestätigungs-E-Mail gesendet</h2>
-          <p className="text-gray-600 text-sm">
-            Bitte überprüfen Sie Ihr Postfach und klicken Sie auf den Aktivierungslink.
-          </p>
-          <Link to="/login" className="mt-6 inline-block text-blue-600 hover:underline text-sm">
-            Zur Anmeldung
+      <AuthLayout
+        title={t('registerPage.successTitle')}
+        subtitle={t('registerPage.successText')}
+      >
+        <div className="flex flex-col items-center gap-5 py-2">
+          <div className="w-16 h-16 rounded-full bg-green-50 border border-green-200
+            flex items-center justify-center text-3xl">
+            ✉️
+          </div>
+          <Link
+            to="/login"
+            className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+          >
+            {t('registerPage.toLogin')}
           </Link>
         </div>
-      </div>
+      </AuthLayout>
     );
   }
 
-  const isTutor = role === 'tutor';
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
-
-        <h1 className="text-2xl font-bold text-center mb-2">
-          {isTutor ? 'Als Nachhilfelehrer registrieren' : 'Konto erstellen'}
-        </h1>
-        <p className="text-center text-sm text-gray-500 mb-6">
+    <>
+      <Helmet>
+        <title>
           {isTutor
-            ? 'Ihr Profil wird nach Prüfung durch uns freigeschaltet.'
-            : 'Kostenlos und ohne Kreditkarte.'}
-        </p>
+            ? `${t('registerPage.titleTutor')} | TutorsMD`
+            : `${t('registerPage.titleClient')} | TutorsMD`}
+        </title>
+        <meta name="description" content="Erstellen Sie kostenlos ein Konto bei TutorsMD." />
+        <meta name="robots" content="noindex,nofollow" />
+      </Helmet>
 
+      <AuthLayout
+        maxWidth="lg"
+        title={isTutor ? t('registerPage.titleTutor') : t('registerPage.titleClient')}
+        subtitle={isTutor ? t('registerPage.subtitleTutor') : t('registerPage.subtitleClient')}
+      >
         {/* Role switcher */}
-        <div className="flex rounded-lg overflow-hidden border mb-6 text-sm">
+        <div className="mb-6 flex rounded-2xl bg-slate-100 p-1">
           <Link
             to="/register"
-            className={`flex-1 text-center py-2 font-medium transition
-              ${!isTutor ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`flex-1 rounded-xl py-2.5 text-center text-sm font-medium transition-all
+              ${!isTutor
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'}`}
           >
-            Schüler
+            {t('student')}
           </Link>
           <Link
             to="/register/tutor"
-            className={`flex-1 text-center py-2 font-medium transition
-              ${isTutor ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`flex-1 rounded-xl py-2.5 text-center text-sm font-medium transition-all
+              ${isTutor
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'}`}
           >
-            Nachhilfelehrer
+            {t('tutor')}
           </Link>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-
-          {/* Name + Surname */}
-          <div className="grid grid-cols-2 gap-3">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Vorname</label>
+              <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-slate-700">
+                {t('firstName')}
+              </label>
               <input
+                id="name"
                 type="text"
                 autoComplete="given-name"
-                className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2
-                  ${errors.name ? 'border-red-500 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
+                className={authInputClass}
                 {...register('name')}
               />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+              {errors.name && (
+                <p className="mt-1.5 text-xs text-red-500">{errors.name.message}</p>
+              )}
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nachname</label>
+              <label htmlFor="surname" className="mb-1.5 block text-sm font-medium text-slate-700">
+                {t('lastName')}
+              </label>
               <input
+                id="surname"
                 type="text"
                 autoComplete="family-name"
-                className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2
-                  ${errors.surname ? 'border-red-500 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
+                className={authInputClass}
                 {...register('surname')}
               />
-              {errors.surname && <p className="text-red-500 text-xs mt-1">{errors.surname.message}</p>}
+              {errors.surname && (
+                <p className="mt-1.5 text-xs text-red-500">{errors.surname.message}</p>
+              )}
             </div>
           </div>
 
-          {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
-            <input
-              type="email"
-              autoComplete="email"
-              className={`w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2
-                ${errors.email ? 'border-red-500 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
-              {...register('email')}
-            />
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Passwort <span className="text-gray-400 font-normal">(mind. 15 Zeichen)</span>
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">
+              {t('email')}
             </label>
             <input
-              type="password"
-              autoComplete="new-password"
-              className={`w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2
-                ${errors.password ? 'border-red-500 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
-              {...register('password')}
+              id="email"
+              type="email"
+              autoComplete="email"
+              className={authInputClass}
+              {...register('email')}
             />
-            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-          </div>
-
-          {/* Confirm password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Passwort bestätigen</label>
-            <input
-              type="password"
-              autoComplete="new-password"
-              className={`w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2
-                ${errors.confirmPassword ? 'border-red-500 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
-              {...register('confirmPassword')}
-            />
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>
+            {errors.email && (
+              <p className="mt-1.5 text-xs text-red-500">{errors.email.message}</p>
             )}
           </div>
 
-          {/* Server error */}
+          <div>
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-700">
+              {t('password')}{' '}
+              <span className="text-slate-400 font-normal">{t('registerPage.passwordHint')}</span>
+            </label>
+            <input
+              id="password"
+              type="password"
+              autoComplete="new-password"
+              className={authInputClass}
+              {...register('password')}
+            />
+            {errors.password && (
+              <p className="mt-1.5 text-xs text-red-500">{errors.password.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="confirmPassword" className="mb-1.5 block text-sm font-medium text-slate-700">
+              {t('registerPage.confirmPassword')}
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              className={authInputClass}
+              {...register('confirmPassword')}
+            />
+            {errors.confirmPassword && (
+              <p className="mt-1.5 text-xs text-red-500">{errors.confirmPassword.message}</p>
+            )}
+          </div>
+
           {serverError && (
-            <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-2">
+            <div className="rounded-2xl border border-red-200 bg-red-50
+              px-4 py-3 text-sm text-red-600">
               {serverError}
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400
-              text-white font-medium py-2 rounded-lg transition text-sm"
-          >
-            {isLoading ? 'Wird registriert...' : 'Registrieren'}
+          <button type="submit" disabled={isLoading} className={authButtonClass}>
+            {isLoading ? t('registerPage.submitting') : t('registerPage.submit')}
           </button>
-
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-500">
-          Bereits registriert?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline">Anmelden</Link>
+        <p className="mt-6 text-center text-sm text-slate-500">
+          {t('registerPage.alreadyHaveAccount')}{' '}
+          <Link to="/login" className="font-medium text-blue-600 hover:text-blue-700">
+            {t('registerPage.loginLink')}
+          </Link>
         </p>
-
-      </div>
-    </div>
+      </AuthLayout>
+    </>
   );
 }

@@ -4,95 +4,91 @@ import { useGetUserLessonsQuery } from '@shared/api/lessonApi';
 import { LessonCard } from '@widgets/lesson-card';
 import { Spinner } from '@shared/index';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const TutorDashboard = () => {
+  const { t } = useTranslation('dashboard');
+
   const { data: profile } = useGetUserProfileQuery();
   const { data: tutorProfile } = useGetTutorProfileQuery();
   const { data: lessonsData, isLoading } = useGetUserLessonsQuery({});
 
   const lessons = lessonsData?.lessons ?? [];
 
-  // ─── Группировка по статусам ─────────────────────────────
-  const pendingLessons = lessons.filter(l => l.status === 'pending');
+  const pendingLessons  = lessons.filter(l => l.status === 'pending');
   const upcomingLessons = lessons.filter(l => l.status === 'confirmed');
-  const activeLessons = lessons.filter(l => l.status === 'in_progress');
+  const activeLessons   = lessons.filter(l => l.status === 'in_progress');
 
-  // ─── Approval ────────────────────────────────────────────
-  const isPending = tutorProfile?.approvalStatus === 'pending';
+  const isPending  = tutorProfile?.approvalStatus === 'pending';
   const isApproved = tutorProfile?.approvalStatus === 'approved';
   const isRejected = tutorProfile?.approvalStatus === 'rejected';
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
-      {/* ─── Header ───────────────────────────────────────── */}
-      <div className="flex items-start justify-between">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Willkommen, {profile?.name}!
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            {t('tutor.greeting', { name: profile?.name })}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Bewertung: ⭐ {tutorProfile?.ratingAvg?.toFixed(1) ?? '0.0'} ({tutorProfile?.ratingCount ?? 0})
+          <p className="text-slate-500 text-sm mt-1">
+            {t('tutor.rating')}: ⭐ {tutorProfile?.ratingAvg?.toFixed(1) ?? '0.0'}{' '}
+            <span className="text-slate-400">({tutorProfile?.ratingCount ?? 0})</span>
           </p>
         </div>
 
         {isPending && (
-          <span className="bg-yellow-100 text-yellow-700 text-xs font-medium px-3 py-1.5 rounded-full">
-            Profil wird geprüft
+          <span className="self-start bg-amber-100 text-amber-700 text-xs font-medium px-3 py-1.5 rounded-full">
+            {t('tutor.approvalStatus.pending')}
           </span>
         )}
-
         {isRejected && (
-          <span className="bg-red-100 text-red-700 text-xs font-medium px-3 py-1.5 rounded-full">
-            Profil abgelehnt
+          <span className="self-start bg-red-50 text-red-600 text-xs font-medium px-3 py-1.5 rounded-full">
+            {t('tutor.approvalStatus.rejected')}
           </span>
         )}
       </div>
 
-      {/* ─── Banner ───────────────────────────────────────── */}
+      {/* Banners */}
       {isPending && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
-          <p className="text-sm text-yellow-800 font-medium">
-            Ihr Profil wird überprüft.
+        <div className="bg-amber-100 border border-amber-200 rounded-3xl p-5">
+          <p className="text-sm text-amber-700 font-semibold">
+            {t('tutor.banners.pending.title')}
           </p>
-          <p className="text-sm text-yellow-700 mt-1">
-            Nach der Freischaltung können Schüler Unterricht buchen.
+          <p className="text-sm text-amber-700 opacity-80 mt-1">
+            {t('tutor.banners.pending.subtitle')}
           </p>
         </div>
       )}
 
       {isRejected && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-5">
-          <p className="text-sm text-red-800 font-medium">
-            Ihr Profil wurde abgelehnt.
+        <div className="bg-red-50 border border-red-200 rounded-3xl p-5">
+          <p className="text-sm text-red-600 font-semibold">
+            {t('tutor.banners.rejected.title')}
           </p>
-          <p className="text-sm text-red-700 mt-1">
-            Bitte aktualisieren Sie Ihr Profil oder kontaktieren Sie den Support.
+          <p className="text-sm text-red-600 opacity-80 mt-1">
+            {t('tutor.banners.rejected.subtitle')}
           </p>
         </div>
       )}
 
-      {/* ─── Основной контент только для approved ─────────── */}
       {isApproved && (
         <>
-
-          {/* ─── Quick Actions ───────────────────────────── */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <QuickAction to="/lessons" icon="📅" title="Alle Unterrichte" />
-            <QuickAction to="/settings" icon="📝" title="Profil bearbeiten" />
-            <QuickAction to="/settings/media" icon="🎥" title="Kamera testen" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <QuickAction to="/lessons"        icon="📅" label={t('tutor.quickActions.lessons')} />
+            <QuickAction to="/settings"       icon="📝" label={t('tutor.quickActions.profile')} />
+            <QuickAction to="/settings/media" icon="🎥" label={t('tutor.quickActions.camera')} />
           </div>
 
-          {/* ─── Loading ───────────────────────────────── */}
           {isLoading ? (
             <Spinner />
           ) : (
             <>
-              {/* ─── Active lessons ───────────────────── */}
               {activeLessons.length > 0 && (
                 <section>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    Laufende Unterrichtsstunden ({activeLessons.length})
+                  <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                    {t('tutor.activeLessons.title')} ({activeLessons.length})
                   </h2>
                   <div className="space-y-3">
                     {activeLessons.map(lesson => (
@@ -102,11 +98,10 @@ export const TutorDashboard = () => {
                 </section>
               )}
 
-              {/* ─── Pending requests ─────────────────── */}
               {pendingLessons.length > 0 && (
                 <section>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    Neue Anfragen ({pendingLessons.length})
+                  <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                    {t('tutor.pendingLessons.title')} ({pendingLessons.length})
                   </h2>
                   <div className="space-y-3">
                     {pendingLessons.map(lesson => (
@@ -116,21 +111,23 @@ export const TutorDashboard = () => {
                 </section>
               )}
 
-              {/* ─── Upcoming lessons ─────────────────── */}
               <section>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Geplante Unterrichtsstunden
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    {t('tutor.upcomingLessons.title')}
                   </h2>
-                  <Link to="/lessons" className="text-sm text-blue-600 hover:underline">
-                    Alle ansehen
+                  <Link
+                    to="/lessons"
+                    className="text-sm text-blue-600 hover:text-blue-700 hover:underline self-start sm:self-auto"
+                  >
+                    {t('tutor.upcomingLessons.viewAll')}
                   </Link>
                 </div>
 
                 {upcomingLessons.length === 0 ? (
-                  <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-8 text-center">
-                    <p className="text-gray-400 text-sm">
-                      Keine geplanten Unterrichtsstunden.
+                  <div className="bg-white rounded-3xl border border-dashed border-slate-200 p-10 text-center">
+                    <p className="text-slate-500 text-sm">
+                      {t('tutor.upcomingLessons.empty')}
                     </p>
                   </div>
                 ) : (
@@ -149,13 +146,16 @@ export const TutorDashboard = () => {
   );
 };
 
-const QuickAction = ({ to, icon, title }: { to: string; icon: string; title: string }) => (
+const QuickAction = ({ to, icon, label }: { to: string; icon: string; label: string }) => (
   <Link
     to={to}
-    className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md
-      transition flex items-center gap-3"
+    className="bg-white rounded-3xl border border-slate-200
+      p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200
+      flex items-center gap-3 group"
   >
     <span className="text-2xl">{icon}</span>
-    <p className="font-medium text-gray-900 text-sm">{title}</p>
+    <p className="font-semibold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
+      {label}
+    </p>
   </Link>
 );
