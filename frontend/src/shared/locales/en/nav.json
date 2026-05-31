@@ -1,12 +1,18 @@
 {
-  "tutors":    "Tutors",
-  "subjects":  "Subjects",
-  "prices":    "Prices",
-  "faq":       "FAQ",
-  "dashboard": "Dashboard",
-  "lessons":   "Lessons",
-  "schedule":  "Schedule",
-  "messages":  "Messages",
-  "support":   "Support",
-  "settings":  "Settings"
+  "tutors":      "Tutors",
+  "faq":         "FAQ",
+  "dashboard":   "Dashboard",
+  "lessons":     "Lessons",
+  "schedule":    "Schedule",
+  "messages":    "Messages",
+  "likedTutors": "Saved tutors",
+  "support":     "Support",
+  "settings":    "Settings",
+  "mediaCheck":  "Camera & mic",
+  "login":       "Sign in",
+  "register":    "Sign up",
+  "logout":      "Sign out",
+  "userMenu":    "User profile",
+  "openMenu":    "Open menu",
+  "closeMenu":   "Close menu"
 }

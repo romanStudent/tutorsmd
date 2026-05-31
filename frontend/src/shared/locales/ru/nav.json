@@ -1,12 +1,18 @@
 {
-  "tutors":    "Учителя",
-  "subjects":  "Предметы",
-  "prices":    "Цены",
-  "faq":       "Вопросы",
-  "dashboard": "Мой кабинет",
-  "lessons":   "Уроки",
-  "schedule":  "Расписание",
-  "messages":  "Сообщения",
-  "support":   "Поддержка",
-  "settings":  "Настройки"
+  "tutors":      "Репетиторы",
+  "faq":         "FAQ",
+  "dashboard":   "Dashboard",
+  "lessons":     "Уроки",
+  "schedule":    "Расписание",
+  "messages":    "Сообщения",
+  "likedTutors": "Избранное",
+  "support":     "Поддержка",
+  "settings":    "Настройки",
+  "mediaCheck":  "Камера и микрофон",
+  "login":       "Войти",
+  "register":    "Регистрация",
+  "logout":      "Выйти",
+  "userMenu":    "Профиль пользователя",
+  "openMenu":    "Открыть меню",
+  "closeMenu":   "Закрыть меню"
 }
