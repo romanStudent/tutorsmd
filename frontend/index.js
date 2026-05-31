@@ -6,5 +6,5 @@ import { Provider } from 'react-redux';
 import './src/shared/config/i18n';
 import { store } from './src/app/store';
 import { App } from './src/app/App';
-import "./output.css";
+import "./input.css";
 ReactDOM.createRoot(document.getElementById('root')).render(_jsx(React.StrictMode, { children: _jsx(Provider, { store: store, children: _jsx(App, {}) }) }));
