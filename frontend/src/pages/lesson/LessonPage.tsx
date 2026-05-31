@@ -63,8 +63,6 @@ export default function LessonPage() {
             canJoin={canJoin}
           />
           <LessonControls
-            lessonId={lessonId}
-            lesson={lesson}
             localStream={localStream}
           />
         </div>

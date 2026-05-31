@@ -4,19 +4,27 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useLoginMutation } from '@shared/api/authApi';
 import { loginSchema, type LoginFormData } from '@features/auth/schemas';
+import AuthLayout from '@widgets/auth/ui/AuthLayout';
+import { authInputClass, authButtonClass } from '@shared/ui/auth/styles';
+import { useTranslation } from 'react-i18next';
 
-// Коды ошибок бэкенда → человекочитаемые сообщения + доп. действие
 const EMAIL_NOT_VERIFIED_MSG = 'Please verify your email before logging in';
 
 export default function LoginPage() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const { t } = useTranslation('auth');
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [login, { isLoading }] = useLoginMutation();
 
-  const [serverError, setServerError]           = useState<string | null>(null);
+  const params       = new URLSearchParams(location.search);
+  const roleFromUrl  = params.get('role');
+  const isAdminLogin = roleFromUrl === 'admin' &&
+    params.get('key') === import.meta.env.VITE_ADMIN_KEY;
+
+  const [serverError, setServerError]       = useState<string | null>(null);
   const [emailNotVerified, setEmailNotVerified] = useState(false);
 
-  // Сообщение от ResetPasswordPage после успешного сброса
   const successMessage = (location.state as any)?.message as string | undefined;
 
   const {
@@ -27,7 +35,7 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { activeRole: 'client' },
+    defaultValues: { activeRole: isAdminLogin ? 'admin' : 'client' },
   });
 
   const activeRole = watch('activeRole');
@@ -35,148 +43,130 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     setServerError(null);
     setEmailNotVerified(false);
-
     try {
-      await login(data).unwrap();
+      await login({
+        ...data,
+        activeRole: isAdminLogin ? 'admin' : data.activeRole,
+      }).unwrap();
       navigate('/dashboard');
     } catch (err: any) {
       const msg: string = err?.data?.message ?? '';
-
       if (msg === EMAIL_NOT_VERIFIED_MSG) {
         setEmailNotVerified(true);
       } else {
-        setServerError(msg || 'Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.');
+        setServerError(msg || t('errors.loginFailed'));
       }
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
+    <AuthLayout
+      title={t('loginPage.title')}
+      subtitle={t('loginPage.subtitle')}
+    >
+      {successMessage && (
+        <div className="mb-5 rounded-2xl border border-green-200 bg-green-50
+          px-4 py-3 text-sm text-green-700">
+          {successMessage}
+        </div>
+      )}
 
-        <h1 className="text-2xl font-bold text-center mb-6">Anmelden</h1>
-
-        {/* Успешный сброс пароля */}
-        {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-700 text-sm
-            rounded-lg px-4 py-3 mb-4">
-            {successMessage}
-          </div>
-        )}
-
-        {/* Role switcher */}
-        <div className="flex rounded-lg overflow-hidden border mb-6">
+      {/* Role switcher */}
+      {!isAdminLogin && (
+        <div className="mb-6 flex rounded-2xl bg-slate-100 p-1">
           {(['client', 'tutor'] as const).map((role) => (
             <label
               key={role}
-              className={`flex-1 text-center py-2 cursor-pointer text-sm font-medium transition
+              className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center
+                text-sm font-medium transition-all
                 ${activeRole === role
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'}`}
             >
-              <input
-                type="radio"
-                value={role}
-                className="hidden"
-                {...register('activeRole')}
-              />
-              {role === 'client' ? 'Schüler' : 'Nachhilfelehrer'}
+              <input type="radio" value={role} className="hidden" {...register('activeRole')} />
+              {role === 'client' ? t('student') : t('tutor')}
             </label>
           ))}
         </div>
+      )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+        <div>
+          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">
+            {t('email')}
+          </label>
+          <input
+            id="email"
+            type="email"
+            autoComplete="email"
+            className={authInputClass}
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="mt-1.5 text-xs text-red-500">{errors.email.message}</p>
+          )}
+        </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
-            <input
-              type="email"
-              autoComplete="email"
-              className={`w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2
-                ${errors.email
-                  ? 'border-red-500 focus:ring-red-300'
-                  : 'border-gray-300 focus:ring-blue-300'}`}
-              {...register('email')}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+        <div>
+          <div className="mb-1.5 flex items-center justify-between">
+            <label htmlFor="password" className="text-sm font-medium text-slate-700">
+              {t('password')}
+            </label>
+            {!isAdminLogin && (
+              <Link to="/forgot-password"
+                className="text-xs font-medium text-blue-600 hover:text-blue-700">
+                {t('forgotPassword')}
+              </Link>
             )}
           </div>
+          <input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            className={authInputClass}
+            {...register('password')}
+          />
+          {errors.password && (
+            <p className="mt-1.5 text-xs text-red-500">{errors.password.message}</p>
+          )}
+        </div>
 
-          {/* Password */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-gray-700">Passwort</label>
-              <Link
-                to="/forgot-password"
-                className="text-xs text-blue-600 hover:underline"
-              >
-                Paaswort Vergessen?
-              </Link>
-            </div>
-            <input
-              type="password"
-              autoComplete="current-password"
-              className={`w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2
-                ${errors.password
-                  ? 'border-red-500 focus:ring-red-300'
-                  : 'border-gray-300 focus:ring-blue-300'}`}
-              {...register('password')}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
-            )}
+        {emailNotVerified && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+            <p className="text-sm font-semibold text-amber-700">
+              {t('loginPage.emailNotVerified.title')}
+            </p>
+            <Link
+              to="/resend-verification"
+              state={{ email: getValues('email') }}
+              className="mt-1.5 inline-block text-xs font-medium text-amber-700 underline
+                underline-offset-2"
+            >
+              {t('loginPage.emailNotVerified.resend')}
+            </Link>
           </div>
+        )}
 
-          {/* Email not verified */}
-          {emailNotVerified && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3">
-              <p className="text-yellow-800 text-sm font-medium">
-                E-Mail nicht bestätigt
-              </p>
-              <p className="text-yellow-700 text-xs mt-1">
-                Bitte bestätigen Sie Ihre E-Mail-Adresse.
-                Kein E-Mail erhalten?
-              </p>
-              <Link
-                to="/resend-verification"
-                state={{ email: getValues('email') }}
-                className="inline-block mt-2 text-xs font-medium text-yellow-800
-                  underline hover:text-yellow-900"
-              >
-                Neuen Aktivierungslink anfordern →
-              </Link>
-            </div>
-          )}
+        {serverError && (
+          <div className="rounded-2xl border border-red-200 bg-red-50
+            px-4 py-3 text-sm text-red-600">
+            {serverError}
+          </div>
+        )}
 
-          {/* Server error */}
-          {serverError && (
-            <div className="bg-red-50 border border-red-200 text-red-600 text-sm
-              rounded-lg px-4 py-2">
-              {serverError}
-            </div>
-          )}
+        <button type="submit" disabled={isLoading} className={authButtonClass}>
+          {isLoading ? t('loginPage.submitting') : t('loginPage.submit')}
+        </button>
+      </form>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400
-              text-white font-medium py-2 rounded-lg transition text-sm"
-          >
-            {isLoading ? 'Wird angemeldet...' : 'Anmelden'}
-          </button>
-
-        </form>
-
-        <p className="mt-4 text-center text-sm text-gray-500">
-          Noch kein Konto?{' '}
-          <Link to="/register" className="text-blue-600 hover:underline">
-            Registrieren
+      {!isAdminLogin && (
+        <p className="mt-6 text-center text-sm text-slate-500">
+          {t('loginPage.noAccount')}{' '}
+          <Link to="/register" className="font-medium text-blue-600 hover:text-blue-700">
+            {t('loginPage.registerLink')}
           </Link>
         </p>
-
-      </div>
-    </div>
+      )}
+    </AuthLayout>
   );
 }

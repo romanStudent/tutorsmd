@@ -4,8 +4,11 @@ import { LessonCard }    from '@widgets/lesson-card/index';
 import { ProgressChart } from '@widgets/dashboard/ui/ProgressChart';
 import { Spinner }       from '@shared/index';
 import { Link }          from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const ClientDashboard = () => {
+  const { t } = useTranslation('dashboard');
+
   const { data: profile, isLoading: profileLoading } = useGetUserProfileQuery();
   const { data: lessonsData, isLoading: lessonsLoading } = useGetUserLessonsQuery({
     status: 'confirmed',
@@ -16,47 +19,65 @@ export const ClientDashboard = () => {
   if (profileLoading) return <Spinner />;
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
-      {/* Приветствие */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Willkommen, {profile?.name}!
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          {t('client.greeting', { name: profile?.name })}
         </h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Hier sind Ihre nächsten Unterrichtsstunden.
-        </p>
+        <p className="text-slate-500 text-sm mt-1">{t('client.subtitle')}</p>
       </div>
 
-      {/* Быстрые действия */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <QuickAction to="/tutors"   icon="🔍" title="Nachhilfelehrer finden" description="Alle verfügbaren Lehrer ansehen" />
-        <QuickAction to="/lessons"  icon="📅" title="Alle Unterrichte"       description="Vergangene und geplante Stunden" />
-        <QuickAction to="/settings" icon="⚙️" title="Einstellungen"          description="Profil und Konto verwalten" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <QuickAction
+          to="/tutors"
+          icon="🔍"
+          title={t('client.quickActions.findTutor')}
+          description={t('client.quickActions.findTutorDesc')}
+        />
+        <QuickAction
+          to="/lessons"
+          icon="📅"
+          title={t('client.quickActions.lessons')}
+          description={t('client.quickActions.lessonsDesc')}
+        />
+        <QuickAction
+          to="/settings"
+          icon="⚙️"
+          title={t('client.quickActions.settings')}
+          description={t('client.quickActions.settingsDesc')}
+        />
       </div>
 
-      {/* График прогресса */}
       <ProgressChart />
 
-      {/* Ближайшие уроки */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Nächste Unterrichtsstunden
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+          <h2 className="text-lg font-semibold text-slate-900">
+            {t('client.upcomingLessons.title')}
           </h2>
-          <Link to="/lessons" className="text-sm text-blue-600 hover:underline">
-            Alle ansehen
+          <Link
+            to="/lessons"
+            className="text-sm text-blue-600 hover:text-blue-700 hover:underline self-start sm:self-auto"
+          >
+            {t('client.upcomingLessons.viewAll')}
           </Link>
         </div>
 
         {lessonsLoading ? (
           <Spinner />
         ) : upcomingLessons.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-8 text-center">
-            <p className="text-gray-400 text-sm mb-4">Keine Unterrichtsstunden geplant.</p>
-            <Link to="/tutors"
-              className="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-              Nachhilfelehrer suchen
+          <div className="bg-white rounded-3xl border border-dashed border-slate-200 p-10 text-center">
+            <p className="text-slate-500 text-sm mb-4">
+              {t('client.upcomingLessons.empty')}
+            </p>
+            <Link
+              to="/tutors"
+              className="inline-block bg-orange-500 hover:bg-orange-600 text-white
+                text-sm font-medium px-5 py-2.5 rounded-xl transition
+                shadow-lg shadow-orange-200"
+            >
+              {t('client.upcomingLessons.findBtn')}
             </Link>
           </div>
         ) : (
@@ -77,13 +98,18 @@ const QuickAction = ({
 }: {
   to: string; icon: string; title: string; description: string;
 }) => (
-  <Link to={to}
-    className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md
-      transition group flex items-start gap-4">
+  <Link
+    to={to}
+    className="bg-white rounded-3xl border border-slate-200
+      p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200
+      group flex items-start gap-4"
+  >
     <span className="text-2xl">{icon}</span>
     <div>
-      <p className="font-medium text-gray-900 group-hover:text-blue-600 transition text-sm">{title}</p>
-      <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+      <p className="font-semibold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
+        {title}
+      </p>
+      <p className="text-xs text-slate-500 mt-0.5">{description}</p>
     </div>
   </Link>
 );

@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForgotPasswordMutation } from '@shared/api/authApi';
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '@features/auth/schemas';
+import AuthLayout from '@widgets/auth/ui/AuthLayout';
 
 export default function ForgotPasswordPage() {
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
@@ -20,21 +21,65 @@ export default function ForgotPasswordPage() {
   };
 
   if (sent) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8 text-center">
-          <div className="text-5xl mb-4">✉️</div>
-          <h2 className="text-xl font-bold mb-2">E-Mail gesendet</h2>
-          <p className="text-gray-600 text-sm">
-            Falls diese E-Mail existiert, haben wir einen Link zum Zurücksetzen des Passworts gesendet.
-          </p>
-          <Link to="/login" className="mt-6 inline-block text-blue-600 hover:underline text-sm">
-            Zurück zur Anmeldung
-          </Link>
+  return (
+    <AuthLayout
+      title="E-Mail gesendet"
+      subtitle="Überprüfen Sie Ihren Posteingang"
+    >
+      <div className="text-center">
+
+        <div
+          className="
+            mx-auto
+            mb-6
+
+            flex
+            h-20
+            w-20
+            items-center
+            justify-center
+
+            rounded-full
+
+            bg-green-100
+
+            text-4xl
+          "
+        >
+          ✉️
         </div>
+
+        <p
+          className="
+            text-sm
+            leading-relaxed
+            text-slate-600
+            dark:text-slate-400
+          "
+        >
+          Falls diese E-Mail existiert, haben wir einen Link zum
+          Zurücksetzen des Passworts gesendet.
+        </p>
+
+        <Link
+          to="/login"
+          className="
+            mt-6
+            inline-block
+
+            font-medium
+
+            text-blue-600
+            hover:text-blue-700
+          "
+        >
+          Zurück zur Anmeldung
+        </Link>
+
       </div>
-    );
-  }
+    </AuthLayout>
+  );
+}
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
