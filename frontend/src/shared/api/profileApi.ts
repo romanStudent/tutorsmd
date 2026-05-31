@@ -48,6 +48,7 @@ export const profileApi = baseApi.injectEndpoints({
     // GET /profile/me
     getUserProfile: build.query<UserProfile, void>({
       query: () => '/profile/me',
+      transformResponse: (response: { profile: UserProfile }) => response.profile,
       providesTags: ['User'],
     }),
 
@@ -58,6 +59,7 @@ export const profileApi = baseApi.injectEndpoints({
         method: 'PUT',
         body,
       }),
+      transformResponse: (response: { profile: UserProfile }) => response.profile,
       invalidatesTags: ['User'],
     }),
 
