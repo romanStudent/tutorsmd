@@ -1,12 +1,18 @@
 {
-  "tutors":    "Lehrer",
-  "subjects":  "Fächer",
-  "prices":    "Preise",
-  "faq":       "Fragen",
-  "dashboard": "Mein Bereich",
-  "lessons":   "Unterrichte",
-  "schedule":  "Stundenplan",
-  "messages":  "Nachrichten",
-  "support":   "Support",
-  "settings":  "Einstellungen"
+  "tutors":      "Nachhilfelehrer",
+  "faq":         "FAQ",
+  "dashboard":   "Dashboard",
+  "lessons":     "Unterrichte",
+  "schedule":    "Stundenplan",
+  "messages":    "Nachrichten",
+  "likedTutors": "Gemerkte Lehrer",
+  "support":     "Support",
+  "settings":    "Einstellungen",
+  "mediaCheck":  "Kamera & Mikrofon",
+  "login":       "Anmelden",
+  "register":    "Registrieren",
+  "logout":      "Abmelden",
+  "userMenu":    "Benutzerprofil",
+  "openMenu":    "Menü öffnen",
+  "closeMenu":   "Menü schließen"
 }
