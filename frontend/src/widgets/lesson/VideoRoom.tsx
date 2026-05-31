@@ -3,14 +3,15 @@ import { useSelector } from 'react-redux';
 import { selectUserId, selectActiveRole } from '@entities/user/model/selectors';
 import { tokenManager } from '@shared/lib/TokenManager';
 import { io, Socket } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
-  lessonId: string;
-  localStream: MediaStream | null;
-  setLocalStream: (s: MediaStream | null) => void;
-  remoteStreams: Map<string, MediaStream>;
+  lessonId:        string;
+  localStream:     MediaStream | null;
+  setLocalStream:  (s: MediaStream | null) => void;
+  remoteStreams:   Map<string, MediaStream>;
   setRemoteStreams: React.Dispatch<React.SetStateAction<Map<string, MediaStream>>>;
-  canJoin: boolean;
+  canJoin:         boolean;
 }
 
 export const VideoRoom = ({
@@ -21,12 +22,13 @@ export const VideoRoom = ({
   setRemoteStreams,
   canJoin,
 }: Props) => {
-  const userId = useSelector(selectUserId);
+  const { t } = useTranslation('lesson');
+  const userId     = useSelector(selectUserId);
   const activeRole = useSelector(selectActiveRole);
 
-  const localRef = useRef<HTMLVideoElement>(null);
+  const localRef  = useRef<HTMLVideoElement>(null);
   const socketRef = useRef<Socket | null>(null);
-  const peersRef = useRef<Map<string, RTCPeerConnection>>(new Map());
+  const peersRef  = useRef<Map<string, RTCPeerConnection>>(new Map());
 
   const [participants, setParticipants] = useState<string[]>([]);
   const [tutorPresent, setTutorPresent] = useState(false);
@@ -34,7 +36,6 @@ export const VideoRoom = ({
   // ───────────── MEDIA ─────────────
   useEffect(() => {
     if (!canJoin) return;
-
     let stream: MediaStream;
 
     navigator.mediaDevices
@@ -60,39 +61,29 @@ export const VideoRoom = ({
       withCredentials: true,
       auth: { token: tokenManager.get() },
     });
-
     socketRef.current = socket;
     socket.emit('joinLesson', { lessonId });
 
-    // ─── Participants ───
     socket.on('updateParticipants', async (list: string[]) => {
       setParticipants(list);
-
       for (const peerId of list) {
         if (peerId === socket.id) continue;
         if (peersRef.current.has(peerId)) continue;
-
         const pc = createPeerConnection(peerId, socket);
-
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
-
         socket.emit('lesson:offer', { to: peerId, offer });
       }
     });
 
     socket.on('tutorJoined', () => setTutorPresent(true));
 
-    // ─── SIGNALING ───
     socket.on('lesson:offer', async ({ from, offer }) => {
       if (peersRef.current.has(from)) return;
-
       const pc = createPeerConnection(from, socket);
-
       await pc.setRemoteDescription(offer);
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
-
       socket.emit('lesson:answer', { to: from, answer });
     });
 
@@ -107,7 +98,6 @@ export const VideoRoom = ({
     socket.on('lesson:user-left', (peerId: string) => {
       peersRef.current.get(peerId)?.close();
       peersRef.current.delete(peerId);
-
       setRemoteStreams((prev) => {
         const m = new Map(prev);
         m.delete(peerId);
@@ -122,10 +112,8 @@ export const VideoRoom = ({
     return () => {
       socket.emit('leaveLesson', { lessonId });
       socket.disconnect();
-
       peersRef.current.forEach((pc) => pc.close());
       peersRef.current.clear();
-
       setRemoteStreams(new Map());
     };
   }, [canJoin, localStream, userId, lessonId]);
@@ -136,16 +124,11 @@ export const VideoRoom = ({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     });
 
-    localStream?.getTracks().forEach((track) => {
-      pc.addTrack(track, localStream);
-    });
+    localStream?.getTracks().forEach((track) => pc.addTrack(track, localStream));
 
     pc.onicecandidate = (e) => {
       if (e.candidate) {
-        socket.emit('lesson:ice-candidate', {
-          to: peerId,
-          candidate: e.candidate,
-        });
+        socket.emit('lesson:ice-candidate', { to: peerId, candidate: e.candidate });
       }
     };
 
@@ -163,65 +146,69 @@ export const VideoRoom = ({
 
   // ───────────── GRID ─────────────
   const remoteEntries = Array.from(remoteStreams.entries());
-  const totalVideos = 1 + remoteEntries.length;
-  const cols = totalVideos <= 1 ? 1 : totalVideos <= 4 ? 2 : 3;
+  const totalVideos   = 1 + remoteEntries.length;
+  const cols          = totalVideos <= 1 ? 1 : totalVideos <= 4 ? 2 : 3;
 
   // ───────────── UI ─────────────
   return (
     <div
-      className="flex-1 grid gap-2 p-2 bg-gray-900"
+      className="flex-1 grid gap-2 p-2 bg-slate-950"
       style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
     >
-      {/* Local */}
-      <div className="relative bg-gray-800 rounded-xl overflow-hidden aspect-video">
+      {/* Local video */}
+      <div className="relative bg-slate-900 rounded-2xl overflow-hidden aspect-video">
         <video ref={localRef} autoPlay playsInline muted className="w-full h-full object-cover" />
 
-        {/* Role */}
-        <span className="absolute bottom-2 left-2 text-xs text-white bg-black/50 px-2 py-0.5 rounded">
-          Sie {activeRole === 'tutor'
-            ? '(Lehrer)'
+        {/* Role badge */}
+        <span className="absolute bottom-2 left-2 text-xs text-white
+          bg-black/60 backdrop-blur-sm px-2 py-1 rounded-lg">
+          {t('videoRoom.you')}{' '}
+          {activeRole === 'tutor'
+            ? t('videoRoom.roleTeacher')
             : activeRole === 'admin'
-            ? '(Admin)'
-            : '(Schüler)'}
+            ? t('videoRoom.roleAdmin')
+            : t('videoRoom.roleStudent')}
         </span>
 
-        {/* Participants */}
-        <span className="absolute top-2 right-2 text-xs text-white bg-black/50 px-2 py-1 rounded">
-          {participants.length} online
+        {/* Participants count */}
+        <span className="absolute top-2 right-2 text-xs text-white
+          bg-black/60 backdrop-blur-sm px-2 py-1 rounded-lg">
+          {participants.length} {t('videoRoom.online')}
         </span>
 
-        {/* Waiting UX */}
+        {/* Waiting */}
         {participants.length === 1 && (
-          <span className="absolute top-2 left-2 text-xs text-yellow-400">
-            Waiting for others...
+          <span className="absolute top-2 left-2 text-xs text-amber-400
+            bg-black/60 backdrop-blur-sm px-2 py-1 rounded-lg">
+            {t('videoRoom.waitingForOthers')}
           </span>
         )}
 
-        {/* Tutor status */}
+        {/* Tutor not joined */}
         {activeRole === 'client' && !tutorPresent && (
-          <span className="absolute top-6 left-2 text-xs text-red-400">
-            Tutor not joined
+          <span className="absolute top-10 left-2 text-xs text-red-400
+            bg-black/60 backdrop-blur-sm px-2 py-1 rounded-lg">
+            {t('videoRoom.tutorNotJoined')}
           </span>
         )}
       </div>
 
-      {/* Remote */}
+      {/* Remote videos */}
       {remoteEntries.map(([peerId, stream]) => (
         <RemoteVideo key={peerId} peerId={peerId} stream={stream} />
       ))}
 
+      {/* Not started */}
       {!canJoin && (
-        <div className="col-span-full flex items-center justify-center">
-          <p className="text-gray-400 text-sm">
-            Der Unterricht hat noch nicht begonnen.
-          </p>
+        <div className="col-span-full flex items-center justify-center py-16">
+          <p className="text-slate-400 text-sm">{t('videoRoom.lessonNotStarted')}</p>
         </div>
       )}
     </div>
   );
 };
 
-// ───────────── Remote ─────────────
+// ───────────── Remote video ─────────────
 const RemoteVideo = ({ stream, peerId }: { stream: MediaStream; peerId: string }) => {
   const ref = useRef<HTMLVideoElement>(null);
 
@@ -230,10 +217,10 @@ const RemoteVideo = ({ stream, peerId }: { stream: MediaStream; peerId: string }
   }, [stream]);
 
   return (
-    <div className="relative bg-gray-800 rounded-xl overflow-hidden aspect-video">
+    <div className="relative bg-slate-900 rounded-2xl overflow-hidden aspect-video">
       <video ref={ref} autoPlay playsInline className="w-full h-full object-cover" />
-
-      <span className="absolute bottom-2 left-2 text-xs text-white bg-black/50 px-2 py-0.5 rounded">
+      <span className="absolute bottom-2 left-2 text-xs text-white
+        bg-black/60 backdrop-blur-sm px-2 py-1 rounded-lg">
         {peerId.slice(0, 8)}
       </span>
     </div>

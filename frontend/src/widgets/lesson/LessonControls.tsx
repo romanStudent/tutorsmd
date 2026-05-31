@@ -1,29 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { selectActiveRole } from '@entities/user/model/selectors';
-import {
-  useConfirmLessonMutation,
-  useCancelByClientMutation,
-  useCancelByTutorMutation,
-} from '@shared/api/lessonApi';
-import type { Lesson } from '@shared/api/lessonApi';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
-  lessonId:    string;
-  lesson:      Lesson;
   localStream: MediaStream | null;
 }
 
-export const LessonControls = ({ lessonId, lesson, localStream }: Props) => {
-  const navigate    = useNavigate();
-  const activeRole  = useSelector(selectActiveRole);
-  const [mic, setMic]   = useState(true);
-  const [cam, setCam]   = useState(true);
+export const LessonControls = ({ localStream }: Props) => {
+  const { t } = useTranslation('lesson');
+  const navigate   = useNavigate();
 
-  const [confirmLesson]  = useConfirmLessonMutation();
-  const [cancelByClient] = useCancelByClientMutation();
-  const [cancelByTutor]  = useCancelByTutorMutation();
+  const [mic, setMic] = useState(true);
+  const [cam, setCam] = useState(true);
 
   const toggleMic = () => {
     localStream?.getAudioTracks().forEach(t => { t.enabled = !mic; });
@@ -35,62 +23,63 @@ export const LessonControls = ({ lessonId, lesson, localStream }: Props) => {
     setCam(v => !v);
   };
 
-  const handleLeave = async () => {
+  const handleLeave = () => {
     localStream?.getTracks().forEach(t => t.stop());
     navigate('/dashboard');
   };
 
-  const handleCancel = async () => {
-    if (!confirm('Unterricht wirklich absagen?')) return;
-    if (activeRole === 'client') {
-      await cancelByClient({ lessonId }).unwrap().catch(() => {});
-    } else {
-      await cancelByTutor({ lessonId }).unwrap().catch(() => {});
-    }
-    navigate('/dashboard');
-  };
+
 
   return (
-    <div className="bg-gray-800 border-t border-gray-700 px-4 py-3 flex items-center justify-center gap-4">
+    <div className="bg-slate-900 border-t border-slate-800 px-4 py-3
+      flex items-center justify-center gap-3 flex-wrap">
 
-      {/* Микрофон */}
-      <button onClick={toggleMic}
-        className={`p-3 rounded-xl transition ${mic ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'}`}
-        title={mic ? 'Mikrofon ausschalten' : 'Mikrofon einschalten'}>
-        {mic ? '🎤' : '🔇'}
-      </button>
+      {/* Mic */}
+      <ControlBtn
+        onClick={toggleMic}
+        active={mic}
+        title={mic ? t('controls.micOff') : t('controls.micOn')}
+        icon={mic ? '🎤' : '🔇'}
+      />
 
-      {/* Камера */}
-      <button onClick={toggleCam}
-        className={`p-3 rounded-xl transition ${cam ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'}`}
-        title={cam ? 'Kamera ausschalten' : 'Kamera einschalten'}>
-        {cam ? '📷' : '🚫'}
-      </button>
+      {/* Cam */}
+      <ControlBtn
+        onClick={toggleCam}
+        active={cam}
+        title={cam ? t('controls.camOff') : t('controls.camOn')}
+        icon={cam ? '📷' : '🚫'}
+      />
 
-      {/* Подтвердить урок (тьютор, статус pending) */}
-      {activeRole === 'tutor' && lesson.status === 'pending' && (
-        <button onClick={() => confirmLesson(lessonId)}
-          className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium
-            px-4 py-2 rounded-xl transition">
-          Bestätigen
-        </button>
-      )}
-
-      {/* Отменить */}
-      {['pending', 'confirmed'].includes(lesson.status) && (
-        <button onClick={handleCancel}
-          className="bg-gray-700 hover:bg-red-700 text-white text-sm font-medium
-            px-4 py-2 rounded-xl transition">
-          Absagen
-        </button>
-      )}
-
-      {/* Выйти */}
-      <button onClick={handleLeave}
+      {/* Leave */}
+      <button
+        onClick={handleLeave}
         className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium
-          px-4 py-2 rounded-xl transition">
-        Verlassen
+          px-4 py-2.5 rounded-xl transition"
+      >
+        {t('controls.leave')}
       </button>
     </div>
   );
 };
+
+// ─── Control button ───────────────────────────────────────────
+const ControlBtn = ({
+  onClick, active, title, icon,
+}: {
+  onClick: () => void;
+  active: boolean;
+  title: string;
+  icon: string;
+}) => (
+  <button
+    onClick={onClick}
+    title={title}
+    aria-label={title}
+    className={`p-2.5 rounded-xl transition text-lg leading-none
+      ${active
+        ? 'bg-slate-700 hover:bg-slate-600'
+        : 'bg-red-600 hover:bg-red-700'}`}
+  >
+    {icon}
+  </button>
+);

@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom';
-import type { Lesson } from '@shared/api/lessonApi';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCancelByClientMutation, useCancelByTutorMutation, useConfirmLessonMutation, type Lesson } from '@shared/api/lessonApi';
+import { useSelector } from 'react-redux';
+import { selectActiveRole } from '@entities/user/model/selectors';
 
 const STATUS_LABELS: Record<string, string> = {
   pending:              'Anfrage',
@@ -31,8 +33,28 @@ interface Props {
 }
 
 export const LessonCard = ({ lesson, role }: Props) => {
+
+  const navigate    = useNavigate();
   const date = new Date(lesson.scheduledAt);
   const person = role === 'client' ? lesson.tutor : lesson.client;
+
+    const activeRole  = useSelector(selectActiveRole);
+    const lessonId = lesson.id;
+  
+    const [confirmLesson]  = useConfirmLessonMutation();
+    const [cancelByClient] = useCancelByClientMutation();
+    const [cancelByTutor]  = useCancelByTutorMutation();
+  
+
+    const handleCancel = async () => {
+    if (!confirm('Unterricht wirklich absagen?')) return;
+    if (activeRole === 'client') {
+      await cancelByClient({ lessonId }).unwrap().catch(() => {});
+    } else {
+      await cancelByTutor({ lessonId }).unwrap().catch(() => {});
+    }
+    navigate('/dashboard');
+  };
 
   return (
     <Link
@@ -65,6 +87,24 @@ export const LessonCard = ({ lesson, role }: Props) => {
           </p>
         </div>
       </div>
+
+         {/* Подтвердить урок (тьютор, статус pending) */}
+      {activeRole === 'tutor' && lesson.status === 'pending' && (
+        <button onClick={() => confirmLesson(lessonId)}
+          className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium
+            px-4 py-2 rounded-xl transition">
+          Bestätigen
+        </button>
+      )}
+
+      {/* Отменить */}
+      {['pending', 'confirmed'].includes(lesson.status) && (
+        <button onClick={handleCancel}
+          className="bg-gray-700 hover:bg-red-700 text-white text-sm font-medium
+            px-4 py-2 rounded-xl transition">
+          Absagen
+        </button>
+      )}
 
       {/* Статус */}
       <span className={`text-xs font-medium px-3 py-1 rounded-full flex-shrink-0
