@@ -24,7 +24,7 @@ export default function RegisterPage({ role = 'client' }: Props) {
   const [success, setSuccess]         = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerSchema) as any,
     defaultValues: {
       languageCode: 'de',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
