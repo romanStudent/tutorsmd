@@ -1,101 +1,120 @@
 {
   "title": "Settings",
   "tabs": {
-    "profile": "Personal info",
-    "tutorProfile": "Tutor profile",
-    "security": "Security",
-    "sessions": "Sessions"
+    "profile":      "Personal Info",
+    "tutorProfile": "Tutor Profile",
+    "becomeTutor":  "Become a Tutor",
+    "security":     "Security",
+    "sessions":     "Sessions"
   },
   "profile": {
-    "title": "Personal info",
+    "title": "Personal Info",
     "saved": "Saved ✓",
     "fields": {
-      "firstName": "First name",
-      "lastName": "Last name",
-      "username": "Username",
-      "language": "Language",
-      "timezone": "Timezone",
-      "email": "Email"
+      "firstName": "First Name",
+      "lastName":  "Last Name",
+      "username":  "Username",
+      "language":  "Language",
+      "timezone":  "Timezone",
+      "email":     "Email"
     },
-    "emailVerified": "✓ Verified",
+    "emailVerified":    "✓ Verified",
     "emailNotVerified": "Not verified",
-    "save": "Save",
+    "save":   "Save",
     "saving": "Saving..."
   },
   "tutorProfile": {
     "saved": "Saved ✓",
     "approvalStatus": {
       "pending": {
-        "title": "Your profile is being reviewed.",
-        "subtitle": "You can fill in your profile now — it will become visible once approved."
+        "title":    "Your profile is under review.",
+        "subtitle": "You can already fill in your profile — it will be visible after approval."
       },
       "rejected": {
-        "title": "Your profile has been rejected.",
+        "title":    "Your profile was rejected.",
         "subtitle": "Please update your profile and wait for re-review."
       },
       "approved": "✓ Profile approved"
     },
-    "hourlyRate": {
-      "title": "Hourly rate"
-    },
+    "hourlyRate": { "title": "Hourly Rate" },
     "name": {
-      "title": "Name in German / in Russian",
-      "firstNameDe": "First name (DE)",
-      "firstNameRu": "First name (RU)",
-      "lastNameDe": "Last name (DE)",
-      "lastNameRu": "Last name (RU)"
+      "title":       "Name in German / Russian",
+      "firstNameDe": "First Name (DE)",
+      "firstNameRu": "First Name (RU)",
+      "lastNameDe":  "Last Name (DE)",
+      "lastNameRu":  "Last Name (RU)"
     },
     "highlight": {
-      "title": "Short introduction",
-      "maxChars": "max. 500 characters",
-      "de": "In German",
-      "ru": "In Russian",
-      "placeholderDe": "e.g. I have been teaching maths for 5 years...",
-      "placeholderRu": "например: Преподаю математику уже 5 лет..."
+      "title":         "Short Bio",
+      "maxChars":      "max. 500 characters",
+      "de":            "In German",
+      "ru":            "In Russian",
+      "placeholderDe": "e.g. I have been teaching math for 5 years...",
+      "placeholderRu": "e.g. I have been teaching math for 5 years..."
     },
     "fullDescription": {
-      "title": "Full description",
-      "maxChars": "max. 5000 characters",
-      "de": "In German",
-      "ru": "In Russian",
+      "title":         "Full Description",
+      "maxChars":      "max. 5000 characters",
+      "de":            "In German",
+      "ru":            "In Russian",
       "placeholderDe": "Describe your experience, methods, achievements...",
-      "placeholderRu": "Опишите свой опыт, методику, достижения..."
+      "placeholderRu": "Describe your experience, methods, achievements..."
     },
-    "save": "Save",
+    "save":   "Save",
     "saving": "Saving..."
   },
+  "becomeTutor": {
+    "title":       "Become a Tutor",
+    "description": "Want to teach on TutorsMD? Follow these steps:",
+    "steps": {
+      "1": "Send us an email with your subjects",
+      "2": "Our team will review your application within 1-2 business days",
+      "3": "After approval, log in as a tutor and complete your profile"
+    },
+    "note":         "We currently accept applications by email.",
+    "contactAdmin": "Contact Admin",
+    "status": {
+      "pending":  "Your application is under review. We'll get back to you soon.",
+      "approved": "Congratulations! You are now a tutor. Please log in again.",
+      "rejected": "Unfortunately your application was rejected. Contact us for details."
+    }
+  },
   "changePassword": {
-    "title": "Change password",
-    "oldPassword": "Current password",
-    "newPassword": "New password (min. 15 characters)",
-    "confirmPassword": "Confirm password",
-    "submit": "Change password",
-    "submitting": "Changing..."
+    "title":           "Change Password",
+    "oldPassword":     "Current Password",
+    "newPassword":     "New Password (min. 15 characters)",
+    "confirmPassword": "Confirm Password",
+    "submit":          "Change Password",
+    "submitting":      "Changing...",
+    "success":         "Password changed successfully ✓"
   },
   "changeEmail": {
-    "title": "Change email",
-    "newEmail": "New email",
-    "password": "Current password (to confirm)",
-    "submit": "Send confirmation link",
-    "submitting": "Sending..."
+    "title":      "Change Email",
+    "newEmail":   "New Email",
+    "password":   "Current Password (for confirmation)",
+    "submit":     "Send Confirmation Link",
+    "submitting": "Sending...",
+    "success":    "Confirmation link sent ✓"
   },
   "sessions": {
-    "title": "Active sessions",
-    "revokeAll": "Sign out of all devices",
-    "empty": "No active sessions.",
-    "unknownDevice": "Unknown device",
-    "createdAt": "Created",
-    "expiresAt": "Expires",
-    "revoke": "Sign out"
+    "title":                  "Active Sessions",
+    "revokeAll":              "Log out of all devices",
+    "empty":                  "No active sessions.",
+    "unknownDevice":          "Unknown device",
+    "createdAt":              "Created",
+    "expiresAt":              "Expires",
+    "revoke":                 "Revoke",
+    "current":                "Current",
+    "revokeCurrentAndLogout": "Revoke (this session)"
   },
   "media": {
-    "title": "Test camera & microphone",
-    "error": "No access to camera/microphone. Please check browser permissions.",
-    "video": "Video",
-    "audio": "Audio",
-    "startRecording": "Start recording",
-    "stopRecording": "Stop recording",
-    "playback": "Playback:",
-    "hint": "If you don't see the camera or microphone, check your browser permissions."
+    "title":          "Test Camera & Microphone",
+    "error":          "No access to camera/microphone. Please check permissions.",
+    "video":          "Video",
+    "audio":          "Audio",
+    "startRecording": "Start Recording",
+    "stopRecording":  "Stop Recording",
+    "playback":       "Playback:",
+    "hint":           "If you don't see camera or microphone, check your browser permissions."
   }
 }

@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 export const schema = z.object({
-  oldPassword: z.string().min(1, 'Erforderlich'),
-  newPassword: z.string().min(15, 'Mindestens 15 Zeichen').max(64),
-  confirmPassword: z.string(),
+  oldPassword:     z.string().min(1, 'Required'),
+  newPassword:     z.string().min(15, 'Min 15 characters'),
+  confirmPassword: z.string().min(1, 'Required'),
 }).refine(d => d.newPassword === d.confirmPassword, {
-  message: 'Passwörter stimmen nicht überein',
+  message: 'Passwords do not match',
   path: ['confirmPassword'],
 });
 

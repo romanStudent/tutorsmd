@@ -262,7 +262,7 @@ const refreshTokenUseCase = new RefreshTokenUseCase(
   refreshTokenFactory,
 );
 
-const getActiveSessionsUseCase = new GetActiveSessionsUseCase(refreshTokenRepo);
+const getActiveSessionsUseCase = new GetActiveSessionsUseCase(refreshTokenRepo, refreshTokenFactory);
 const revokeSessionUseCase     = new RevokeSessionUseCase(refreshTokenRepo);
 const revokeAllSessionsUseCase = new RevokeAllSessionsUseCase(refreshTokenRepo, userRepo);
 
