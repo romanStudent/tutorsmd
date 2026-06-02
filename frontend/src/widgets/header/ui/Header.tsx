@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectIsAuthenticated, selectActiveRole } from '@entities/user/model/selectors';
-import { UserMenu }        from './UserMenu';
-import { SideMenu }        from './SideMenu';
+import { UserMenu }         from './UserMenu';
+import { SideMenu }         from './SideMenu';
 import { LanguageSwitcher } from '../../../shared/index';
-import { useTranslation }  from 'react-i18next';
+import { useTranslation }   from 'react-i18next';
 
 const NAV_LINKS_PUBLIC = [
-  { key: 'tutors',   to: '/tutors' },
-  { key: 'faq',      to: '/faq' },
+  { key: 'tutors', to: '/tutors' },
+  { key: 'faq',    to: '/faq' },
 ];
 
 const NAV_LINKS_AUTH: Record<string, { key: string; to: string }[]> = {
@@ -17,11 +17,12 @@ const NAV_LINKS_AUTH: Record<string, { key: string; to: string }[]> = {
     { key: 'dashboard', to: '/dashboard' },
     { key: 'tutors',    to: '/tutors' },
     { key: 'lessons',   to: '/lessons' },
+    { key: 'support',   to: '/support' }, 
   ],
   tutor: [
     { key: 'dashboard', to: '/dashboard' },
     { key: 'lessons',   to: '/lessons' },
-    { key: 'schedule',  to: '/schedule' },
+    { key: 'support',   to: '/support' },   
   ],
   admin: [
     { key: 'dashboard', to: '/dashboard' },
@@ -30,8 +31,7 @@ const NAV_LINKS_AUTH: Record<string, { key: string; to: string }[]> = {
 };
 
 export const Header = () => {
-  // namespace 'nav' — ключи берутся из nav.json напрямую
-  const { t } = useTranslation('nav');
+  const { t }           = useTranslation('nav');
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const activeRole      = useSelector(selectActiveRole);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
@@ -75,7 +75,7 @@ export const Header = () => {
             </div>
             <UserMenu />
 
-            {/* Hamburger — только мобайл */}
+            {/* Hamburger */}
             <button
               className="md:hidden p-2 rounded-xl hover:bg-slate-100 transition"
               onClick={() => setSideMenuOpen(true)}

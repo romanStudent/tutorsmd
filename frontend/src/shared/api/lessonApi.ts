@@ -1,4 +1,3 @@
-// src/shared/api/lessonApi.ts
 import { baseApi } from './baseApi';
 
 export type LessonStatus =
