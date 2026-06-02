@@ -7,7 +7,10 @@ export const socketAuthMiddleware = (
   accessTokenFactory: IAccessTokenFactory
 ): SocketMiddleware => {
   return (socket: Socket, next: (err?: Error) => void): void => {
-    const token = socket.handshake.auth.accessToken as string | undefined;
+    const token = 
+      (socket.handshake.auth.accessToken as string | undefined) 
+        || 
+      (socket.handshake.auth.token as string | undefined) ;
 
     if (!token) {
       return next(new Error("Unauthorized: No token"));

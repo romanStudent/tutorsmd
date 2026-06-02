@@ -156,9 +156,19 @@ const io = createSocketServer({
   completeLessonUseCase: completeLessonUseCase
 });
 
+
+// AUTO PENDING /////////////////////////////////////////////////////
+// ОКОНЧАНИЕ УРОКА ЧЕРЕЗ 2 ЧАСА
 appEvents.on(AppEvents.LESSON_COMPLETED, (lessonId: string) => {
   io.to(lessonId).emit('meetingEnded');
 });
+
+// LOGOUT С УСТРОЙСТВА, КОТОРОЕ РАЗЛОГИНИЛИ С ДРУГОГО УСТРОЙСТВА
+appEvents.on(AppEvents.SESSION_REVOKED, (userId: string) => {
+  io.to(`user:${userId}`).emit('session:revoked');
+});
+////////////////////////////////////////////////////////////////////////
+
 
 app.use("/socket.io", rateLimit({
   windowMs: 60_000,
