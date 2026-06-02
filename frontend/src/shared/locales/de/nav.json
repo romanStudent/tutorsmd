@@ -14,5 +14,6 @@
   "logout":      "Abmelden",
   "userMenu":    "Benutzerprofil",
   "openMenu":    "Menü öffnen",
-  "closeMenu":   "Menü schließen"
+  "closeMenu":   "Menü schließen",
+  "switchRole":  "Rolle wechseln"
 }

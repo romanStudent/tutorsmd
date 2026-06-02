@@ -14,5 +14,6 @@
   "logout":      "Sign out",
   "userMenu":    "User profile",
   "openMenu":    "Open menu",
-  "closeMenu":   "Close menu"
+  "closeMenu":   "Close menu",
+  "switchRole":  "Switch role"
 }
