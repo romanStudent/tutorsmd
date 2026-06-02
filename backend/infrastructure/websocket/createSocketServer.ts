@@ -164,6 +164,7 @@ export const createSocketServer = ({
   io.on("connection", (socket: Socket) => {
     // Принудительное отключение по истечении Access Token.
     // Клиент должен переподключиться с новым токеном после refresh.
+    socket.join(`user:${socket.data.user.id}`);
     const tokenTimer = setTimeout(() => {
       socket.emit("auth:expired");
       socket.disconnect(true);

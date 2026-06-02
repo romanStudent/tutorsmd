@@ -2,6 +2,7 @@ import { DomainError } from "../../../../domain/errors/DomainError";
 import { ForbiddenError } from "../../../../domain/errors/ForbiddenError";
 import { NotFoundError } from "../../../../domain/errors/NotFoundError";
 import { IRefreshTokenRepository } from "../../../../domain/repositories/IRefreshTokenRepository";
+import { appEvents, AppEvents }    from "../../../../infrastructure/events/AppEventEmitter";
 
 export class RevokeSessionUseCase {
   constructor(
@@ -11,7 +12,7 @@ export class RevokeSessionUseCase {
   async execute(userId: string, tokenHash: string): Promise<void> {
     const session = await this.refreshTokenRepo.findByTokenHash(tokenHash);
 
-    if (!session || session.userId !== userId) {
+    if (!session) {
       throw new NotFoundError('Session not found');
     }
 
@@ -22,5 +23,7 @@ export class RevokeSessionUseCase {
     }
 
     await this.refreshTokenRepo.revoke(tokenHash);
+    // Уведомить WebSocket -> устройство с этой сессией должно разлогиниться
+    appEvents.emit(AppEvents.SESSION_REVOKED, userId);
   }
 }
