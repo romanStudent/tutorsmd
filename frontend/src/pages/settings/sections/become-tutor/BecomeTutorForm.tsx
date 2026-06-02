@@ -60,13 +60,16 @@ export const BecomeTutorForm = () => {
         <p className="text-sm text-blue-800 mb-4">
           {t('becomeTutor.note')}
         </p>
-        <a
-          href="mailto:support@tutorsmd.net?subject=Ich möchte Lehrer werden"
+        <button
+          type="button"
+          onClick={() => {
+            window.location.href = 'mailto:ra.ivanov1405@gmail.com?subject=Ich möchte Lehrer werden';
+          }}
           className="inline-block bg-blue-600 hover:bg-blue-700 text-white
-            text-sm font-medium px-6 py-2.5 rounded-xl transition"
+          text-sm font-medium px-6 py-2.5 rounded-xl transition"
         >
-          {t('becomeTutor.contactAdmin')}
-        </a>
+        {t('becomeTutor.contactAdmin')}
+        </button>
       </div>
     </div>
   );
