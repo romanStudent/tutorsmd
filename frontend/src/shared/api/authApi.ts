@@ -130,6 +130,8 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      // onQueryStarted уже в  
+   /*
       onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
@@ -140,6 +142,7 @@ export const authApi = baseApi.injectEndpoints({
           }));
         } catch {}
       },
+      */
     }),
 
     // POST /auth/activate/:token
@@ -198,6 +201,7 @@ interface Session {
   deviceInfo: string | null;
   createdAt:  string;
   expiresAt:  string;
+  isCurrent:  boolean;
 }
 
 export const {

@@ -238,7 +238,8 @@ async resendVerification(req: Request<{}, {}, ResendVerificationBody>, res: Resp
 
  async getActiveSessions(req: Request, res: Response): Promise<void> {
     const userId = req.user!.userId;
-    const sessions = await this.getActiveSessionsUseCase.execute(userId);
+    const refreshToken = req.cookies?.refreshToken;
+    const sessions = await this.getActiveSessionsUseCase.execute(userId, refreshToken ?? '');
     res.status(200).json({ sessions });
   }
 

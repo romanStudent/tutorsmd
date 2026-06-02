@@ -1,101 +1,120 @@
 {
   "title": "Einstellungen",
   "tabs": {
-    "profile": "Persönliche Daten",
+    "profile":      "Persönliche Daten",
     "tutorProfile": "Lehrerprofil",
-    "security": "Sicherheit",
-    "sessions": "Sitzungen"
+    "becomeTutor":  "Lehrer werden",
+    "security":     "Sicherheit",
+    "sessions":     "Sitzungen"
   },
   "profile": {
     "title": "Persönliche Daten",
     "saved": "Gespeichert ✓",
     "fields": {
       "firstName": "Vorname",
-      "lastName": "Nachname",
-      "username": "Benutzername",
-      "language": "Sprache",
-      "timezone": "Zeitzone",
-      "email": "E-Mail"
+      "lastName":  "Nachname",
+      "username":  "Benutzername",
+      "language":  "Sprache",
+      "timezone":  "Zeitzone",
+      "email":     "E-Mail"
     },
-    "emailVerified": "✓ Verifiziert",
+    "emailVerified":    "✓ Verifiziert",
     "emailNotVerified": "Nicht verifiziert",
-    "save": "Speichern",
-    "saving": "Wird gespeichert..."
+    "save":    "Speichern",
+    "saving":  "Wird gespeichert..."
   },
   "tutorProfile": {
     "saved": "Gespeichert ✓",
     "approvalStatus": {
       "pending": {
-        "title": "Ihr Profil wird geprüft.",
+        "title":    "Ihr Profil wird geprüft.",
         "subtitle": "Sie können Ihr Profil bereits ausfüllen — es wird nach der Freischaltung sichtbar."
       },
       "rejected": {
-        "title": "Ihr Profil wurde abgelehnt.",
+        "title":    "Ihr Profil wurde abgelehnt.",
         "subtitle": "Bitte aktualisieren Sie Ihr Profil und warten Sie auf eine erneute Prüfung."
       },
       "approved": "✓ Profil freigeschaltet"
     },
-    "hourlyRate": {
-      "title": "Stundensatz"
-    },
+    "hourlyRate": { "title": "Stundensatz" },
     "name": {
-      "title": "Name auf Deutsch / по-русски",
+      "title":       "Name auf Deutsch / по-русски",
       "firstNameDe": "Vorname (DE)",
       "firstNameRu": "Vorname (RU)",
-      "lastNameDe": "Nachname (DE)",
-      "lastNameRu": "Nachname (RU)"
+      "lastNameDe":  "Nachname (DE)",
+      "lastNameRu":  "Nachname (RU)"
     },
     "highlight": {
-      "title": "Kurzvorstellung",
-      "maxChars": "max. 500 Zeichen",
-      "de": "Auf Deutsch",
-      "ru": "По-русски",
+      "title":         "Kurzvorstellung",
+      "maxChars":      "max. 500 Zeichen",
+      "de":            "Auf Deutsch",
+      "ru":            "По-русски",
       "placeholderDe": "z.B. Ich unterrichte Mathematik seit 5 Jahren...",
       "placeholderRu": "например: Преподаю математику уже 5 лет..."
     },
     "fullDescription": {
-      "title": "Ausführliche Beschreibung",
-      "maxChars": "max. 5000 Zeichen",
-      "de": "Auf Deutsch",
-      "ru": "По-русски",
+      "title":         "Ausführliche Beschreibung",
+      "maxChars":      "max. 5000 Zeichen",
+      "de":            "Auf Deutsch",
+      "ru":            "По-русски",
       "placeholderDe": "Beschreiben Sie Ihre Erfahrung, Methodik, Erfolge...",
       "placeholderRu": "Опишите свой опыт, методику, достижения..."
     },
-    "save": "Speichern",
-    "saving": "Wird gespeichert..."
+    "save":    "Speichern",
+    "saving":  "Wird gespeichert..."
+  },
+  "becomeTutor": {
+    "title":       "Lehrer werden",
+    "description": "Möchten Sie Nachhilfelehrer auf TutorsMD werden? Folgen Sie diesen Schritten:",
+    "steps": {
+      "1": "Schreiben Sie uns eine E-Mail mit Ihren Unterrichtsfächern",
+      "2": "Unser Team prüft Ihre Anfrage innerhalb von 1-2 Werktagen",
+      "3": "Nach Genehmigung können Sie als Lehrer einloggen und Ihr Profil ausfüllen"
+    },
+    "note":         "Aktuell nehmen wir Bewerbungen per E-Mail entgegen.",
+    "contactAdmin": "Admin kontaktieren",
+    "status": {
+      "pending":  "Ihre Anfrage wird geprüft. Wir melden uns bald.",
+      "approved": "Glückwunsch! Sie sind jetzt Lehrer. Bitte neu anmelden.",
+      "rejected": "Leider wurde Ihre Anfrage abgelehnt. Kontaktieren Sie uns für Details."
+    }
   },
   "changePassword": {
-    "title": "Passwort ändern",
-    "oldPassword": "Aktuelles Passwort",
-    "newPassword": "Neues Passwort (mind. 15 Zeichen)",
+    "title":           "Passwort ändern",
+    "oldPassword":     "Aktuelles Passwort",
+    "newPassword":     "Neues Passwort (mind. 15 Zeichen)",
     "confirmPassword": "Passwort bestätigen",
-    "submit": "Passwort ändern",
-    "submitting": "Wird geändert..."
+    "submit":          "Passwort ändern",
+    "submitting":      "Wird geändert...",
+    "success":         "Passwort erfolgreich geändert ✓"
   },
   "changeEmail": {
-    "title": "E-Mail ändern",
-    "newEmail": "Neue E-Mail",
-    "password": "Aktuelles Passwort (zur Bestätigung)",
-    "submit": "Bestätigungslink senden",
-    "submitting": "Wird gesendet..."
+    "title":       "E-Mail ändern",
+    "newEmail":    "Neue E-Mail",
+    "password":    "Aktuelles Passwort (zur Bestätigung)",
+    "submit":      "Bestätigungslink senden",
+    "submitting":  "Wird gesendet...",
+    "success":     "Bestätigungslink wurde gesendet ✓"
   },
   "sessions": {
-    "title": "Aktive Sitzungen",
-    "revokeAll": "Alle abmelden",
-    "empty": "Keine aktiven Sitzungen.",
-    "unknownDevice": "Unbekanntes Gerät",
-    "createdAt": "Erstellt",
-    "expiresAt": "Läuft ab",
-    "revoke": "Abmelden"
+    "title":                  "Aktive Sitzungen",
+    "revokeAll":              "Alle abmelden",
+    "empty":                  "Keine aktiven Sitzungen.",
+    "unknownDevice":          "Unbekanntes Gerät",
+    "createdAt":              "Erstellt",
+    "expiresAt":              "Läuft ab",
+    "revoke":                 "Abmelden",
+    "current":                "Aktuell",
+    "revokeCurrentAndLogout": "Abmelden (diese Sitzung)"
   },
   "media": {
-    "title": "Kamera & Mikrofon testen",
-    "error": "Kein Zugriff auf Kamera/Mikrofon. Bitte Berechtigungen prüfen.",
-    "video": "Video",
-    "audio": "Audio",
+    "title":          "Kamera & Mikrofon testen",
+    "error":          "Kein Zugriff auf Kamera/Mikrofon. Bitte Berechtigungen prüfen.",
+    "video":          "Video",
+    "audio":          "Audio",
     "startRecording": "Aufnahme starten",
-    "stopRecording": "Aufnahme stoppen",
-    "playback": "Wiedergabe:",
-    "hint": "Wenn Sie Kamera oder Mikrofon nicht sehen, prüfen Sie die Browser-Berechtigungen."
+    "stopRecording":  "Aufnahme stoppen",
+    "playback":       "Wiedergabe:",
+    "hint":           "Wenn Sie Kamera oder Mikrofon nicht sehen, prüfen Sie die Browser-Berechtigungen."
   }
 }

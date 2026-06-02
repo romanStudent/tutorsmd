@@ -1,28 +1,44 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectActiveRole } from '@entities/user/model/selectors';
-import { Layout }            from '@widgets/layout/index';
-import { ProfileForm }       from './sections/profile-form/ProfileForm';
-import { TutorProfileForm }  from './sections/tutor-profile-form/TutorProfileForm';
+import { selectIsAuthenticated } from '@entities/user/model/selectors';
+import { useGetUserProfileQuery } from '@shared/api/profileApi';
+import { Layout }             from '@widgets/layout/index';
+import { ProfileForm }        from './sections/profile-form/ProfileForm';
+import { TutorProfileForm }   from './sections/tutor-profile-form/TutorProfileForm';
+import { BecomeTutorForm }    from './sections/become-tutor/BecomeTutorForm';
 import { ChangePasswordForm } from './sections/change-password/ChangePasswordForm';
-import { ChangeEmailForm }   from './sections/change-email/ChangeEmailForm';
-import { SessionsList }      from './sections/sessions-list/SessionsList';
-import { useTranslation }    from 'react-i18next';
+import { ChangeEmailForm }    from './sections/change-email/ChangeEmailForm';
+import { SessionsList }       from './sections/sessions-list/SessionsList';
+import { useTranslation }     from 'react-i18next';
 
-type TabKey = 'profile' | 'tutor-profile' | 'security' | 'sessions';
+type TabKey = 'profile' | 'tutor-profile' | 'become-tutor' | 'security' | 'sessions';
 
 export default function SettingsPage() {
-  const { t } = useTranslation('settings');
-  const role  = useSelector(selectActiveRole);
+  const { t }           = useTranslation('settings');
+  const role            = useSelector(selectActiveRole);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  // tabs зависят от роли — tutor видит вкладку "Lehrerprofil", client нет
+  // profile нужен чтобы проверить есть ли у client уже tutor-профиль
+  const { data: profile } = useGetUserProfileQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
   const tabs: { key: TabKey; labelKey: string }[] = [
-    { key: 'profile',      labelKey: 'profile' },
+    { key: 'profile', labelKey: 'profile' },
+
+    // tutor видит свой профиль преподавателя
     ...(role === 'tutor'
       ? [{ key: 'tutor-profile' as TabKey, labelKey: 'tutorProfile' }]
       : []),
-    { key: 'security',  labelKey: 'security' },
-    { key: 'sessions',  labelKey: 'sessions' },
+
+    // client без tutor-профиля видит форму заявки
+    ...(role === 'client' && !profile?.tutor
+      ? [{ key: 'become-tutor' as TabKey, labelKey: 'becomeTutor' }]
+      : []),
+
+    { key: 'security', labelKey: 'security' },
+    { key: 'sessions', labelKey: 'sessions' },
   ];
 
   const [tab, setTab] = useState<TabKey>('profile');
@@ -50,9 +66,10 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        {tab === 'profile'       && <ProfileForm />}
+        {tab === 'profile'      && <ProfileForm />}
         {tab === 'tutor-profile' && <TutorProfileForm />}
-        {tab === 'security'      && (
+        {tab === 'become-tutor' && <BecomeTutorForm />}
+        {tab === 'security'     && (
           <div className="space-y-10">
             <ChangePasswordForm />
             <div className="border-t border-slate-200 pt-10">
