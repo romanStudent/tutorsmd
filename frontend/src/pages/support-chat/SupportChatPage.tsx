@@ -85,9 +85,11 @@ export default function SupportChatPage() {
 
   useEffect(() => {
     if (!chat?.id) {
-  console.error('Chat not ready');
-  return;
-}
+      console.log('Chat data not ready yet, waiting...');
+      return;
+    }
+
+    console.log(`[SupportChat] Initializing socket for chat ${chat.id}`);
 
     const socket = io(import.meta.env.VITE_SOCKET_URL as string, {
       withCredentials: true,
@@ -101,6 +103,8 @@ export default function SupportChatPage() {
         console.log('JOIN RESPONSE:', res);
         if (res?.ok) {
           setIsJoined(true);
+        } else {
+          console.error('support:join failed', res);
         }
       });
     };
