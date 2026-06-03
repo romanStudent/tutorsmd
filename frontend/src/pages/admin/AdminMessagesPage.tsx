@@ -1,14 +1,8 @@
-// Admin видит все чаты — выбирает чат — отвечает
-
 import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@entities/user/model/selectors';
 import { tokenManager } from '@shared/lib/TokenManager';
-import {
-  useGetAllChatsQuery,
-  useGetChatByIdQuery,
-  type SupportMessage,
-} from '@shared/api/supportApi';
+import { useGetAllChatsQuery, useGetChatByIdQuery, type SupportMessage } from '@shared/api/supportApi';
 import { Layout } from '@widgets/layout/ui/Layout';
 import { Spinner } from '@shared/index';
 import { io, Socket } from 'socket.io-client';
@@ -16,23 +10,23 @@ import { io, Socket } from 'socket.io-client';
 export default function AdminMessagesPage() {
   const userId = useSelector(selectUserId);
   const [chatId, setChatId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<SupportMessage[]>([]);
+  const [text, setText] = useState('');
+  const [isJoined, setIsJoined] = useState(false);
 
   const { data: allChats, isLoading: chatsLoading } = useGetAllChatsQuery();
-  const { data: activeChat, isLoading: chatLoading } = useGetChatByIdQuery(
-    chatId ?? '', { skip: !chatId },
-  );
+  const { data: activeChat, isLoading: chatLoading } = useGetChatByIdQuery(chatId ?? '', { skip: !chatId });
 
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const [messages, setMessages] = useState<SupportMessage[]>([]);
-  const [text, setText]         = useState('');
 
-  useEffect(() => {
-    if (activeChat?.messages) setMessages(activeChat.messages);
-  }, [activeChat]);
 
+  // Socket setup
   useEffect(() => {
-    if (!chatId || !activeChat?.userId) return;
+     if (!chatId || !activeChat?.userId) {
+      setIsJoined(false);
+      return;
+    }
 
     const socket = io(import.meta.env.VITE_SOCKET_URL as string, {
       withCredentials: true,
@@ -40,51 +34,47 @@ export default function AdminMessagesPage() {
     });
     socketRef.current = socket;
 
-    socket.emit(
-    'support:admin_join',
-    { targetUserId: activeChat.userId },
-    (res: any) => {
-      console.log('ADMIN JOIN RESPONSE:', res);
+    console.log(`[Admin] Joining chat ${chatId}`);
 
-      if (!res?.ok) {
-        console.error('admin join failed', res);
+   socket.emit(
+      'support:admin_join',
+      { targetUserId: activeChat.userId },
+      (res: any) => {
+        console.log('ADMIN JOIN RESPONSE:', res);
+        if (res?.ok) setIsJoined(true);
       }
-    }
-  );
+    );
 
-  socket.on('support:history', (msgs: SupportMessage[]) => {
-    setMessages(msgs);
-  });
-
+    socket.on('support:history', (msgs: SupportMessage[]) => setMessages(msgs));
     socket.on('support:message', (msg: SupportMessage) => {
-      setMessages((prev) => [...prev, msg]);
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+      setMessages(prev => [...prev, msg]);
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     });
 
-    return () => { socket.disconnect(); };
+    return () => {
+      socket.disconnect();
+      setIsJoined(false);
+    };
   }, [chatId, activeChat?.userId]);
 
   const send = () => {
-    if (!text.trim() || !chatId) return;
-    socketRef.current?.emit(
-      'support:message', 
+    if (!text.trim() || !socketRef.current || !isJoined) return;
+
+    socketRef.current.emit(
+      'support:message',
       { text: text.trim() },
       (res: any) => {
-      console.log('ADMIN SEND RESPONSE:', res);
-
-      if (!res?.ok) {
-        console.error('admin send failed', res);
-        return;
+        if (res?.ok) {
+          setText('');
+        } else {
+          console.error('Admin send failed:', res);
+        }
       }
-
-      setText('');
-    }
-    
     );
-    setText('');
   };
 
   const chats = allChats?.chats ?? [];
+
 
   return (
     <Layout>
@@ -189,7 +179,7 @@ export default function AdminMessagesPage() {
                   />
                   <button
                     onClick={send}
-                    disabled={!text.trim()}
+                    disabled={!text.trim() || !isJoined}
                     className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300
                       text-white px-4 py-2 rounded-xl transition text-sm font-medium"
                   >
