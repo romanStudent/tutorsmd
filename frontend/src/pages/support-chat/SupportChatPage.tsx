@@ -95,6 +95,28 @@ export default function SupportChatPage() {
     });
     socketRef.current = socket;
 
+    const onConnect = () => {
+      console.log(`[SupportChat] Socket connected, joining chat ${chat.id}`);
+      socket.emit('support:join', {}, (res: any) => {
+        console.log('JOIN RESPONSE:', res);
+        if (res?.ok) {
+          setIsJoined(true);
+        }
+      });
+    };
+
+    socket.on('connect', onConnect);
+
+    socket.on('support:history', (msgs: SupportMessage[]) => {
+      setMessages(msgs);
+      setHasMore(msgs.length >= 50);
+    });
+
+    socket.on('support:message', (msg: SupportMessage) => {
+      setMessages((prev) => [...prev, msg]);
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+    });
+
     socket.emit('support:join', {}, (res: any) => {
       console.log('JOIN RESPONSE:', res);
       if (res?.ok) {
@@ -104,22 +126,15 @@ export default function SupportChatPage() {
     }
     });
 
-    socket.on('support:history', (msgs: SupportMessage[]) => {
-      setMessages(msgs);
-    });
-
-    socket.on('support:message', (msg: SupportMessage) => {
-      setMessages((prev) => [...prev, msg]);
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-    });
-
     return () => { socket.disconnect(); setIsJoined(false); };
   }, [chat?.id]);
 
   const loadMore = useCallback(async () => {
     if (!chat?.id || !messages.length || loadingMore) return;
+
     setLoadingMore(true);
     const oldest = messages[0];
+
     socketRef.current?.emit(
       'support:history_more',
       { chatId: chat.id, limit: 30, before: oldest.createdAt },
@@ -156,11 +171,7 @@ export default function SupportChatPage() {
         'support:presign',
         { fileName: pending.file.name, mimeType: pending.file.type, size: pending.file.size },
         async (res: any) => {
-          if (!res?.ok) {
-            setPendingFiles((prev) =>
-              prev.map((p, i) => i === idx ? { ...p, status: 'error' } : p));
-            return reject(new Error(res?.error ?? 'Presign failed'));
-          }
+          if (!res?.ok) return reject(new Error(res?.error));
 
           const { uploadUrl, key, name } = res;
           setPendingFiles((prev) =>
@@ -202,17 +213,13 @@ export default function SupportChatPage() {
   };
 
   const send = async () => {
-    if (!socketRef.current?.connected) {
-  console.error('Socket not connected');
-  return;
-}
+    const socket = socketRef.current;
+    if (!socket?.connected || !isJoined || !chat?.id) {
+      console.error('Cannot send: socket or chat not ready', { connected: socket?.connected, isJoined });
+      return;
+    }
 
-if (!isJoined) {
-    console.error('Not joined yet');
-    return;
-  }
-
-    if ((!text.trim() && !pendingFiles.length) || sending || !chat?.id) return;
+    if ((!text.trim() && !pendingFiles.length) || sending) return;
 
     setSending(true);
 
@@ -228,17 +235,17 @@ if (!isJoined) {
           files: uploadedFiles.length ? uploadedFiles : undefined,
         },
         (res: any) => {
-          console.log('SEND RESPONSE:', res); 
-    if (!res?.ok) {
-        console.error('send failed', res)
-        return;
-      };
+          if (res?.ok) {
+            setText('');
+            setPendingFiles([]);
+          } else {
+            console.error('send failed', res);
+          }
 
-      setText('');
-      setPendingFiles([]);
+      
         },
       );
-      
+
     } catch (err) {
       console.error('Send error:', err);
     } finally {
@@ -247,6 +254,9 @@ if (!isJoined) {
   };
 
   if (isLoading) return <Layout><Spinner /></Layout>;
+
+  const isReady = chat?.id && socketRef.current?.connected && isJoined;
+
 
   return (
     <Layout>
@@ -399,7 +409,7 @@ if (!isJoined) {
 
           <button
             onClick={send}
-            disabled={(!text.trim() && !pendingFiles.length) || sending}
+            disabled={!isReady || (!text.trim() && !pendingFiles.length) || sending}
             className="bg-blue-600 hover:bg-blue-700 disabled:opacity-40
               text-white px-4 py-2.5 rounded-xl transition text-sm font-medium flex-shrink-0"
           >

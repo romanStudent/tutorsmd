@@ -40,8 +40,8 @@ export const createSupportChatHandler = (
   socket.on(
     "support:join",
     safeHandler("support:join", async (
-      payload: { targetUserId?: string } | null,
-      callback?: Function,
+      payload,
+      callback,
     ) => {
       const parsed = JoinSchema.safeParse(payload);
       if (!parsed.success) {
@@ -59,6 +59,12 @@ export const createSupportChatHandler = (
 
       // Реальный chatId из БД — не 'support:${userId}'
       const roomId = `support:${chat.id}`;
+
+      // Важно: очищаю предыдущий чат
+    if (socket.data.chatId && socket.data.chatId !== chat.id) {
+      await socket.leave(`support:${socket.data.chatId}`);
+    }
+
       socket.data.chatId = chat.id;
 
       await socket.join(roomId);
@@ -78,8 +84,8 @@ export const createSupportChatHandler = (
   socket.on(
     "support:admin_join",
     safeHandler("support:admin_join", async (
-      data: { targetUserId: string },
-      callback?: Function,
+      data,
+      callback,
     ) => {
       if (activeRole !== "admin") {
         return callback?.({ ok: false, error: "Forbidden" });
@@ -113,9 +119,10 @@ export const createSupportChatHandler = (
   socket.on(
     "support:message",
     safeHandler("support:message", async (
-      data: { text?: string; files?: FileMetadataDto[] },
-      callback?: Function,
+      data,
+      callback,
     ) => {
+      
 
        console.log("[SOCKET] support:message", {
       userId,
@@ -124,15 +131,15 @@ export const createSupportChatHandler = (
       data,
     });
 
-      // Rate limit: 30 сообщений / минуту
-      if (await isRateLimited(socket, 30, "support:message", 60_000)) {
-        return callback?.({ ok: false, error: "Too many messages" });
-      }
-
       const chatId = socket.data.chatId as string | undefined;
       if (!chatId) {
         console.error("[SOCKET] NO CHAT ID");
         return callback?.({ ok: false, error: "Join chat first" });
+      }
+
+        // Rate limit: 30 сообщений / минуту
+      if (await isRateLimited(socket, 30, "support:message", 60_000)) {
+        return callback?.({ ok: false, error: "Too many messages" });
       }
 
        const parsed = MessageSchema.safeParse(data);
@@ -162,7 +169,7 @@ export const createSupportChatHandler = (
         socket.to("support:agents").emit("support:notify", {
           chatId,
           senderId: userId,
-          preview:  data.text?.slice(0, 100) ?? "[file]",
+          preview:  parsed.data.text?.slice(0, 100) ?? "[file]",
         });
       }
 
@@ -180,8 +187,8 @@ export const createSupportChatHandler = (
   socket.on(
     "support:presign",
     safeHandler("support:presign", async (
-      data: { fileName: string; mimeType: string; size: number },
-      callback?: Function,
+      data,
+      callback,
     ) => {
       // Rate limit: 10 файлов / минуту
       if (await isRateLimited(socket, 10, "support:presign", 60_000)) {
