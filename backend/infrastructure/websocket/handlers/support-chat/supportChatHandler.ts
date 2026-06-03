@@ -125,11 +125,11 @@ export const createSupportChatHandler = (
       
 
        console.log("[SOCKET] support:message", {
-      userId,
-      role: activeRole,
-      chatId: socket.data.chatId,
-      data,
-    });
+        userId,
+        role: activeRole,
+        chatId: socket.data.chatId,
+        hasText: !!data?.text,
+      });
 
       const chatId = socket.data.chatId as string | undefined;
       if (!chatId) {
