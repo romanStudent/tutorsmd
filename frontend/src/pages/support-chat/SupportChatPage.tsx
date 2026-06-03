@@ -10,16 +10,13 @@ import type { SupportMessage, SupportAttachment } from '@shared/api/supportApi';
 import { useTranslation } from 'react-i18next';
 
 interface PendingFile {
-  file:     File;
-  status:   'pending' | 'uploading' | 'done' | 'error';
-  key?:     string;
-  name?:    string;
+  file: File;
+  status: 'pending' | 'uploading' | 'done' | 'error';
+  key?: string;
+  name?: string;
   progress: number;
 }
 
-
-
-// ─── Attachment viewer ────────────────────────────────────────
 const AttachmentView = ({ attachment, isOwn }: { attachment: SupportAttachment; isOwn: boolean }) => {
   const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(attachment.name) ||
     attachment.mimeType?.startsWith('image/');
@@ -29,74 +26,60 @@ const AttachmentView = ({ attachment, isOwn }: { attachment: SupportAttachment; 
   if (isImage) {
     return (
       <a href={url} target="_blank" rel="noopener noreferrer" className="block max-w-[200px]">
-        <img
-          src={url}
-          alt={attachment.name}
-          className="max-w-[200px] rounded-xl object-cover"
-          loading="lazy"
-        />
-        <p className={`text-xs mt-1 truncate ${isOwn ? 'opacity-70' : 'text-slate-400'}`}>
-          {attachment.name}
-        </p>
+        <img src={url} alt={attachment.name} className="max-w-[200px] rounded-xl object-cover" loading="lazy" />
+        <p className={`text-xs mt-1 truncate ${isOwn ? 'opacity-70' : 'text-slate-400'}`}>{attachment.name}</p>
       </a>
     );
   }
 
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`flex items-center gap-2 text-xs underline underline-offset-2
-        ${isOwn ? 'text-blue-100 hover:text-white' : 'text-slate-500 hover:text-slate-700'}`}
-    >
+    <a href={url} target="_blank" rel="noopener noreferrer"
+       className={`flex items-center gap-2 text-xs underline underline-offset-2 ${isOwn ? 'text-blue-100 hover:text-white' : 'text-slate-500 hover:text-slate-700'}`}>
       <span>{isPdf ? '📄' : '📎'}</span>
       <span className="truncate max-w-[160px]">{attachment.name}</span>
-      {attachment.size && (
-        <span className="opacity-60">({Math.round(attachment.size / 1024)} KB)</span>
-      )}
+      {attachment.size && <span className="opacity-60">({Math.round(attachment.size / 1024)} KB)</span>}
     </a>
   );
 };
 
-// ─── Main component ───────────────────────────────────────────
 export default function SupportChatPage() {
-  const userId    = useSelector(selectUserId);
+  const userId = useSelector(selectUserId);
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: chat, isLoading } = useGetMyChatQuery();
-  const [messages, setMessages]   = useState<SupportMessage[]>([]);
-  const [text, setText]           = useState('');
+
+  const [messages, setMessages] = useState<SupportMessage[]>([]);
+  const [text, setText] = useState('');
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
   const [sending, setSending] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-
   const [isJoined, setIsJoined] = useState(false);
 
   const { t } = useTranslation('support');
 
-     // Debug
+  // Debug
   useEffect(() => {
     console.log('[SupportChat Debug] chat data:', chat);
   }, [chat]);
 
-  // Socket connection — ЖДЁМ пока chat.id действительно появится
+  // Socket connection
   useEffect(() => {
     if (!chat?.id) {
       console.log('[SupportChat] Waiting for chat data...');
       return;
     }
 
-    console.log(`[SupportChat] Chat ready → initializing socket for ${chat.id}`);
+    console.log(`[SupportChat] Chat ready (id=${chat.id}) → initializing socket`);
 
     const socket = io(import.meta.env.VITE_SOCKET_URL as string, {
       withCredentials: true,
       auth: { token: tokenManager.get() },
       reconnection: true,
       reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
     socketRef.current = socket;
@@ -107,6 +90,8 @@ export default function SupportChatPage() {
         console.log('JOIN RESPONSE:', res);
         if (res?.ok) {
           setIsJoined(true);
+        } else {
+          console.error('support:join failed', res);
         }
       });
     };
@@ -114,6 +99,7 @@ export default function SupportChatPage() {
     socket.on('connect', handleConnect);
 
     socket.on('support:history', (msgs: SupportMessage[]) => {
+      console.log(`[SupportChat] Received history: ${msgs.length} messages`);
       setMessages(msgs);
       setHasMore(msgs.length >= 50);
     });
@@ -123,18 +109,18 @@ export default function SupportChatPage() {
       setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 80);
     });
 
-    // Join
+    // Initial join
     socket.emit('support:join', {}, (res: any) => {
-      console.log('JOIN RESPONSE:', res);
+      console.log('JOIN RESPONSE (initial):', res);
       if (res?.ok) setIsJoined(true);
     });
 
     return () => {
-      console.log(`[SupportChat] Disconnecting socket for chat ${chat.id}`);
+      console.log(`[SupportChat] Cleaning up socket for chat ${chat.id}`);
       socket.disconnect();
       setIsJoined(false);
     };
-  }, [chat?.id]); // ← только от id
+  }, [chat?.id]);
 
   const loadMore = useCallback(async () => {
     if (!chat?.id || !messages.length || loadingMore) return;
