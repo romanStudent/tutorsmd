@@ -30,6 +30,7 @@ import { createReviewRouter }       from './presentation/routes/ReviewRoutes';
 import { createQuizRouter }         from './presentation/routes/QuizRoutes';
 import { createAppealRouter }       from './presentation/routes/AppealRoutes';
 import { createFeedbackRouter }     from './presentation/routes/FeedbackRoutes';
+import { createSupportChatRouter } from './presentation/routes/SupportChatRoutes';
 
 import {
   authController,
@@ -42,6 +43,7 @@ import {
   quizController,
   appealController,
   feedbackController,
+  supportChatController,
 } from './di/container';
 
 
@@ -57,6 +59,7 @@ import { createSocketServer } from './infrastructure/websocket/createSocketServe
 import { connectRedis } from './infrastructure/redis/redisClient';
 import { createWorker } from './infrastructure/queue/worker';
 import { startScheduler } from './infrastructure/queue/scheduler';
+
 
 // Перенеси ЭТО наверх файла, до async function bootstrap():
 declare module 'express-serve-static-core' {
@@ -125,6 +128,7 @@ app.use('/api/reviews', createReviewRouter(reviewController));
 app.use('/api/quiz',    createQuizRouter(quizController));
 app.use('/api/appeals', createAppealRouter(appealController));
 app.use('/api/feedback', createFeedbackRouter(feedbackController));
+app.use('/api/support', createSupportChatRouter(supportChatController));
 ///////////////////////////////////
 
 ///////////// HEALTH ///////////////////////////////////////////////////////////
