@@ -11,7 +11,7 @@ import {
   GetSupportHistoryQueryDto,
   ChatIdParams
 } from './support-chat.schema';
-import { GetAllSupportChatsUseCase } from '../../../application/usecases/support-chat/GetAllSupportChatsuseCase';
+import { GetAllSupportChatsUseCase } from '../../../application/usecases/support-chat/GetAllSupportChatsUseCase';
 
 
 
