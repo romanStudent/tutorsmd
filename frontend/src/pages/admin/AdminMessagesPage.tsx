@@ -14,12 +14,15 @@ export default function AdminMessagesPage() {
   const [text, setText] = useState('');
   const [isJoined, setIsJoined] = useState(false);
 
-  const { data: allChats, isLoading: chatsLoading } = useGetAllChatsQuery();
+  const { data: allChatsResponse, isLoading: chatsLoading } = useGetAllChatsQuery();
   const { data: activeChat, isLoading: chatLoading } = useGetChatByIdQuery(chatId ?? '', { skip: !chatId });
 
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const chats = allChatsResponse?.chats ?? [];
+
+  console.log('[Admin] allChatsResponse:', allChatsResponse); // ← посмотри в консоли
 
   // Socket setup
   useEffect(() => {
@@ -72,8 +75,6 @@ export default function AdminMessagesPage() {
       }
     );
   };
-
-  const chats = allChats?.chats ?? [];
 
 
   return (
