@@ -32,6 +32,14 @@ const chatSelect = {
   id:        true,
   userId:    true,
   createdAt: true,
+  user: {
+    select: {
+      name:    true,
+      surname: true,
+      email:   true,
+    }
+  },
+
 } satisfies Prisma.SupportChatSelect;
 
 // url убран из select — колонки нет в схеме
@@ -112,7 +120,18 @@ export class PrismaSupportChatRepository implements ISupportChatRepository {
   async findChatById(chatId: string): Promise<SupportChatDto | null> {
   const chat = await this.prisma.supportChat.findUnique({
     where:  { id: chatId },
-    select: chatSelect,
+    select: {
+      id: true,
+      userId: true,
+      createdAt: true,
+      user: {  // добавляем join
+        select: {
+          name: true,
+          surname: true,
+          email: true,
+        }
+      }
+    },
   });
   return chat ? this.chatToDto(chat) : null;
   }
@@ -120,7 +139,7 @@ export class PrismaSupportChatRepository implements ISupportChatRepository {
   async findAllChats(): Promise<SupportChatDto[]> {
     const chats = await this.prisma.supportChat.findMany({
       orderBy: { createdAt: "desc" },
-      select:  chatSelect,
+      select: chatSelect,
     });
     return chats.map((c: any) => this.chatToDto(c));
   }
@@ -132,6 +151,11 @@ export class PrismaSupportChatRepository implements ISupportChatRepository {
       id:        c.id,
       userId:    c.userId,
       createdAt: c.createdAt,
+      user: c.user ? {           
+        name: c.user.name,
+        surname: c.user.surname,
+        email: c.user.email,
+      } : undefined,
     };
   }
 
