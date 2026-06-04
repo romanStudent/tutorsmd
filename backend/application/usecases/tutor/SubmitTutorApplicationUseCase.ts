@@ -9,12 +9,7 @@ export class SubmitTutorApplicationUseCase {
     const tutor = await this.tutorRepo.findByUserId(userId);
     if (!tutor) throw new NotFoundError('Tutor not found');
 
-    if (!tutor.hourlyRate) {
-      throw new DomainError('Please set your hourly rate before submitting');
-    }
-    if (!tutor.highlightDe && !tutor.highlightRu) {
-      throw new DomainError('Please add a short introduction before submitting');
-    }
+    tutor.validateForSubmission();
 
     const submitted = tutor.submit();
     await this.tutorRepo.save(submitted);
