@@ -20,9 +20,14 @@ export default function AdminMessagesPage() {
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const chats = allChatsResponse?.chats ?? [];
+ const chats = Array.isArray(allChatsResponse?.chats) 
+    ? allChatsResponse.chats 
+    : [];
 
-  console.log('[Admin] allChatsResponse:', allChatsResponse); // ← посмотри в консоли
+console.log('[Admin] Final chats array:', chats);
+  console.log('[Admin] extracted chats count:', chats.length);
+
+  console.log('[Admin] allChatsResponse:', allChatsResponse);
 
   // Socket setup
   useEffect(() => {
@@ -108,11 +113,6 @@ export default function AdminMessagesPage() {
                   <p className="text-xs text-gray-400 truncate mt-0.5">
                     {chat.user?.email ?? ''}
                   </p>
-                  {chat.messages.at(-1)?.text && (
-                    <p className="text-xs text-gray-500 truncate mt-1">
-                      {chat.messages.at(-1)!.text}
-                    </p>
-                  )}
                 </button>
               ))
             )}

@@ -32,10 +32,10 @@ async getAllChats(req: Request, res: Response): Promise<void> {
     res.status(403).json({ error: 'Forbidden' });
   }
 
-  const chats = await this.getAllChatsUseCase.execute(requesterRole);
+  const result = await this.getAllChatsUseCase.execute(requesterRole);
 
 
-  res.status(200).json({ chats });
+  res.status(200).json({ chats: result.chats });
 }
 
   // POST /support/chat/join

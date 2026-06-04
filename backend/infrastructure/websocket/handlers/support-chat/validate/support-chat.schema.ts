@@ -1,7 +1,7 @@
 import z from "zod";
 
 
-const SUPPORT_FILE_SIZE_LIMIT = Number(process.env.SUPPORT_FILE_SIZE_LIMIT);
+const SUPPORT_FILE_SIZE_LIMIT = Number(process.env.SUPPORT_FILE_SIZE_LIMIT) || 5 * 1024 * 1024;
 
 export const JoinSchema = z.object({
   targetUserId: z.string().uuid().optional(),
