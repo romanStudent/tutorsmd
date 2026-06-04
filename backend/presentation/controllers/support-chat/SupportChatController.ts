@@ -11,6 +11,7 @@ import {
   GetSupportHistoryQueryDto,
   ChatIdParams
 } from './support-chat.schema';
+import { GetAllSupportChatsUseCase } from '../../../application/usecases/support-chat/GetAllSupportChatsuseCase';
 
 
 
@@ -19,7 +20,23 @@ export class SupportChatController implements ISupportChatController {
     private readonly joinUseCase: JoinSupportChatUseCase,
     private readonly getHistoryUseCase: GetSupportChatHistoryUseCase,
     private readonly sendMessageUseCase: SendSupportChatMessageUseCase,
+    private readonly getAllChatsUseCase: GetAllSupportChatsUseCase,
   ) {}
+
+  // Добавь в класс SupportChatController
+
+async getAllChats(req: Request, res: Response): Promise<void> {
+  const requesterRole = req.user!.activeRole;
+
+  if (requesterRole !== 'admin') {
+    res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const chats = await this.getAllChatsUseCase.execute(requesterRole);
+
+
+  res.status(200).json({ chats });
+}
 
   // POST /support/chat/join
   async join(
