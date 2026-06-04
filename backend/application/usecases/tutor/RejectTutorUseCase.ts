@@ -21,7 +21,7 @@ export class RejectTutorUseCase {
     if (!tutor) throw new NotFoundError('Tutor not found');
 
     // 2. Reject через domain method — бросит DomainError если уже rejected
-    const rejected = tutor.reject();
+    const rejected = tutor.reject(dto.reason);
     await this.tutorRepo.save(rejected);
 
     // 3. Уведомить тьютора — вне транзакции

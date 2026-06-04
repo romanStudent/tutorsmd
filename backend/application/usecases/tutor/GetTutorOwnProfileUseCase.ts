@@ -1,9 +1,8 @@
-import { ITutorRepository } from '../../../../domain/repositories/ITutorRepository';
-import { IUserRepository } from '../../../../domain/repositories/IUserRepository';
-import { NotFoundError } from '../../../../domain/errors/NotFoundError';
-import { DomainError } from '../../../../domain/errors/DomainError';
+import { ITutorRepository } from '../../../domain/repositories/ITutorRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { NotFoundError } from '../../../domain/errors/NotFoundError';
 
-export class GetTutorPublicProfileUseCase {
+export class GetTutorOwnProfileUseCase {
   constructor(
     private readonly tutorRepo: ITutorRepository,
     private readonly userRepo: IUserRepository,
@@ -14,10 +13,6 @@ export class GetTutorPublicProfileUseCase {
 
     if (!tutor) {
       throw new NotFoundError('Tutor not found');
-    }
-
-    if (!tutor.isApproved) {
-      throw new DomainError('Tutor profile is not public');
     }
 
     const user = await this.userRepo.findById(tutor.userId);
@@ -51,6 +46,14 @@ export class GetTutorPublicProfileUseCase {
 
       fulldescribeDe: tutor.fulldescribeDe,
       fulldescribeRu: tutor.fulldescribeRu,
+
+      approvalStatus: tutor.approvalStatus,
+      rejectionReason: tutor.rejectionReason,
+
+      profileCompletion: tutor.profileCompletion,
+
+      createdAt: tutor.createdAt,
+      updatedAt: tutor.updatedAt,
     };
   }
 }

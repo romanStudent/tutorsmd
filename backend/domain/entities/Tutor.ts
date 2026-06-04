@@ -108,7 +108,49 @@ export class Tutor {
   get isPending(): boolean { return this.props.approvalStatus === 'pending'; }
   get isRejected(): boolean { return this.props.approvalStatus === 'rejected'; }
 
- 
+  get profileCompletion(): number {
+  const fields = [
+    this.nameDe,
+    this.nameRu,
+    this.highlightDe,
+    this.highlightRu,
+    this.fulldescribeDe,
+    this.fulldescribeRu,
+    this.hourlyRate,
+  ];
+
+  const filled = fields.filter(value => {
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+
+  return value !== null &&
+         value !== undefined;
+}).length;
+
+  return Math.round(
+    (filled / fields.length) * 100
+  );
+}
+
+
+validateForSubmission(): void {
+  if (!this.hourlyRate) {
+    throw new DomainError('Hourly rate is required');
+  }
+
+  if (!this.nameDe && !this.nameRu) {
+    throw new DomainError('Tutor name is required');
+  }
+
+  if (!this.highlightDe && !this.highlightRu) {
+    throw new DomainError('Tutor short description is required');
+  }
+
+  if (!this.fulldescribeDe && !this.fulldescribeRu) {
+    throw new DomainError('Tutor full description is required');
+  }
+}
 
   // Обновление профиля — один вызов для всех полей (по аналогии с User.update)
   update(props: UpdateTutorProps): Tutor {
@@ -294,6 +336,7 @@ startReview(): Tutor {
       ratingAvg: Number(props.ratingAvg),
       ratingCount: props.ratingCount,
       approvalStatus: props.approvalStatus,
+      
       approvedAt: props.approvedAt ? new Date(props.approvedAt) : null,
       approvedBy: props.approvedBy,
       rejectionReason: null,

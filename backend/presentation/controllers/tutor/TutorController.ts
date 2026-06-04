@@ -17,11 +17,13 @@ import {
   RejectTutorDto,
   TutorIdParamsSchema,
 } from './tutor.schema';
+import { GetTutorOwnProfileUseCase } from '../../../application/usecases/tutor/GetTutorOwnProfileUseCase';
 
 export class TutorController implements ITutorController {
   constructor(
     private readonly getTutorByUserIdUseCase: GetTutorByUserIdUseCase,
-    private readonly getProfileUseCase: GetTutorPublicProfileUseCase,
+    private readonly getOwnProfileUseCase: GetTutorOwnProfileUseCase,
+    private readonly getPublicProfileUseCase: GetTutorPublicProfileUseCase,
     private readonly updateProfileUseCase: UpdateTutorProfileUseCase,
     private readonly getPendingTutorsUseCase: GetPendingTutorsUseCase,
     private readonly approveTutorUseCase: ApproveTutorUseCase,
@@ -40,7 +42,7 @@ export class TutorController implements ITutorController {
       return;
     }
 
-    const profile = await this.getProfileUseCase.execute(tutorId);
+    const profile = await this.getOwnProfileUseCase.execute(tutorId);
     res.status(200).json({ profile });
   }
 
@@ -66,7 +68,9 @@ export class TutorController implements ITutorController {
       ...body,
     });
 
-    res.status(200).json({ message: 'Profile updated.' });
+    const profile = await this.getOwnProfileUseCase.execute(tutorId);
+
+    res.status(200).json({ message: 'Profile updated.', profile });
   }
 
   // GET /tutor/pending - только admin
@@ -89,7 +93,7 @@ async startReview(req: Request, res: Response): Promise<void> {
 
 async getReviewProfile(req: Request, res: Response): Promise<void> {
   const { tutorId } = req.params as { tutorId: string };
-  const profile = await this.getProfileUseCase.execute(tutorId);
+  const profile = await this.getOwnProfileUseCase.execute(tutorId);
   res.status(200).json({ profile });
 }
 
