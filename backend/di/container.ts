@@ -144,6 +144,7 @@ import { TutorPublicController } from '../presentation/controllers/tutor/public/
 import { GetTutorPublicListUseCase } from '../application/usecases/tutor/public/GetTutorPublicListUseCase';
 import { StartTutorReviewUseCase } from '../application/usecases/tutor/StartTutorReviewUseCase';
 import { SubmitTutorApplicationUseCase } from '../application/usecases/tutor/SubmitTutorApplicationUseCase';
+import { GetAllSupportChatsUseCase } from '../application/usecases/support-chat/GetAllSupportChatsuseCase';
 
 
 // ─── Token Infrastructure ─────────────────────────────────────
@@ -451,6 +452,7 @@ const provideAnswerFeedbackUseCase = new ProvideAnswerFeedbackUseCase(
 const joinSupportChatUseCase = new JoinSupportChatUseCase(supportChatRepo);
 const sendSupportMessageUseCase = new SendSupportChatMessageUseCase(supportChatRepo);
 const getSupportChatHistoryUseCase = new GetSupportChatHistoryUseCase(supportChatRepo);
+const getAllSupportChatsUseCase = new GetAllSupportChatsUseCase(supportChatRepo);
 
 // REVIEW 
 const submitReviewUseCase = new SubmitReviewUseCase(
@@ -551,6 +553,7 @@ const supportChatController = new SupportChatController(
   joinSupportChatUseCase,
   getSupportChatHistoryUseCase,
   sendSupportMessageUseCase,
+  getAllSupportChatsUseCase
 );
 const reviewController = new ReviewController(
   submitReviewUseCase, 

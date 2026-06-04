@@ -17,6 +17,14 @@ export const createSupportChatRouter = (
 
   router.use(requireAuth);
 
+  // ─── GET ALL CHATS (ADMIN ONLY) ──────────────────────────────────────
+router.get(
+  '/chats',
+  wrap(async (req, res) => {
+    await controller.getAllChats(req, res);  
+  })
+);
+
   // ─── JOIN ─────────────────────────────────────────────
   router.post(
     '/join',

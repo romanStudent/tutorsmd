@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { ChatIdParams, GetSupportHistoryQueryDto, SendSupportChatMessageBody } from './support-chat.schema';
 
 export interface ISupportChatController {
+  getAllChats(req: Request, res: Response): Promise<void>;
   join(req: Request, res: Response): Promise<void>;
   getMyChat(req: Request, res: Response): Promise<void>;
 
