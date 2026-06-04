@@ -144,7 +144,7 @@ import { TutorPublicController } from '../presentation/controllers/tutor/public/
 import { GetTutorPublicListUseCase } from '../application/usecases/tutor/public/GetTutorPublicListUseCase';
 import { StartTutorReviewUseCase } from '../application/usecases/tutor/StartTutorReviewUseCase';
 import { SubmitTutorApplicationUseCase } from '../application/usecases/tutor/SubmitTutorApplicationUseCase';
-import { GetAllSupportChatsUseCase } from '../application/usecases/support-chat/GetAllSupportChatsuseCase';
+import { GetAllSupportChatsUseCase } from '../application/usecases/support-chat/GetAllSupportChatsUseCase';
 
 
 // ─── Token Infrastructure ─────────────────────────────────────
