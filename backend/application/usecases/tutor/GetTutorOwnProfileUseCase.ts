@@ -1,11 +1,13 @@
 import { ITutorRepository } from '../../../domain/repositories/ITutorRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { NotFoundError } from '../../../domain/errors/NotFoundError';
+import { PrismaClient } from '@prisma/client';
 
 export class GetTutorOwnProfileUseCase {
   constructor(
     private readonly tutorRepo: ITutorRepository,
     private readonly userRepo: IUserRepository,
+    private readonly prisma: PrismaClient
   ) {}
 
   async execute(tutorId: string) {
@@ -20,6 +22,11 @@ export class GetTutorOwnProfileUseCase {
     if (!user) {
       throw new NotFoundError('User not found');
     }
+
+    const tutorSubjects = await this.prisma.tutorSubject.findMany({
+      where: { tutorId: tutor.id },
+      include: { subject: true },
+    });
 
     return {
       id: tutor.id,
@@ -51,6 +58,7 @@ export class GetTutorOwnProfileUseCase {
       rejectionReason: tutor.rejectionReason,
 
       profileCompletion: tutor.profileCompletion,
+      subjects: tutorSubjects.map(ts => ({ id: ts.subject.id, name: ts.subject.name })),
 
       createdAt: tutor.createdAt,
       updatedAt: tutor.updatedAt,

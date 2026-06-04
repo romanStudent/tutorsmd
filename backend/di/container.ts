@@ -147,6 +147,7 @@ import { SubmitTutorApplicationUseCase } from '../application/usecases/tutor/Sub
 import { GetAllSupportChatsUseCase } from '../application/usecases/support-chat/GetAllSupportChatsUseCase';
 import { GetSupportChatByIdUseCase } from '../application/usecases/support-chat/GetSupportChatByIdUseCase';
 import { GetTutorOwnProfileUseCase } from '../application/usecases/tutor/GetTutorOwnProfileUseCase';
+import { UpdateTutorSubjectsUseCase } from '../application/usecases/tutor/UpdatetutorSubjectsUseCase';
 
 
 // ─── Token Infrastructure ─────────────────────────────────────
@@ -571,15 +572,16 @@ const reviewController = new ReviewController(
 );
 
 
-const getOwnProfileUseCase = new GetTutorOwnProfileUseCase(tutorRepo, userRepo);
+const getOwnProfileUseCase = new GetTutorOwnProfileUseCase(tutorRepo, userRepo, prisma);
 const startReviewUseCase = new StartTutorReviewUseCase(tutorRepo);
-
+const updateSubjectsUseCase = new UpdateTutorSubjectsUseCase(tutorRepo, prisma);
 // TUTOR
 const tutorController = new TutorController(
   getTutorByUserIdUseCase, getOwnProfileUseCase,
   getTutorPublicProfileUseCase, updateTutorProfileUseCase,
   getPendingTutorsUseCase, approveTutorUseCase, rejectTutorUseCase,
-  submitTutorApplicationUseCase, startReviewUseCase
+  submitTutorApplicationUseCase, startReviewUseCase,
+  updateSubjectsUseCase
 );
 const tutorPublicController = new TutorPublicController(
   getTutorPublicListUseCase,
