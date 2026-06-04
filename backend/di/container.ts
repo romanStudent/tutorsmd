@@ -145,6 +145,7 @@ import { GetTutorPublicListUseCase } from '../application/usecases/tutor/public/
 import { StartTutorReviewUseCase } from '../application/usecases/tutor/StartTutorReviewUseCase';
 import { SubmitTutorApplicationUseCase } from '../application/usecases/tutor/SubmitTutorApplicationUseCase';
 import { GetAllSupportChatsUseCase } from '../application/usecases/support-chat/GetAllSupportChatsUseCase';
+import { GetSupportChatByIdUseCase } from '../application/usecases/support-chat/GetSupportChatByIdUseCase';
 
 
 // ─── Token Infrastructure ─────────────────────────────────────
@@ -453,6 +454,7 @@ const joinSupportChatUseCase = new JoinSupportChatUseCase(supportChatRepo);
 const sendSupportMessageUseCase = new SendSupportChatMessageUseCase(supportChatRepo);
 const getSupportChatHistoryUseCase = new GetSupportChatHistoryUseCase(supportChatRepo);
 const getAllSupportChatsUseCase = new GetAllSupportChatsUseCase(supportChatRepo);
+const getSupportChatByIdUseCase = new GetSupportChatByIdUseCase(supportChatRepo);
 
 // REVIEW 
 const submitReviewUseCase = new SubmitReviewUseCase(
@@ -553,7 +555,8 @@ const supportChatController = new SupportChatController(
   joinSupportChatUseCase,
   getSupportChatHistoryUseCase,
   sendSupportMessageUseCase,
-  getAllSupportChatsUseCase
+  getAllSupportChatsUseCase,
+  getSupportChatByIdUseCase
 );
 const reviewController = new ReviewController(
   submitReviewUseCase, 

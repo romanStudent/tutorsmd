@@ -25,6 +25,14 @@ router.get(
   })
 );
 
+router.get(
+  '/chats/:chatId',
+  validate(ChatIdParamsSchema, 'params'),
+  wrap(async (req, res) => {
+    await controller.getChatById(req, res);
+  })
+);
+
   // ─── JOIN ─────────────────────────────────────────────
   router.post(
     '/join',
