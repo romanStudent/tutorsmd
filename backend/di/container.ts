@@ -147,7 +147,7 @@ import { SubmitTutorApplicationUseCase } from '../application/usecases/tutor/Sub
 import { GetAllSupportChatsUseCase } from '../application/usecases/support-chat/GetAllSupportChatsUseCase';
 import { GetSupportChatByIdUseCase } from '../application/usecases/support-chat/GetSupportChatByIdUseCase';
 import { GetTutorOwnProfileUseCase } from '../application/usecases/tutor/GetTutorOwnProfileUseCase';
-import { UpdateTutorSubjectsUseCase } from '../application/usecases/tutor/UpdatetutorSubjectsUseCase';
+import { UpdateTutorSubjectsUseCase } from '../application/usecases/tutor/UpdateTutorSubjectsUseCase';
 
 
 // ─── Token Infrastructure ─────────────────────────────────────
