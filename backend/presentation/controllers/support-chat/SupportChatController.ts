@@ -12,6 +12,7 @@ import {
   ChatIdParams
 } from './support-chat.schema';
 import { GetAllSupportChatsUseCase } from '../../../application/usecases/support-chat/GetAllSupportChatsUseCase';
+import { GetSupportChatByIdUseCase } from '../../../application/usecases/support-chat/GetSupportChatByIdUseCase';
 
 
 
@@ -21,6 +22,7 @@ export class SupportChatController implements ISupportChatController {
     private readonly getHistoryUseCase: GetSupportChatHistoryUseCase,
     private readonly sendMessageUseCase: SendSupportChatMessageUseCase,
     private readonly getAllChatsUseCase: GetAllSupportChatsUseCase,
+    private readonly getChatByIdUseCase: GetSupportChatByIdUseCase,
   ) {}
 
   // Добавь в класс SupportChatController
@@ -36,6 +38,18 @@ async getAllChats(req: Request, res: Response): Promise<void> {
 
 
   res.status(200).json({ chats: result.chats });
+}
+
+async getChatById(req: Request, res: Response): Promise<void> {
+  const requesterRole = req.user!.activeRole;
+  const { chatId } = req.params;
+
+  const result = await this.getChatByIdUseCase.execute(
+    chatId,
+    requesterRole,
+  );
+
+  res.status(200).json(result.chat);
 }
 
   // POST /support/chat/join
