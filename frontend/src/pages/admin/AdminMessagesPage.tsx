@@ -23,7 +23,6 @@ export default function AdminMessagesPage() {
   const [text, setText] = useState('');
   const [isJoined, setIsJoined] = useState(false);
 
-  // Надёжная защита
   const chats = Array.isArray(allChatsResponse?.chats) ? allChatsResponse.chats : [];
 
   console.log('[Admin] allChatsResponse:', allChatsResponse);
@@ -31,7 +30,7 @@ export default function AdminMessagesPage() {
 
   // Socket setup
   useEffect(() => {
-    if (!chatId) {
+    if (!chatId || !activeChat?.userId) {
       setIsJoined(false);
       setMessages([]);
       return;
@@ -43,9 +42,11 @@ export default function AdminMessagesPage() {
     });
     socketRef.current = socket;
 
-    console.log(`[Admin] Joining chat ${chatId}`);
+    console.log(`[Admin] Joining chat ${chatId} with userId ${activeChat.userId}`);
 
-    socket.emit('support:admin_join', { targetUserId: activeChat?.userId || '' }, (res: any) => {
+    socket.emit('support:admin_join', { 
+      targetUserId: activeChat.userId   // теперь точно UUID
+    }, (res: any) => {
       console.log('ADMIN JOIN RESPONSE:', res);
       if (res?.ok) setIsJoined(true);
     });
@@ -82,7 +83,6 @@ export default function AdminMessagesPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Support-Nachrichten</h1>
 
         <div className="flex gap-4 h-[calc(100vh-180px)]">
-          {/* Sidebar */}
           <aside className="w-72 flex-shrink-0 bg-white rounded-2xl border border-gray-100 overflow-y-auto">
             {chatsLoading ? (
               <Spinner />
@@ -97,7 +97,12 @@ export default function AdminMessagesPage() {
                     ${chatId === chat.id ? 'bg-blue-50 border-l-2 border-blue-600' : ''}`}
                 >
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    {(chat.user.name.length > 0) ? chat.user.name : chat.userId.slice(0, 8)}
+                    {chat.user 
+                      ? `${chat.user.name} ${chat.user.surname}` 
+                      : chat.userId?.slice(0, 8)}
+                  </p>
+                  <p className="text-xs text-gray-400 truncate mt-0.5">
+                    {chat.user?.email ?? ''}
                   </p>
                 </button>
               ))
@@ -115,7 +120,11 @@ export default function AdminMessagesPage() {
             ) : (
               <>
                 <div className="px-5 py-3 border-b border-gray-100 flex-shrink-0">
-                  <p className="font-medium text-gray-900 text-sm">Chat {chatId}</p>
+                  <p className="font-medium text-gray-900">
+                    {activeChat?.user 
+                      ? `${activeChat.user.name} ${activeChat.user.surname}` 
+                      : chatId}
+                  </p>
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
