@@ -18,7 +18,7 @@ import {
   TutorIdParamsSchema,
 } from './tutor.schema';
 import { GetTutorOwnProfileUseCase } from '../../../application/usecases/tutor/GetTutorOwnProfileUseCase';
-import { UpdateTutorSubjectsUseCase } from '../../../application/usecases/tutor/UpdatetutorSubjectsUseCase';
+import { UpdateTutorSubjectsUseCase } from '../../../application/usecases/tutor/UpdateTutorSubjectsUseCase';
 
 export class TutorController implements ITutorController {
   constructor(
