@@ -141,4 +141,5 @@ export const {
   useSubmitApplicationMutation,
   useGetReviewProfileQuery,
   useStartReviewMutation,
+  useUpdateTutorSubjectsMutation
 } = tutorApi;
