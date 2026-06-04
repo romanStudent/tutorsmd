@@ -167,9 +167,14 @@ export default function SupportChatPage() {
         'support:presign',
         { fileName: pending.file.name, mimeType: pending.file.type, size: pending.file.size },
         async (res: any) => {
-          if (!res?.ok) return reject(new Error(res?.error));
+          console.log('[Upload] Presign response:', res);
+          if (!res?.ok) {
+          console.error('[Upload] Presign failed:', res?.error);
+          return reject(new Error(res?.error || 'Presign failed'));
+        }
 
           const { uploadUrl, key, name } = res;
+          console.log('[Upload] Starting upload to:', uploadUrl);
           setPendingFiles((prev) =>
             prev.map((p, i) => i === idx ? { ...p, status: 'uploading' } : p));
 

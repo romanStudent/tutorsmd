@@ -4,6 +4,11 @@ export interface SupportChatDto {
   id:        string;
   userId:    string;
   createdAt: Date;
+  user?: {
+    name:    string;
+    surname: string;
+    email:   string;
+  };
 }
 
 export interface SupportAttachmentDto extends FileMetadataDto {
