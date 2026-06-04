@@ -3,33 +3,37 @@ import { createBrowserRouter, RouterProvider as RRProvider, Navigate, Outlet } f
 import { ProtectedRoute } from './ProtectedRoute';
 import { useSessionManager } from '@app/hooks/useSessionManager';
 
+const lazyRetry = (fn: () => Promise<any>) =>
+  fn().catch(() => { window.location.reload(); throw new Error('chunk_reload'); });
+
+
 // AUTH
-const LoginPage              = lazy(() => import('@pages/auth/LoginPage'));
-const RegisterPage           = lazy(() => import('@pages/auth/RegisterPage'));
-const ActivatePage           = lazy(() => import('@pages/auth/ActivatePage'));
-const ResendVerificationPage = lazy(() => import('@pages/auth/ResendVerificationPage'));
-const ForgotPasswordPage     = lazy(() => import('@pages/auth/ForgotPasswordPage'));
-const ResetPasswordPage      = lazy(() => import('@pages/auth/ResetPasswordPage'));
+const LoginPage              = lazy(() => lazyRetry(() => import('@pages/auth/LoginPage')));
+const RegisterPage           = lazy(() => lazyRetry(() => import('@pages/auth/RegisterPage')));
+const ActivatePage           = lazy(() => lazyRetry(() => import('@pages/auth/ActivatePage')));
+const ResendVerificationPage = lazy(() => lazyRetry(() => import('@pages/auth/ResendVerificationPage')));
+const ForgotPasswordPage     = lazy(() => lazyRetry(() => import('@pages/auth/ForgotPasswordPage')));
+const ResetPasswordPage      = lazy(() => lazyRetry(() => import('@pages/auth/ResetPasswordPage')));
 
 // PUBLIC
-const HomePage    = lazy(() => import('@pages/home/HomePage'));
-const TutorsPage  = lazy(() => import('@pages/tutors/TutorsPage'));
-const TutorPage   = lazy(() => import('@pages/tutors/TutorPage'));
-const AboutPage   = lazy(() => import('@pages/about/AboutPage'));
-const FaqPage     = lazy(() => import('@pages/faq/FaqPage'));
-const PrivacyPage = lazy(() => import('@pages/privacy/PrivacyPage'));
+const HomePage    = lazy(() => lazyRetry(() => import('@pages/home/HomePage')));
+const TutorsPage  = lazy(() => lazyRetry(() => import('@pages/tutors/TutorsPage')));
+const TutorPage   = lazy(() => lazyRetry(() => import('@pages/tutors/TutorPage')));
+const AboutPage   = lazy(() => lazyRetry(() => import('@pages/about/AboutPage')));
+const FaqPage     = lazy(() => lazyRetry(() => import('@pages/faq/FaqPage')));
+const PrivacyPage = lazy(() => lazyRetry(() => import('@pages/privacy/PrivacyPage')));
 
 // PRIVATE
-const DashboardPage    = lazy(() => import('@pages/dashboard/DashboardPage'));
-const LessonsPage      = lazy(() => import('@pages/lesson/LessonsPage'));
-const LessonPage       = lazy(() => import('@pages/lesson/LessonPage'));
-const SettingsPage     = lazy(() => import('@pages/settings/SettingsPage'));
-const MediaCheckPage   = lazy(() => import('@pages/settings/sections/media-check/MediaCheckPage'));
-const SupportChatPage  = lazy(() => import('@pages/support-chat/SupportChatPage'));
-const LikedTutorsPage  = lazy(() => import('@pages/liked-tutors/LikedTutorsPage'));
+const DashboardPage    = lazy(() => lazyRetry(() => import('@pages/dashboard/DashboardPage')));
+const LessonsPage      = lazy(() => lazyRetry(() => import('@pages/lesson/LessonsPage')));
+const LessonPage       = lazy(() => lazyRetry(() => import('@pages/lesson/LessonPage')));
+const SettingsPage     = lazy(() => lazyRetry(() => import('@pages/settings/SettingsPage')));
+const MediaCheckPage   = lazy(() => lazyRetry(() => import('@pages/settings/sections/media-check/MediaCheckPage')));
+const SupportChatPage  = lazy(() => lazyRetry(() => import('@pages/support-chat/SupportChatPage')));
+const LikedTutorsPage  = lazy(() => lazyRetry(() => import('@pages/liked-tutors/LikedTutorsPage')));
 
 // ADMIN
-const AdminMessagesPage = lazy(() => import('@pages/admin/AdminMessagesPage'));
+const AdminMessagesPage = lazy(() => lazyRetry(() => import('@pages/admin/AdminMessagesPage')));
 
 const AppShell = () => {
   useSessionManager();

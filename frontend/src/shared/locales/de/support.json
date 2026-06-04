@@ -8,8 +8,10 @@
     "support": "Support"
   },
   "file": {
-    "done": "Hochgeladen",
-    "error": "Fehler"
+  "done": "Hochgeladen",
+  "error": "Upload fehlgeschlagen",
+  "tooLarge": "Datei ist zu groß. Maximale Dateigröße: 25 MB.",
+  "invalidType": "Dateityp wird nicht unterstützt. Erlaubte Formate: JPG, PNG, WEBP, GIF, PDF, MP4, WEBM, MP3, OGG, TXT, ZIP."
   },
   "input": {
     "placeholder": "Nachricht schreiben...",
