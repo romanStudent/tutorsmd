@@ -23,13 +23,17 @@ export interface SupportChat {
   id:        string;
   userId:    string;
   createdAt: string;
-  messages:  SupportMessage[];
+  messages?:  SupportMessage[];
   user?: {
     name:    string;
     surname: string;
     email:   string;
     avatarUrl: string | null;
   };
+}
+
+export interface GetAllChatsResponse {
+  chats: SupportChat[];
 }
 
 export interface JoinSupportChatResponse {
@@ -50,8 +54,8 @@ export const supportApi = baseApi.injectEndpoints({
       providesTags: ['Support'],
     }),
 
-    // GET /support/chats — admin: список всех чатов
-    getAllChats: build.query<{ chats: SupportChat[] }, void>({
+    // GET /support/chats - admin: список всех чатов
+    getAllChats: build.query<GetAllChatsResponse, void>({
       query: () => '/support/chats',
       providesTags: ['Support'],
     }),
