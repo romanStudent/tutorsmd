@@ -18,6 +18,7 @@ import {
   TutorIdParamsSchema,
 } from './tutor.schema';
 import { GetTutorOwnProfileUseCase } from '../../../application/usecases/tutor/GetTutorOwnProfileUseCase';
+import { UpdateTutorSubjectsUseCase } from '../../../application/usecases/tutor/UpdatetutorSubjectsUseCase';
 
 export class TutorController implements ITutorController {
   constructor(
@@ -29,7 +30,8 @@ export class TutorController implements ITutorController {
     private readonly approveTutorUseCase: ApproveTutorUseCase,
     private readonly rejectTutorUseCase: RejectTutorUseCase,
     private readonly submitApplicationUseCase: SubmitTutorApplicationUseCase,
-    private readonly startReviewUseCase: StartTutorReviewUseCase
+    private readonly startReviewUseCase: StartTutorReviewUseCase,
+    private readonly updateSubjectsUseCase: UpdateTutorSubjectsUseCase
   ) {}
 
   // GET /tutor/profile - тьютор смотрит СВОЙ профиль
@@ -120,4 +122,11 @@ async getReviewProfile(req: Request, res: Response): Promise<void> {
     await this.rejectTutorUseCase.execute({ tutorId, reason });
     res.status(200).json({ message: 'Tutor rejected.' });
   }
+
+  async updateSubjects(req: Request, res: Response): Promise<void> {
+  const userId = req.user!.userId;
+  const { subjectIds } = req.body as { subjectIds: string[] };
+  await this.updateSubjectsUseCase.execute(userId, subjectIds);
+  res.status(200).json({ message: 'Subjects updated.' });
+}
 }

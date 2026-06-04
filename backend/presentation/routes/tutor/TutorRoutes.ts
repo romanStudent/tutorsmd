@@ -85,5 +85,8 @@ export const createTutorRouter = (controller: ITutorController): Router => {
     }),
   );
 
+  router.put('/subjects', requireAuth, requireRole('tutor'),
+  wrap(async (req, res) => controller.updateSubjects(req as any, res)));
+
   return router;
 };

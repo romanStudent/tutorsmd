@@ -12,4 +12,5 @@ export interface ITutorController {
 
   approve(req: Request, res: Response): Promise<void>;
   reject(req: Request, res: Response): Promise<void>;
+  updateSubjects(req: Request, res: Response): Promise<void>;
 }
