@@ -47,6 +47,7 @@ export class R2FileStorage implements IFileStorageFactory {
         Bucket:      this.bucket,
         Key:         key,
         ContentType: mimeType,
+        ACL: 'private',
       }),
       { expiresIn: expiresInSeconds },
     );

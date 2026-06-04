@@ -159,59 +159,76 @@ export default function SupportChatPage() {
   };
 
   const uploadFile = (
-    pending: PendingFile,
-    idx: number,
-  ): Promise<{ key: string; name: string; mimeType: string; size: number }> => {
-    return new Promise((resolve, reject) => {
-      socketRef.current?.emit(
-        'support:presign',
-        { fileName: pending.file.name, mimeType: pending.file.type, size: pending.file.size },
-        async (res: any) => {
-          console.log('[Upload] Presign response:', res);
-          if (!res?.ok) {
-          console.error('[Upload] Presign failed:', res?.error);
+  pending: PendingFile,
+  idx: number,
+): Promise<{ key: string; name: string; mimeType: string; size: number }> => {
+  return new Promise((resolve, reject) => {
+    socketRef.current?.emit(
+      'support:presign',
+      { 
+        fileName: pending.file.name, 
+        mimeType: pending.file.type, 
+        size: pending.file.size 
+      },
+      async (res: any) => {
+        console.log('[Presign] Response:', res);
+
+        if (!res?.ok) {
+          console.error('[Presign] Failed:', res?.error);
+          setPendingFiles(prev => prev.map((p, i) => i === idx ? { ...p, status: 'error' } : p));
           return reject(new Error(res?.error || 'Presign failed'));
         }
 
-          const { uploadUrl, key, name } = res;
-          console.log('[Upload] Starting upload to:', uploadUrl);
-          setPendingFiles((prev) =>
-            prev.map((p, i) => i === idx ? { ...p, status: 'uploading' } : p));
+        const { uploadUrl, key, name } = res;
+        console.log('[Upload] Starting to URL:', uploadUrl.substring(0, 100) + '...');
 
-          try {
-            // XML, а не fetch(), потому что только XMLHttpRequest поддерживает partial upload, а значит и отслеживание прогресс загрузки.
-            const xhr = new XMLHttpRequest();
-            xhr.open('PUT', uploadUrl);
-            xhr.setRequestHeader('Content-Type', pending.file.type);
+        try {
+          const xhr = new XMLHttpRequest();
+          xhr.open('PUT', uploadUrl);
+          xhr.setRequestHeader('Content-Type', pending.file.type);
 
-            xhr.upload.onprogress = (e) => {
-              if (e.lengthComputable) {
-                const pct = Math.round((e.loaded / e.total) * 100);
-                setPendingFiles((prev) =>
-                  prev.map((p, i) => i === idx ? { ...p, progress: pct } : p));
-              }
-            };
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const pct = Math.round((e.loaded / e.total) * 100);
+              setPendingFiles(prev => 
+                prev.map((p, i) => i === idx ? { ...p, progress: pct } : p)
+              );
+            }
+          };
 
-            xhr.onload = () => {
-              if (xhr.status === 200) {
-                setPendingFiles((prev) =>
-                  prev.map((p, i) => i === idx ? { ...p, status: 'done', key, name } : p));
-                resolve({ key, name: name ?? pending.file.name, mimeType: pending.file.type, size: pending.file.size });
-              } else {
-                reject(new Error(`Upload failed: ${xhr.status}`));
-              }
-            };
-            xhr.onerror = () => reject(new Error('Network error'));
-            xhr.send(pending.file);
-          } catch (err) {
-            setPendingFiles((prev) =>
-              prev.map((p, i) => i === idx ? { ...p, status: 'error' } : p));
-            reject(err);
-          }
-        },
-      );
-    });
-  };
+          xhr.onload = () => {
+            console.log('[Upload] Status:', xhr.status, xhr.statusText);
+            if (xhr.status === 200 || xhr.status === 204) {
+              setPendingFiles(prev => 
+                prev.map((p, i) => i === idx ? { ...p, status: 'done', key, name } : p)
+              );
+              resolve({ 
+                key, 
+                name: name ?? pending.file.name, 
+                mimeType: pending.file.type, 
+                size: pending.file.size 
+              });
+            } else {
+              reject(new Error(`Upload failed with status ${xhr.status}`));
+            }
+          };
+
+          xhr.onerror = (e) => {
+            console.error('[Upload] Network Error:', e);
+            reject(new Error('Network error - check CORS or network'));
+          };
+
+          xhr.ontimeout = () => reject(new Error('Upload timeout'));
+
+          xhr.send(pending.file);
+        } catch (err) {
+          console.error('[Upload] Exception:', err);
+          reject(err);
+        }
+      }
+    );
+  });
+};
 
   const send = async () => {
     const socket = socketRef.current;
