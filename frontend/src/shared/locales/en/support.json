@@ -8,9 +8,11 @@
     "support": "Support"
   },
   "file": {
-    "done": "Uploaded",
-    "error": "Error"
-  },
+  "done": "Uploaded",
+  "error": "Upload failed",
+  "tooLarge": "File is too large. Maximum file size: 25 MB.",
+  "invalidType": "Unsupported file type. Allowed formats: JPG, PNG, WEBP, GIF, PDF, MP4, WEBM, MP3, OGG, TXT, ZIP."
+},
   "input": {
     "placeholder": "Write a message...",
     "attachTitle": "Attach file",

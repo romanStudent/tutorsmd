@@ -19,7 +19,7 @@ export const SendSupportChatMessageSchema = z.object({
     key:      z.string().min(1).max(500),
     name:     z.string().min(1).max(255),
     mimeType: z.string().min(1).max(100),
-    size:     z.number().int().positive().max(5 * 1024 * 1024),
+    size:     z.number().int().positive().max(25 * 1024 * 1024),
   })).max(5).optional(),
 }).refine(
   (d) => d.text?.trim() || (d.attachments && d.attachments.length > 0),

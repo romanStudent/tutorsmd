@@ -7,10 +7,12 @@
   "senderLabel": {
     "support": "Поддержка"
   },
-  "file": {
-    "done": "Загружено",
-    "error": "Ошибка"
-  },
+   "file": {
+  "done": "Загружено",
+  "error": "Ошибка загрузки",
+  "tooLarge": "Файл слишком большой. Максимальный размер файла: 25 МБ.",
+  "invalidType": "Недопустимый тип файла. Разрешены: JPG, PNG, WEBP, GIF, PDF, MP4, WEBM, MP3, OGG, TXT, ZIP."
+},
   "input": {
     "placeholder": "Написать сообщение...",
     "attachTitle": "Прикрепить файл",

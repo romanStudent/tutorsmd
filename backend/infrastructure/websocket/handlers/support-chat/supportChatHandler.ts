@@ -214,7 +214,7 @@ export const createSupportChatHandler = (
        if (size > SIZE_LIMITS["support/chats"]) {
         return callback?.({
           ok: false,
-          error: `File too large. Max ${SIZE_LIMITS["support/chats"] / 1024 / 1024} MB`,
+          code: 'FILE_TOO_LARGE',
         });
       }
 
