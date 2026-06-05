@@ -27,6 +27,7 @@ export interface Lesson {
   startedAt:           string | null;
   completedAt:         string | null;
   createdAt:           string;
+  updatedAt:           string;
   tutor?:   { name: string; surname: string; avatarUrl: string | null };
   client?:  { name: string; surname: string; avatarUrl: string | null };
 }
