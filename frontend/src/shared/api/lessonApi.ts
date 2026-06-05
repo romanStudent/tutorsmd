@@ -15,22 +15,22 @@ export type LessonStatus =
 export type LessonType = 'trial' | 'regular';
 
 export interface Lesson {
-  id:                 string;
-  clientId:           string;
-  tutorId:            string;
-  subjectId:          string;
-  type:               LessonType;
-  status:             LessonStatus;
-  scheduledAt:        string;
-  durationMinutes:    number;
-  cancellationReason: string | null;
+  id:                  string;
+  clientId:            string;
+  tutorId:             string;
+  subjectId:           string;
+  type:                LessonType;
+  status:              LessonStatus;
+  scheduledAt:         string;
+  durationMinutes:     number;
+  cancellationReason:  string | null;
   proposedScheduledAt: string | null;
   proposedExpiresAt:   string | null;
-  startedAt:          string | null;
-  completedAt:        string | null;
-  createdAt:          string;
-  // Populated relations
-  tutor?: { name: string; surname: string; avatarUrl: string | null };
+  startedAt:           string | null;
+  completedAt:         string | null;
+  createdAt:           string;
+  updatedAt:           string;
+  tutor?:  { name: string; surname: string; avatarUrl: string | null };
   client?: { name: string; surname: string; avatarUrl: string | null };
 }
 
@@ -43,7 +43,7 @@ export const lessonApi = baseApi.injectEndpoints({
       providesTags: (_r, _e, id) => [{ type: 'Lesson', id }],
     }),
 
-    // GET /lessons — список уроков текущего пользователя
+    // GET /lessons
     getUserLessons: build.query<{ lessons: Lesson[] }, {
       status?: LessonStatus;
       from?: string;
@@ -54,19 +54,25 @@ export const lessonApi = baseApi.injectEndpoints({
     }),
 
     // POST /lessons/trial
-    createTrialLesson: build.mutation<{ lessonId: string }, {
-      tutorId:         string;
-      subjectId:       string;
-      scheduledAt:     string;
+    createTrialLesson: build.mutation<{ lessonId: string; scheduledAt: string; status: string }, {
+      tutorId:          string;
+      subjectId:        string;
+      scheduledAt:      string;
       durationMinutes?: number;
     }>({
       query: (body) => ({ url: '/lessons/trial', method: 'POST', body }),
       invalidatesTags: ['Lesson'],
     }),
 
-    // POST /lessons/:lessonId/confirm
+    // POST /lessons/:lessonId/confirm  (тьютор подтверждает)
     confirmLesson: build.mutation<void, string>({
       query: (id) => ({ url: `/lessons/${id}/confirm`, method: 'POST' }),
+      invalidatesTags: ['Lesson'],
+    }),
+
+    // POST /lessons/:lessonId/reject  (тьютор отклоняет)
+    rejectLesson: build.mutation<void, string>({
+      query: (id) => ({ url: `/lessons/${id}/reject`, method: 'POST' }),
       invalidatesTags: ['Lesson'],
     }),
 
@@ -90,29 +96,42 @@ export const lessonApi = baseApi.injectEndpoints({
       invalidatesTags: ['Lesson'],
     }),
 
-    // POST /lessons/:lessonId/reschedule/propose
+    // POST /lessons/:lessonId/reschedule/propose  (тьютор предлагает перенос)
     proposeReschedule: build.mutation<void, {
       lessonId:       string;
       newScheduledAt: string;
-      expiresAt:      string;
     }>({
-      query: ({ lessonId, ...body }) => ({
+      query: ({ lessonId, newScheduledAt }) => ({
         url: `/lessons/${lessonId}/reschedule/propose`,
         method: 'POST',
-        body,
+        body: { newScheduledAt },
       }),
       invalidatesTags: ['Lesson'],
     }),
 
-    // POST /lessons/:lessonId/reschedule/accept
-    acceptReschedule: build.mutation<void, string>({
+    // POST /lessons/:lessonId/reschedule/accept  (клиент принимает перенос)
+    acceptReschedule: build.mutation<{ newLessonId: string; scheduledAt: string }, string>({
       query: (id) => ({ url: `/lessons/${id}/reschedule/accept`, method: 'POST' }),
       invalidatesTags: ['Lesson'],
     }),
 
-    // POST /lessons/:lessonId/reschedule/decline
+    // POST /lessons/:lessonId/reschedule/decline  (клиент отклоняет перенос)
     declineReschedule: build.mutation<void, string>({
       query: (id) => ({ url: `/lessons/${id}/reschedule/decline`, method: 'POST' }),
+      invalidatesTags: ['Lesson'],
+    }),
+
+    // POST /lessons/:lessonId/reschedule/client  (клиент сам переносит)
+    rescheduleByClient: build.mutation<{ newLessonId: string; scheduledAt: string }, {
+      lessonId:         string;
+      newScheduledAt:   string;
+      durationMinutes?: number;
+    }>({
+      query: ({ lessonId, ...body }) => ({
+        url: `/lessons/${lessonId}/reschedule/client`,
+        method: 'POST',
+        body,
+      }),
       invalidatesTags: ['Lesson'],
     }),
 
@@ -124,9 +143,11 @@ export const {
   useGetUserLessonsQuery,
   useCreateTrialLessonMutation,
   useConfirmLessonMutation,
+  useRejectLessonMutation,
   useCancelByClientMutation,
   useCancelByTutorMutation,
   useProposeRescheduleMutation,
   useAcceptRescheduleMutation,
   useDeclineRescheduleMutation,
+  useRescheduleByClientMutation,
 } = lessonApi;

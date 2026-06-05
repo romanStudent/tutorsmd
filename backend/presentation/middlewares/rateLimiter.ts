@@ -24,6 +24,7 @@ type LimiterOpts = Pick<Options, 'windowMs' | 'max' | 'message' | 'skipSuccessfu
  */
 const createPublicLimiter = (opts: LimiterOpts): RateLimitRequestHandler =>
   rateLimit({
+    validate: false,
     windowMs: opts.windowMs,
     max: opts.max,
     message: opts.message,

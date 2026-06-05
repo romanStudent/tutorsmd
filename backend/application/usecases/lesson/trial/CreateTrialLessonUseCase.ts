@@ -77,7 +77,9 @@ export class CreateTrialLessonUseCase {
     durationMinutes: dto.durationMinutes,
   });
 
-  await this.lessonRepo.create(lesson);
+  // сейчас заглушка сразу "confirmed", но на будущее надо полумать как синхронизировать статусы "pending", "confirmed" и AvailableSlot
+  const confirmed = lesson.confirm();
+  await this.lessonRepo.create(confirmed);
 
   return {
     lessonId:    lesson.id,

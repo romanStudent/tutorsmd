@@ -68,7 +68,7 @@ export const BookTrialButton = ({
     setError(null);
 
     try {
-      const result =
+      // const result =
         await createTrial({
           tutorId,
           subjectId,
@@ -76,10 +76,12 @@ export const BookTrialButton = ({
             `${date}T${time}`,
           ).toISOString(),
         }).unwrap();
-
+        navigate('/dashboard');
+/*
       navigate(
         `/lessons/${result.lessonId}`,
       );
+      */
     } catch (err: any) {
       setError(
         err?.data?.message ??
