@@ -82,9 +82,9 @@ export class CreateTrialLessonUseCase {
   await this.lessonRepo.create(confirmed);
 
   return {
-    lessonId:    lesson.id,
+    lessonId:    confirmed.id,
     scheduledAt: lesson.scheduledAt,
-    status:      lesson.status,
+    status:      confirmed.status,
   };
 }
 }
