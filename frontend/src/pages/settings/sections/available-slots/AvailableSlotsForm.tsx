@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { selectUserId } from '@entities/user/model/selectors';
 import {
   useGetTutorSlotsQuery,
   useCreateSlotMutation,
