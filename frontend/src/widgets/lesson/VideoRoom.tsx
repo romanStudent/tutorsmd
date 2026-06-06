@@ -109,6 +109,15 @@ export const VideoRoom = ({
       peersRef.current.forEach((pc) => pc.close());
       peersRef.current.clear();
       setRemoteStreams(new Map());
+     
+  socket.off('updateParticipants');
+  socket.off('tutor:joined');
+    socket.off('lesson:offer');
+  socket.off('lesson:answer');
+    socket.off('lesson:ice-candidate');
+  socket.off('lesson:user-left');
+  socket.off('meetingEnded');
+
     };
   }, [canJoin, joined, localStream, userId, lessonId]);
 

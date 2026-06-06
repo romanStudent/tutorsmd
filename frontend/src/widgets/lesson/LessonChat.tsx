@@ -40,6 +40,11 @@ export const LessonChat = ({ lessonId }: { lessonId: string }) => {
       setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
     });
 
+    return () => {
+  socket.off('lesson:chat:history');
+  socket.off('lesson:message:new');
+};
+
     
   }, [lessonId, joined, socket]);
 
