@@ -7,6 +7,7 @@ import { useUpdateTutorSubjectsMutation } from '@shared/api/tutor/tutorApi';
 import { Spinner } from '@shared/index';
 import { useTranslation } from 'react-i18next';
 import { SUBJECTS, getSubjectName } from '@shared/config/subjects';
+import { AvailableSlotsForm } from '../available-slots/AvailableSlotsForm';
 
 export const TutorProfileForm = () => {
   const { t, i18n } = useTranslation('settings');
@@ -218,6 +219,12 @@ export const TutorProfileForm = () => {
           text-white text-sm font-medium px-6 py-2.5 rounded-xl transition shadow-lg shadow-orange-200">
         {saving ? t('tutorProfile.saving') : t('tutorProfile.save')}
       </button>
+
+      <section className="space-y-3">
+        <SectionTitle>Verfügbarkeit</SectionTitle>
+
+        <AvailableSlotsForm />
+      </section>
 
       {/* Submit application */}
       {(approvalStatus === 'pending' || approvalStatus === 'rejected') && (

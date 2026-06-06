@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@entities/user/model/selectors';
-import { tokenManager } from '@shared/lib/TokenManager';
-import { io, Socket } from 'socket.io-client';
 import { useTranslation } from 'react-i18next';
+import { useLessonSocket } from '@shared/providers/LessonSocketProvider';
 
 interface ChatMessage {
   id:         string;
@@ -17,18 +16,15 @@ interface ChatMessage {
 export const LessonChat = ({ lessonId }: { lessonId: string }) => {
   const { t } = useTranslation('lesson');
   const userId    = useSelector(selectUserId);
-  const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText]         = useState('');
 
+  const socket = useLessonSocket();
+
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_SOCKET_URL as string, {
-      withCredentials: true,
-      auth: { token: tokenManager.get() },
-    });
-    socketRef.current = socket;
+   
 
     socket.emit('lesson:chat:join', { lessonId });
 
@@ -42,12 +38,12 @@ export const LessonChat = ({ lessonId }: { lessonId: string }) => {
       setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
     });
 
-    return () => { socket.disconnect(); };
-  }, [lessonId]);
+    
+  }, [lessonId, socket]);
 
   const send = () => {
     if (!text.trim()) return;
-    socketRef.current?.emit('lesson:message', { lessonId, text: text.trim() }, (response: any) => {
+    socket.emit('lesson:message', { lessonId, text: text.trim() }, (response: any) => {
       if (response?.error) {
         console.error(response.error);
       }

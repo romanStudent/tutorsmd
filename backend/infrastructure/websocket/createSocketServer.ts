@@ -22,6 +22,7 @@ import { createWebRtcHandler }   from "./handlers/web-rtc/WebRtcHandler";
 
 import redis, { subClient } from "../redis/redisClient";
 import { CompleteLessonUseCase } from "../../application/usecases/lesson/CompleteLessonUseCase";
+import { BoardSnapshotService } from "./handlers/board/BoardSnapshotService";
 
 // ── Конфиг из env ─────────────────────────────────────────────────────────────
 
@@ -98,7 +99,8 @@ interface SocketServerDeps {
   joinSupportChat:    JoinSupportChatUseCase;
   sendSupportMessage: SendSupportChatMessageUseCase;
   getSupportChatHistory:  GetSupportChatHistoryUseCase;
-  completeLessonUseCase:  CompleteLessonUseCase
+  completeLessonUseCase:  CompleteLessonUseCase,
+  boardSnapshotService: BoardSnapshotService
 }
 
 // ── Фабрика ───────────────────────────────────────────────────────────────────
@@ -111,7 +113,8 @@ export const createSocketServer = ({
   joinSupportChat,
   sendSupportMessage,
   getSupportChatHistory,
-  completeLessonUseCase
+  completeLessonUseCase,
+  boardSnapshotService
 }: SocketServerDeps): SocketIOServer => {
   const allowedOrigins = (process.env.CLIENT_URL ?? "")
     .split(",")
@@ -176,7 +179,7 @@ export const createSocketServer = ({
       createSupportChatHandler(io, socket, joinSupportChat, sendSupportMessage, getSupportChatHistory, fileStorage);
       createLessonHandler(io, socket, { completeLessonUseCase, fileStorage, prisma});
     
-      createBoardHandler(io, socket);
+      createBoardHandler(io, socket, {boardSnapshot: boardSnapshotService});
       createWebRtcHandler(io, socket);
     } catch (err) {
       console.error("[socket] Ошибка при регистрации handlers:", {

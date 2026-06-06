@@ -7,8 +7,7 @@
 import { useEffect, useRef, useReducer, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@entities/user/model/selectors';
-import { tokenManager } from '@shared/lib/TokenManager';
-import { io, Socket } from 'socket.io-client';
+import { useLessonSocket } from '@shared/providers/LessonSocketProvider';
 
 type Tool = 'brush' | 'erase' | 'line' | 'rect' | 'circle' | 'text';
 interface ToolState { tool: Tool; color: string; lineWidth: number; }
@@ -23,7 +22,6 @@ const PAGE_INDEX = 0;
 export const Whiteboard = ({ lessonId }: { lessonId: string }) => {
   const userId    = useSelector(selectUserId);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const socketRef = useRef<Socket | null>(null);
   const history   = useRef<DrawAction[]>([]);
   const redoStack = useRef<DrawAction[]>([]);
   const drawing   = useRef(false);
@@ -31,6 +29,8 @@ export const Whiteboard = ({ lessonId }: { lessonId: string }) => {
   const points    = useRef<{ x: number; y: number }[]>([]);
   const snapshot  = useRef<ImageData | null>(null);
   const [toolState, dispatch] = useReducer(toolReducer, initialTool);
+
+  const socket = useLessonSocket();
 
   const getCtx = () => canvasRef.current?.getContext('2d') ?? null;
   const getPos = (e: React.PointerEvent) => {
@@ -85,17 +85,13 @@ export const Whiteboard = ({ lessonId }: { lessonId: string }) => {
   }, [applyAction]);
 
   const emitAction = useCallback((action: DrawAction) => {
-    socketRef.current?.emit('board:action', {
+    socket.emit('board:action', {
       lessonId, pageIndex: PAGE_INDEX,
       action: { type: action.type, data: action.data },
     });
   }, [lessonId]);
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_SOCKET_URL as string, {
-      withCredentials: true, auth: { token: tokenManager.get() },
-    });
-    socketRef.current = socket;
     socket.emit('board:join', { lessonId });
 
     socket.on('board:fullState', (state: Record<number, BoardActionFromServer[]>) => {
@@ -128,8 +124,7 @@ export const Whiteboard = ({ lessonId }: { lessonId: string }) => {
 
     socket.on('board:error', (err: { code: string }) => console.warn('Board:', err.code));
 
-    return () => { socket.disconnect(); };
-  }, [lessonId, userId, applyAction, redrawFromActions]);
+  }, [lessonId, userId, applyAction, redrawFromActions, socket]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     drawing.current = true; const pos = getPos(e);
@@ -185,7 +180,7 @@ export const Whiteboard = ({ lessonId }: { lessonId: string }) => {
   const undo = () => {
     if (!history.current.length) return;
     redoStack.current.push(history.current[history.current.length - 1]);
-    socketRef.current?.emit('board:undo', { lessonId, pageIndex: PAGE_INDEX });
+    socket.emit('board:undo', { lessonId, pageIndex: PAGE_INDEX });
     // history обновится когда придёт board:pageState
   };
 

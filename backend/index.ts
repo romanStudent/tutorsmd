@@ -54,11 +54,12 @@ import { errorMiddleware } from './presentation/middlewares/errorMiddleware';
 
 import { accessTokenFactory, autoCompleteLesson, completeLessonUseCase, fileStorage, getSupportChatHistoryUseCase, joinSupportChatUseCase, prisma, sendSupportMessageUseCase,  autoCancelPending,
   autoExpireReschedule,
-  sendLessonReminders } from './di/container';
+  sendLessonReminders, boardSnapshotService } from './di/container';
 import { createSocketServer } from './infrastructure/websocket/createSocketServer';
 import { connectRedis } from './infrastructure/redis/redisClient';
 import { createWorker } from './infrastructure/queue/worker';
 import { startScheduler } from './infrastructure/queue/scheduler';
+import { BoardSnapshotService } from './infrastructure/websocket/handlers/board/BoardSnapshotService';
 
 
 // Перенеси ЭТО наверх файла, до async function bootstrap():
@@ -157,7 +158,8 @@ const io = createSocketServer({
   joinSupportChat:    joinSupportChatUseCase,
   sendSupportMessage: sendSupportMessageUseCase,
   getSupportChatHistory:  getSupportChatHistoryUseCase,
-  completeLessonUseCase: completeLessonUseCase
+  completeLessonUseCase: completeLessonUseCase,
+  boardSnapshotService: boardSnapshotService
 });
 
 

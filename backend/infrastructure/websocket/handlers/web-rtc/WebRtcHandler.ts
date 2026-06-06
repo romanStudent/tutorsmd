@@ -42,4 +42,35 @@ export const createWebRtcHandler = (io: Server, socket: Socket): void => {
     if (!isInLesson(lessonId)) return;
     io.to(lessonId).emit("receiveStream", socket.id, streamId);
   });
+
+
+  socket.on(
+  'lesson:offer',
+  ({ to, offer }) => {
+    io.to(to).emit('lesson:offer', {
+      from: socket.id,
+      offer,
+    });
+  },
+);
+
+socket.on(
+  'lesson:answer',
+  ({ to, answer }) => {
+    io.to(to).emit('lesson:answer', {
+      from: socket.id,
+      answer,
+    });
+  },
+);
+
+socket.on(
+  'lesson:ice-candidate',
+  ({ to, candidate }) => {
+    io.to(to).emit('lesson:ice-candidate', {
+      from: socket.id,
+      candidate,
+    });
+  },
+);
 };

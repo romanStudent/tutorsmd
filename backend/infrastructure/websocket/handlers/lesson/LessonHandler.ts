@@ -75,13 +75,16 @@ export const createLessonHandler = (
 
   // -- joinLesson -------------------------------------------------------------------------
   //
-  // Клиент: socket.emit("joinLesson", { lessonId })
+  // Клиент: socket.emit("lesson:join", { lessonId })
   // Сервер: проверяет права (clientId | tutorId | admin), кладёт в Socket.IO room,
   //         добавляет в Redis presence, рассылает updateParticipants.
   //
   socket.on(
-    "joinLesson",
-    safeHandler("lesson:join", async (data: { lessonId: string }) => {
+    "lesson:join",
+    safeHandler("lesson:join", 
+      async (
+        data: { lessonId: string }, 
+        callback?: (res: { ok: boolean; error?: string }) => void) => {
       // Идемпотентность: уже в уроке -> повторно шлём joinedLesson
       const existing = socket.data.lessonCtx as LessonContext | undefined;
       if (existing) {
@@ -89,18 +92,29 @@ export const createLessonHandler = (
           startAt: existing.startAt,
           status:  existing.status,
         });
-        return;
+       callback?.({
+        ok: true,
+      });
+      return
       }
 
       const parsed = JoinLessonSchema.safeParse(data);
       if (!parsed.success) {
-        socket.emit("lesson:join:error", { code: "BAD_REQUEST", message: parsed.error.issues[0].message });
+        // socket.emit("lesson:join:error", { code: "BAD_REQUEST", message: parsed.error.issues[0].message });
+         callback?.({
+        ok: false,
+        error: 'FORBIDDEN',
+      });
         return;
       }
 
       const ctx = await resolveLessonContext(prisma, parsed.data.lessonId);
       if (!ctx) {
-        socket.emit("lesson:join:error", { code: "NOT_FOUND", message: "Lesson not found" });
+        // socket.emit("lesson:join:error", { code: "NOT_FOUND", message: "Lesson not found" });
+         callback?.({
+        ok: false,
+        error: 'NOT_FOUND',
+      });
         return;
       }
 
@@ -114,7 +128,11 @@ export const createLessonHandler = (
 
 
       if (!allowed) {
-        socket.emit("lesson:join:error", { code: "FORBIDDEN", message: "Access denied" });
+        // socket.emit("lesson:join:error", { code: "FORBIDDEN", message: "Access denied" });
+         callback?.({
+        ok: false,
+        error: 'FORBIDDEN',
+      });
         return;
       }
 
@@ -122,14 +140,22 @@ export const createLessonHandler = (
 
       const activeStatuses = ["pending", "confirmed", "in_progress"];
       if (!activeStatuses.includes(ctx.status)) {
-        socket.emit("lesson:error", { code: "LESSON_NOT_ACTIVE", status: ctx.status });
+        // socket.emit("lesson:error", { code: "LESSON_NOT_ACTIVE", status: ctx.status });
+         callback?.({
+        ok: false,
+        error: 'LESSON_NOT_ACTIVE',
+      });
         return;
       }
 
       const { limit, windowMs } = getRateLimitConfig(user.activeRole, "lesson:join");
 
       if (await isRateLimited(socket, limit, "lesson:join", windowMs)) {
-        socket.emit("lesson:join:error", { error: "Too many requests" });
+        // socket.emit("lesson:join:error", { error: "Too many requests" });
+         callback?.({
+        ok: false,
+        error: 'RATE_LIMITED',
+      });
         return;
       }
 
@@ -146,10 +172,13 @@ export const createLessonHandler = (
         io.to(ctx.lessonId).emit("tutor:joined", true);
       }
 
+      /*
       socket.emit("lesson:join", {
         startAt: ctx.startAt,
         status:  ctx.status,
       });
+      */
+     callback?.({ok: true})
     }),
   );
 
@@ -158,7 +187,7 @@ export const createLessonHandler = (
   // Отдельная Socket.IO room "lesson-chat:{lessonId}" — чтобы не смешивать
   // сигнальные события урока (WebRTC, presence) с сообщениями чата.
   //
-  // Клиент: socket.emit("joinLessonChat", { lessonId })
+  // Клиент: socket.emit("lesson:chat:join", { lessonId })
   // Сервер: шлёт lessonChatHistory (последние 50 из Postgres)
   //
   socket.on(
@@ -200,7 +229,19 @@ export const createLessonHandler = (
         },
       });
 
-      socket.emit("lesson:chat:history", history);
+      // Генерируем presigned URL для файлов
+      const historyWithUrls = await Promise.all(history.map(async msg => {
+        if (!msg.fileKey) return msg;
+    try {
+    const fileUrl = await fileStorage.getPresignedDownloadUrl(msg.fileKey, 3600);
+    return { ...msg, fileUrl };
+  } catch {
+    return { ...msg, fileUrl: null };
+  }
+}));
+
+socket.emit('lesson:chat:history', historyWithUrls);
+
       socket.emit("lesson:chat:joined", { success: true });
 
       io.to(chatRoom).emit("lesson:chat:joined:user", {
@@ -364,6 +405,14 @@ export const createLessonHandler = (
           lessonId: ctx.lessonId,
           tutorId:  ctx.tutorId,
         });
+
+        if (deps.boardSnapshot) {
+          await deps.boardSnapshot.saveSnapshot(ctx.lessonId).catch(err =>
+            console.error('[endLesson] snapshot failed:', err)
+        );
+        } else {
+          await clearBoardFromRedis(ctx.lessonId).catch(console.error);
+          }
       } catch (err) {
         
         if (err instanceof DomainError || err instanceof NotFoundError || err instanceof ConflictError || err instanceof UnauthorizedError) {

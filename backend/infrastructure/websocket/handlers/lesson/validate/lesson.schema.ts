@@ -3,6 +3,7 @@ import { SIZE_LIMITS } from "../../../../../domain/entities/file/fileConstants";
 import { CompleteLessonUseCase } from "../../../../../application/usecases/lesson/CompleteLessonUseCase";
 import { PrismaClient } from '@prisma/client';
 import { IFileStorageFactory } from "../../../../../application/ports/file/IFileStorageFactory";
+import { BoardSnapshotService } from "../../board/BoardSnapshotService";
 
 export const JoinLessonSchema = z.object({
   lessonId: z.string().uuid(),
@@ -40,4 +41,5 @@ export interface LessonHandlerDeps {
   completeLessonUseCase: CompleteLessonUseCase;
   fileStorage:           IFileStorageFactory;
   prisma:                PrismaClient;
+  boardSnapshot?: BoardSnapshotService;
 }

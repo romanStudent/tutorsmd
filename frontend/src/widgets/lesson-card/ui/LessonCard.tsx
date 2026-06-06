@@ -58,6 +58,10 @@ export const LessonCard = ({ lesson, role }: Props) => {
   const date   = new Date(lesson.scheduledAt);
   const person = role === 'client' ? lesson.tutor : lesson.client;
 
+  // const [showReschedule, setShowReschedule] = useState(false);
+
+
+
   const handleConfirm = async () => {
     await confirm(lessonId).unwrap().catch(() => {});
   };
@@ -156,6 +160,13 @@ export const LessonCard = ({ lesson, role }: Props) => {
             </button>
           )}
 
+          {status === 'confirmed' &&
+            activeRole === 'tutor' && (
+              <button>
+                  Verschieben
+              </button>
+          )}
+
           {/* Клиент: принять перенос */}
           {status === 'pending_reschedule' && activeRole === 'client' && (
             <button onClick={handleAccept}
@@ -185,13 +196,7 @@ export const LessonCard = ({ lesson, role }: Props) => {
         </div>
       )}
 
-      {/* Терминальный статус — только ссылка на урок */}
-      {isTerminal && (
-        <button onClick={handleJoin}
-          className="text-xs text-gray-400 hover:text-gray-600 transition flex-shrink-0">
-          Details →
-        </button>
-      )}
+      
     </div>
   );
 };
