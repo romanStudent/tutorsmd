@@ -17,6 +17,7 @@ import { VideoRoom }      from '@widgets/lesson/VideoRoom';
 import { LessonChat }     from '@widgets/lesson/LessonChat';
 import { Whiteboard }     from '@widgets/lesson/Whiteboard';
 import { LessonControls } from '@widgets/lesson/LessonControls';
+import { LessonSocketProvider } from '@shared/providers/LessonSocketProvider';
 
 type Tab = 'chat' | 'whiteboard';
 
@@ -275,7 +276,8 @@ export default function LessonPage() {
         </div>
       ) : (
         <div className="flex flex-1 overflow-hidden">
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <LessonSocketProvider lessonId={lesson.id}>
+           <div className="flex-1 flex flex-col overflow-hidden">
             <VideoRoom
               lessonId={lessonId}
               localStream={localStream}
@@ -285,7 +287,7 @@ export default function LessonPage() {
               canJoin={canJoin}
             />
             <LessonControls localStream={localStream} />
-          </div>
+           </div>
 
           <aside className="w-80 flex flex-col border-l border-gray-700
             bg-gray-800 flex-shrink-0">
@@ -306,6 +308,8 @@ export default function LessonPage() {
                 : <Whiteboard lessonId={lessonId} />}
             </div>
           </aside>
+         </LessonSocketProvider>
+          
         </div>
       )}
     </div>

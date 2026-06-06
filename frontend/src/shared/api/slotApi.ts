@@ -12,7 +12,7 @@ export const slotApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     // GET /slots/my — слоты текущего тьютора
     getTutorSlots: build.query<{ slots: Slot[] }, void>({
-      query: () => '/slots/my',
+      query: () => '/slots/me',
       providesTags: ['Slot'],
     }),
 

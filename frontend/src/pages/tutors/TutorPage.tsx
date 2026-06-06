@@ -10,7 +10,7 @@ import { LikeButton }     from '@shared/ui/LikeButton';
 import { useTranslation } from 'react-i18next';
 
 export default function TutorPage() {
-  const { t, i18n } = useTranslation('tutorPage');
+  const { t, i18n } = useTranslation('tutorpage');
   const lang = i18n.language;
 
   const { tutorId }     = useParams<{ tutorId: string }>();

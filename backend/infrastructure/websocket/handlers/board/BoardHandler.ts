@@ -28,6 +28,7 @@ import {
   type ValidatedBoardAction,
   type BoardActionType,
 } from "./validate/board.schema";
+import { BoardSnapshotService } from "./BoardSnapshotService";
  
 // ── Константы ─────────────────────────────────────────────────────────────────
  
@@ -117,7 +118,7 @@ export const loadBoardFromRedis = async (
 };
  
 
-export const createBoardHandler = (io: Server, socket: Socket): void => {
+export const createBoardHandler = (io: Server, socket: Socket, deps: {boardSnapshot: BoardSnapshotService}): void => {
   const user = socket.data.user as { id: string; activeRole: string } | undefined;
   if (!user) return;
  
@@ -157,11 +158,24 @@ export const createBoardHandler = (io: Server, socket: Socket): void => {
 
 
       // загружаю через Set-индекс, без redis.keys()
-      const fullState = await loadBoardFromRedis(lessonId);
- 
-      socket.emit("board:fullState", fullState);
-    }),
-  );
+      let fullState = await loadBoardFromRedis(lessonId);
+
+      // Если Redis пустой — пробуем загрузить из R2
+  if (Object.keys(fullState).length === 0 && deps?.boardSnapshot) {
+    const snapshot = await deps.boardSnapshot.loadSnapshot(lessonId);
+    if (snapshot) {
+      fullState = snapshot as Record<number, BoardAction[]>;
+      // Восстанавливаем в Redis
+      for (const [pageIndex, actions] of Object.entries(snapshot)) {
+        for (const action of actions as any[]) {
+          await saveStroke(action);
+        }
+      }
+    }
+  }
+
+  socket.emit('board:fullState', fullState);
+}));
 
 
 

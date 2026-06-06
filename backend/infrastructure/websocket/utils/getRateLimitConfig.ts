@@ -7,8 +7,8 @@ export const getRateLimitConfig = (role: string, event: string) => {
     return { limit: 30, windowMs: 60_000 };
   }
 
-  if (event === "joinLesson") {
-    
+  if (event === "joinLesson" || event === "lesson:join") {
+    return { limit: 120, windowMs: 60_000 };
   }
 
   return { limit: 100, windowMs: 60_000 };

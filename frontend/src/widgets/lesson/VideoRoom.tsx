@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUserId, selectActiveRole } from '@entities/user/model/selectors';
-import { tokenManager } from '@shared/lib/TokenManager';
-import { io, Socket } from 'socket.io-client';
 import { useTranslation } from 'react-i18next';
+import { useLessonSocket } from '@shared/providers/LessonSocketProvider';
+import { Socket } from 'socket.io-client';
 
 interface Props {
   lessonId:        string;
@@ -27,11 +27,12 @@ export const VideoRoom = ({
   const activeRole = useSelector(selectActiveRole);
 
   const localRef  = useRef<HTMLVideoElement>(null);
-  const socketRef = useRef<Socket | null>(null);
   const peersRef  = useRef<Map<string, RTCPeerConnection>>(new Map());
 
   const [participants, setParticipants] = useState<string[]>([]);
   const [tutorPresent, setTutorPresent] = useState(false);
+
+  const socket = useLessonSocket();
 
   // ───────────── MEDIA ─────────────
   useEffect(() => {
@@ -56,13 +57,6 @@ export const VideoRoom = ({
   // ───────────── SOCKET + WEBRTC ─────────────
   useEffect(() => {
     if (!canJoin || !localStream || !userId) return;
-
-    const socket = io(import.meta.env.VITE_SOCKET_URL as string, {
-      withCredentials: true,
-      auth: { token: tokenManager.get() },
-    });
-    socketRef.current = socket;
-    socket.emit('joinLesson', { lessonId });
 
     socket.on('updateParticipants', async (list: string[]) => {
       setParticipants(list);
@@ -111,7 +105,6 @@ export const VideoRoom = ({
 
     return () => {
       socket.emit('leaveLesson', { lessonId });
-      socket.disconnect();
       peersRef.current.forEach((pc) => pc.close());
       peersRef.current.clear();
       setRemoteStreams(new Map());

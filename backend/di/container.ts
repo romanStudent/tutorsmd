@@ -149,6 +149,7 @@ import { GetSupportChatByIdUseCase } from '../application/usecases/support-chat/
 import { GetTutorOwnProfileUseCase } from '../application/usecases/tutor/GetTutorOwnProfileUseCase';
 import { UpdateTutorSubjectsUseCase } from '../application/usecases/tutor/UpdateTutorSubjectsUseCase';
 import { GetUserLessonsUseCase } from '../application/usecases/lesson/GetUserLessonsUseCase';
+import { BoardSnapshotService } from '../infrastructure/websocket/handlers/board/BoardSnapshotService';
 
 
 // ─── Token Infrastructure ─────────────────────────────────────
@@ -381,6 +382,7 @@ const startLessonUseCase = new StartLessonUseCase(
 );
 
 const getUserLessonsUseCase = new GetUserLessonsUseCase(lessonRepo);
+const boardSnapshotService = new BoardSnapshotService(fileStorage);
 
 
 // PERSON
@@ -631,6 +633,7 @@ export {
   // LESSON
   completeLessonUseCase,
   generateNextRegularLessonUseCase,
+  boardSnapshotService,
 
   // JOBS
   autoCancelPending,

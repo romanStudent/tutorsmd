@@ -14,7 +14,7 @@ export class GetUserLessonUseCase {
     private readonly lessonRepo: ILessonRepository,
   ) {}
 
-  async execute(dto: GetUserLessonDto): Promise<Lesson> {
+  async execute(dto: GetUserLessonDto): Promise<Object> {
     const lessonId = new LessonId(dto.lessonId);
 
     const lesson = await this.lessonRepo.findById(lessonId.value);
@@ -34,6 +34,25 @@ export class GetUserLessonUseCase {
       );
     }
 
-    return lesson;
+    return {
+    id:                  lesson.id,
+    clientId:            lesson.clientId,
+    tutorId:             lesson.tutorId,
+    subjectId:           lesson.subjectId,
+    type:                lesson.type,
+    status:              lesson.status,
+    scheduledAt:         lesson.scheduledAt,
+    durationMinutes:     lesson.durationMinutes,
+    recurringScheduleId: lesson.recurringScheduleId,
+    rescheduledFromId:   lesson.rescheduledFromId,
+    roomId:              lesson.roomId,
+    cancellationReason:  lesson.cancellationReason,
+    proposedScheduledAt: lesson.proposedScheduledAt,
+    proposedExpiresAt:   lesson.proposedExpiresAt,
+    startedAt:           lesson.startedAt,
+    completedAt:         lesson.completedAt,
+    createdAt:           lesson.createdAt,
+    updatedAt:           lesson.updatedAt,
+  };
   }
 }
