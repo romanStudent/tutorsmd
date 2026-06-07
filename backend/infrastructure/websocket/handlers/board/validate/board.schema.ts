@@ -150,6 +150,7 @@ export type ParseResult =
 export const parseIncomingAction = (raw: unknown): ParseResult => {
   // Шаг 1: базовая структура (lessonId UUID, pageIndex int, type enum)
   const base = baseSchema.safeParse(raw);
+  console.log(base);
   if (!base.success) {
     return { success: false, error: base.error.issues[0]?.message ?? "Invalid structure" };
   }
@@ -160,6 +161,7 @@ export const parseIncomingAction = (raw: unknown): ParseResult => {
     type: base.data.type,
     data: base.data.data,
   });
+  console.log(payload);
   if (!payload.success) {
     return { success: false, error: payload.error.issues[0]?.message ?? "Invalid action data" };
   }

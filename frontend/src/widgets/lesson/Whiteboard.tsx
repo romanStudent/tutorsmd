@@ -85,10 +85,13 @@ export const Whiteboard = ({ lessonId }: { lessonId: string }) => {
   }, [applyAction]);
 
   const emitAction = useCallback((action: DrawAction) => {
-    socket.emit('board:action', {
-      lessonId, pageIndex: PAGE_INDEX,
-      action: { type: action.type, data: action.data },
-    });
+    const payload = {
+    lessonId,
+    pageIndex: PAGE_INDEX,
+    action: { type: action.type, data: action.data },
+  };
+  console.log('[Board] emitting board:action:', JSON.stringify(payload));
+    socket.emit('board:action', payload);
   }, [lessonId]);
 
   useEffect(() => {

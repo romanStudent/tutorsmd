@@ -204,7 +204,9 @@ socket.on(
       // 2. Zod: полная валидация — структура + discriminatedUnion по type
       // После этой проверки lessonId, pageIndex, action строго типизированы
       const parsed = parseIncomingAction(raw);
+      console.log(parsed);
       if (!parsed.success) {
+        
         socket.emit("board:error", { code: "INVALID_ACTION", reason: parsed.error });
         return;
       }
