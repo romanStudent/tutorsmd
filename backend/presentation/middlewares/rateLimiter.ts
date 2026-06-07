@@ -45,6 +45,7 @@ const createPublicLimiter = (opts: LimiterOpts): RateLimitRequestHandler =>
  */
 const createUserLimiter = (opts: LimiterOpts): RateLimitRequestHandler =>
   rateLimit({
+    validate: false,
     windowMs: opts.windowMs,
     max: opts.max,
     message: opts.message,
