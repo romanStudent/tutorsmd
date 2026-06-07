@@ -41,6 +41,8 @@ export const Whiteboard = ({ lessonId }: { lessonId: string }) => {
     };
   };
 
+  
+
   const applyAction = useCallback((action: DrawAction) => {
     const ctx = getCtx();
     if (!ctx) return;
