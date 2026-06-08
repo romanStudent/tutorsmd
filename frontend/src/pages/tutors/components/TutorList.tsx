@@ -72,9 +72,12 @@ export const TutorList = () => {
 
             {/* Стоимость */}
             <div className="flex items-center justify-between mt-auto">
+             {/*
               <span className="text-sm font-semibold text-gray-900">
                 {tutor.hourlyRate ? `${tutor.hourlyRate} €/Std.` : 'Preis auf Anfrage'}
               </span>
+             */}
+             
               <span className="text-xs text-blue-600 font-medium">
                 Profil ansehen →
               </span>

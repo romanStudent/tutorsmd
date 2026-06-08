@@ -94,11 +94,13 @@ export default function LikedTutorsPage() {
                             {highlight}
                           </p>
                         )}
-                        {tutor.hourlyRate && (
+                        {/*
+                        tutor.hourlyRate && (
                           <p className="text-sm font-semibold text-slate-900 mt-2">
                             {tutor.hourlyRate} {t('perHour')}
                           </p>
-                        )}
+                        )
+                          */}
                       </div>
                     </Link>
                   </div>
