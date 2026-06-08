@@ -87,11 +87,13 @@ export default function TutorPage() {
                   ({tutor.ratingCount} {t('reviews')})
                 </span>
               </span>
-              {tutor.hourlyRate && (
+              {/*
+              tutor.hourlyRate && (
                 <span className="text-sm font-semibold text-slate-900">
                   {tutor.hourlyRate} {t('perHour')}
                 </span>
-              )}
+              )
+                */}
             </div>
 
             {highlight && (

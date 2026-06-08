@@ -267,6 +267,23 @@ export default function LessonPage() {
             {lesson.cancellationReason && (
               <p className="text-sm text-gray-400">Grund: {lesson.cancellationReason}</p>
             )}
+            {status === 'completed' && lesson.type === 'trial' && role === 'client' && (
+        <div className="bg-blue-600/20 border border-blue-600/40 rounded-2xl p-5 text-left space-y-3">
+          <p className="text-blue-300 font-semibold text-sm">
+            🎉 Probestunde abgeschlossen!
+          </p>
+          <p className="text-gray-300 text-sm">
+            Hat Ihnen die Stunde gefallen? Buchen Sie regelmäßige Unterrichtsstunden
+            mit diesem Lehrer.
+          </p>
+          <button
+            onClick={() => navigate(`/tutors/${lesson.tutorId}`)}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm
+              font-medium px-4 py-2.5 rounded-xl transition">
+            Reguläre Stunden buchen →
+          </button>
+        </div>
+      )}
             <button onClick={() => navigate('/dashboard')}
               className="bg-blue-600 hover:bg-blue-700 text-white text-sm
                 px-6 py-2.5 rounded-xl transition">

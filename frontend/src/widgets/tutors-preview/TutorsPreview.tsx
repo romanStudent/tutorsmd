@@ -70,12 +70,15 @@ export const TutorsPreview = () => {
                 </p>
               )}
 
-              {/* Rate */}
+
+              {/* Rate
               {tutor.hourlyRate && (
                 <p className="text-sm font-semibold text-slate-900 mt-3">
                   {tutor.hourlyRate} {t('tutorsPreview.perHour')}
                 </p>
               )}
+              */}
+              
             </Link>
           ))}
         </div>

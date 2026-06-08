@@ -4,6 +4,36 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
 
 export default defineConfig({
+  test: {
+    // Глобальные переменные окружения для тестов
+    env: {
+      NODE_ENV: 'test',
+    },
+ 
+    // Загружаем .env.test перед тестами
+    // Установи: npm i -D dotenv
+    setupFiles: ['dotenv/config'],
+ 
+    // Последовательное выполнение интеграционных и e2e тестов
+    // (они делят тестовую БД — параллельность сломает изоляцию)
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        // Интеграционные и e2e — строго последовательно
+        singleFork: true,
+      },
+    },
+    // Таймаут для e2e тестов (реальные HTTP + БД медленнее)
+    testTimeout: 30_000,
+ 
+    // Алиасы путей (должны совпадать с tsconfig.paths)
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@shared': path.resolve(__dirname, './src/shared'),
+      '@features': path.resolve(__dirname, './src/features'),
+      '@widgets': path.resolve(__dirname, './src/widgets'),
+    },
+  },
   plugins: [
     react(), 
     visualizer({
