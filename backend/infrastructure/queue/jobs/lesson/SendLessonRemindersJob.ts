@@ -3,8 +3,8 @@
 // Запускается каждые 15 минут — окно ±15 минут от точного времени
 
 import { PrismaClient } from '@prisma/client';
-import { IEmailService } from '../../../application/ports/IEmailService';
-import { LanguageCode } from '../../../domain/entities/User';
+import { IEmailService } from '../../../../application/ports/IEmailService';
+import { LanguageCode } from '../../../../domain/entities/User';
 
 const REMINDER_WINDOWS = [
   { label: '24h', ms: 24 * 60 * 60 * 1000 },

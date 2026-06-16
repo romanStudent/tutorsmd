@@ -4,6 +4,7 @@ export const JobNames = {
   AUTO_EXPIRE_RESCHEDULE: 'auto-expire-reschedule',
   SEND_LESSON_REMINDERS: 'send-lesson-reminders',
   GENERATE_NEXT_REGULAR: 'generate-next-regular-lesson',
+  GENERATE_LESSON_SUMMARY: 'generate-lesson-summary',
 } as const;
 
 export type JobName = typeof JobNames[keyof typeof JobNames];
