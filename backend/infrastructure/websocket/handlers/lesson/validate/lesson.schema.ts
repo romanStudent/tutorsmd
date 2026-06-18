@@ -42,4 +42,5 @@ export interface LessonHandlerDeps {
   fileStorage:           IFileStorageFactory;
   prisma:                PrismaClient;
   boardSnapshot?: BoardSnapshotService;
+  lessonQueue:    
 }

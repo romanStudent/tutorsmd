@@ -54,7 +54,7 @@ import { errorMiddleware } from './presentation/middlewares/errorMiddleware';
 
 import { accessTokenFactory, autoCompleteLesson, completeLessonUseCase, fileStorage, getSupportChatHistoryUseCase, joinSupportChatUseCase, prisma, sendSupportMessageUseCase,  autoCancelPending,
   autoExpireReschedule,
-  sendLessonReminders, boardSnapshotService } from './di/container';
+  sendLessonReminders, boardSnapshotService, generateLessonSummary } from './di/container';
 import { createSocketServer } from './infrastructure/websocket/createSocketServer';
 import { connectRedis } from './infrastructure/redis/redisClient';
 import { createWorker } from './infrastructure/queue/worker';
@@ -88,6 +88,7 @@ const worker = createWorker({
   autoCancelPending,
   autoExpireReschedule,
   sendLessonReminders,
+  generateLessonSummary
 });
 
 await startScheduler();

@@ -58,7 +58,7 @@ export class GetTutorOwnProfileUseCase {
       rejectionReason: tutor.rejectionReason,
 
       profileCompletion: tutor.profileCompletion,
-      subjects: tutorSubjects.map(ts => ({ id: ts.subject.id, name: ts.subject.name })),
+      subjects: tutorSubjects.map((ts: {subject: {id: string, name: string}}) => ({ id: ts.subject.id, name: ts.subject.name })),
 
       createdAt: tutor.createdAt,
       updatedAt: tutor.updatedAt,

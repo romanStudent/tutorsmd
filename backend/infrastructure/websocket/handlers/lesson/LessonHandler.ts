@@ -30,6 +30,7 @@ import { NotFoundError } from "../../../../domain/errors/NotFoundError";
 import { ConflictError } from "../../../../domain/errors/ConflictError";
 import { UnauthorizedError } from "../../../../domain/errors/UnauthorizedError";
 import { getRateLimitConfig } from "../../utils/getRateLimitConfig";
+import { JobNames } from "../../../queue/job-names";
 
 
 // ── Resolve lesson context ────────────────────────────────────────────────────
@@ -230,7 +231,7 @@ export const createLessonHandler = (
       });
 
       // Генерируем presigned URL для файлов
-      const historyWithUrls = await Promise.all(history.map(async msg => {
+      const historyWithUrls = await Promise.all(history.map(async (msg: {fileKey: string}) => {
         if (!msg.fileKey) return msg;
     try {
     const fileUrl = await fileStorage.getPresignedDownloadUrl(msg.fileKey, 3600);
@@ -405,6 +406,13 @@ socket.emit('lesson:chat:history', historyWithUrls);
           lessonId: ctx.lessonId,
           tutorId:  ctx.tutorId,
         });
+
+        // lessonHandler.ts — в endLesson, после completeLessonUseCase.execute()
+await deps.lessonQueue.add(
+  JobNames.GENERATE_LESSON_SUMMARY,
+  { lessonId: ctx.lessonId, tutorId: ctx.tutorId, clientId: ctx.clientId },
+  { attempts: 2, backoff: { type: 'fixed', delay: 10_000 } },
+);
 
         if (deps.boardSnapshot) {
           await deps.boardSnapshot.saveSnapshot(ctx.lessonId).catch(err =>
