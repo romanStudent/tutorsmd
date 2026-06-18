@@ -1,5 +1,41 @@
 {
-  "dependencies": {
-    "socket.io-client": "^4.8.1"
+  "name": "tutorsmd",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "frontend:dev": "npm run dev -w frontend",
+    "backend:dev": "npm run dev -w backend",
+
+    "frontend:typecheck": "npm run typecheck -w frontend",
+    "backend:typecheck": "npm run typecheck -w backend",
+
+    "frontend:lint": "npm run lint -w frontend",
+
+    "frontend:test": "npm run test:ci -w frontend",
+    "backend:test:unit": "npm run test:unit -w backend",
+    "backend:test:integration": "npm run test:integration -w backend",
+    "backend:test": "npm run test:ci -w backend",
+
+    "frontend:build": "npm run build -w frontend",
+    "backend:build": "npm run build -w backend",
+
+    "typecheck": "npm run frontend:typecheck && npm run backend:typecheck",
+    "lint": "npm run frontend:lint",
+    "test": "npm run frontend:test && npm run backend:test",
+    "backend:migrate:test": "npm run migrate:test -w backend",
+    "test:integration": "docker compose -f docker-compose.test.yml up -d --wait && npm run backend:migrate:test && npm run backend:test:integration && docker compose -f docker-compose.test.yml down",
+    "build": "npm run frontend:build && npm run backend:build",
+
+    "check:frontend": "npm run typecheck -w frontend && npm run lint -w frontend && npm run test:ci -w frontend && npm run build -w frontend",
+    "check:backend": "npm run db:generate -w backend && npm run typecheck -w backend && npm run test:ci -w backend && npm run build -w backend",
+
+    "check": "npm run check:frontend && npm run check:backend"
   }
 }
+
+
+
+

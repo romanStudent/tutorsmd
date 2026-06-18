@@ -57,7 +57,7 @@ services:
 
 
   postgres:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg15
     container_name: tutors-postgres
     restart: unless-stopped
     environment:
@@ -87,6 +87,24 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  tutors-ai:
+    build: ./ai-service
+    container_name: tutors-ai
+    restart: unless-stopped
+    env_file: ./ai-service/.env
+    expose:
+      - "8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tutors-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256m
+  
   tutors-backend:
     build: 
       context: ./backend
