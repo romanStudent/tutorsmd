@@ -58,7 +58,7 @@ import { accessTokenFactory, autoCompleteLesson, completeLessonUseCase, fileStor
 import { createSocketServer } from './infrastructure/websocket/createSocketServer';
 import { connectRedis } from './infrastructure/redis/redisClient';
 import { createWorker } from './infrastructure/queue/worker';
-import { startScheduler } from './infrastructure/queue/scheduler';
+import { lessonQueue, startScheduler } from './infrastructure/queue/scheduler';
 import { BoardSnapshotService } from './infrastructure/websocket/handlers/board/BoardSnapshotService';
 
 
@@ -160,7 +160,8 @@ const io = createSocketServer({
   sendSupportMessage: sendSupportMessageUseCase,
   getSupportChatHistory:  getSupportChatHistoryUseCase,
   completeLessonUseCase: completeLessonUseCase,
-  boardSnapshotService: boardSnapshotService
+  boardSnapshotService: boardSnapshotService,
+  lessonQueue
 });
 
 

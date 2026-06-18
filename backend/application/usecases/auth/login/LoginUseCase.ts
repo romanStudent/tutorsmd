@@ -24,11 +24,11 @@ export class LoginUseCase {
     const user = await this.userRepo.findByEmail(dto.email);
     if (!user) throw new DomainError('Invalid email or password');
 
-    if (!user.hashedPassword) {
+    if (!user.passwordHash) {
       throw new DomainError('This account uses OAuth. Please login with Google.');
     }
 
-    const isValid = await this.passwordHasher.compare(dto.password, user.hashedPassword);
+    const isValid = await this.passwordHasher.compare(dto.password, user.passwordHash);
     if (!isValid) throw new DomainError('Invalid email or password');
 
     if (!user.isEmailVerified) {

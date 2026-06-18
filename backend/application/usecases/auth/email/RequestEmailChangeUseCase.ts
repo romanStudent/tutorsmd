@@ -34,7 +34,7 @@ export class RequestEmailChangeUseCase {
     }
 
     // Проверка пароля — обязательна для смены email
-    const isValid = await this.passwordHasher.compare(dto.password, user.hashedPassword!);
+    const isValid = await this.passwordHasher.compare(dto.password, user.passwordHash!);
     if (!isValid) throw new DomainError('Incorrect password');
 
     if (user.email === newEmailVO.value) {

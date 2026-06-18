@@ -1,4 +1,4 @@
 export interface IPasswordHasher {
   hash(plain: string): Promise<string>;
-  compare(plain: string, hashedPassword: string): Promise<boolean>;
+  compare(plain: string, passwordHash: string): Promise<boolean>;
 }

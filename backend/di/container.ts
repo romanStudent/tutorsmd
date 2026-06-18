@@ -25,6 +25,7 @@ import { PrismaQuizAnswerRepository } from '../infrastructure/database/repositor
 
 import { PrismaReviewRepository } from '../infrastructure/database/repositories/PrismaReviewRepository'; 
 
+import { lessonQueue } from '../infrastructure/queue/scheduler';
 
 
 
@@ -491,18 +492,19 @@ const submitFeedbackUseCase = new SubmitFeedbackUseCase(
 );
 
 // JOBS /////////////////////////////////////////
+const claudeSummaryService = new ClaudeSummaryService(anthropic);
+const generateLessonSummary = new GenerateLessonSummaryJob(prisma, claudeSummaryService);
 const autoCompleteLesson = new AutoCompleteLessonsJob(
   prisma,
   completeLessonUseCase,
   generateNextRegularLessonUseCase,
   (lessonId: string) => appEvents.emit(AppEvents.LESSON_COMPLETED, lessonId),
+  generateLessonSummary
 );
 const autoCancelPending    = new AutoCancelPendingJob(prisma);
 const autoExpireReschedule = new AutoExpireRescheduleJob(prisma);
 const sendLessonReminders  = new SendLessonRemindersJob(prisma, emailService);
 
-const claudeSummaryService = new ClaudeSummaryService(anthropic);
-const generateLessonSummary = new GenerateLessonSummaryJob(prisma, claudeSummaryService);
 //////////////////////////////////////////////////
 
 
@@ -644,6 +646,8 @@ export {
   completeLessonUseCase,
   generateNextRegularLessonUseCase,
   boardSnapshotService,
+  generateLessonSummary,
+  lessonQueue,
 
   // JOBS
   autoCancelPending,
@@ -651,3 +655,20 @@ export {
   autoCompleteLesson,
   sendLessonReminders,
 };
+
+
+export function buildContainer() {
+  return {
+    authController,
+  profileController,
+  tutorController,
+  tutorPublicController,
+  lessonController,
+  availableSlotController,
+  reviewController,
+  quizController,
+  appealController,
+  feedbackController,
+  supportChatController,
+  };
+}
