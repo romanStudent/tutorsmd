@@ -127,10 +127,6 @@ jobs:
     needs: [backend, frontend]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
-    environment:
-      name: production
-      url: https://tutorsmd.net
-
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
