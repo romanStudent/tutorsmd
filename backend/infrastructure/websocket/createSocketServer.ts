@@ -177,7 +177,7 @@ export const createSocketServer = ({
 
     try {
       createSupportChatHandler(io, socket, joinSupportChat, sendSupportMessage, getSupportChatHistory, fileStorage);
-      createLessonHandler(io, socket, { completeLessonUseCase, fileStorage, prisma});
+      createLessonHandler(io, socket, { completeLessonUseCase, fileStorage, prisma, lessonQueue});
     
       createBoardHandler(io, socket, {boardSnapshot: boardSnapshotService});
       createWebRtcHandler(io, socket);
