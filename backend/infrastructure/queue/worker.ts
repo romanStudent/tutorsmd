@@ -2,16 +2,18 @@
 import { Worker, Job } from 'bullmq';
 import { bullmqConnection } from './bullmq.connection';
 import { JobNames } from './job-names';
-import { AutoCompleteLessonsJob }  from './jobs/AutoCompleteLessonsJob';
-import { AutoCancelPendingJob }    from './jobs/AutoCancelPendingJob';
+import { AutoCompleteLessonsJob }  from './jobs/lesson/AutoCompleteLessonsJob';
+import { AutoCancelPendingJob }    from './jobs/lesson/AutoCancelPendingJob';
 import { AutoExpireRescheduleJob } from './jobs/AutoExpireRescheduleJob';
-import { SendLessonRemindersJob }  from './jobs/SendLessonRemindersJob';
+import { SendLessonRemindersJob }  from './jobs/lesson/SendLessonRemindersJob';
+import { GenerateLessonSummaryJob } from './jobs/lesson/GenerateLessonSummaryJob';
 
 interface WorkerDeps {
   autoCompleteLesson:   AutoCompleteLessonsJob;
   autoCancelPending:    AutoCancelPendingJob;
   autoExpireReschedule: AutoExpireRescheduleJob;
   sendLessonReminders:  SendLessonRemindersJob;
+  generateLessonSummary: GenerateLessonSummaryJob
 }
 
 export const createWorker = (deps: WorkerDeps): Worker => {
@@ -33,6 +35,9 @@ export const createWorker = (deps: WorkerDeps): Worker => {
 
         case JobNames.SEND_LESSON_REMINDERS:
           await deps.sendLessonReminders.run();
+          break;
+        case JobNames.GENERATE_LESSON_SUMMARY:
+          await deps.generateLessonSummary.run(job.data);
           break;
 
         default:

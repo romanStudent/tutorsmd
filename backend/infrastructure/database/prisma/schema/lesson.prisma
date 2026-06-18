@@ -71,12 +71,13 @@ model Lesson {
   lessonMessages    LessonMessage[]
   quizAttempts      QuizAttempt[]
   lessonSummary     LessonSummary[]
+  materialChunks    LessonMaterialChunk[]
 
   @@index([clientId, tutorId, type])
   @@index([tutorId, status, scheduledAt])   // Covering index(Index Only Scan). Предстоящие уроки Tutor
   @@index([clientId, status])           // уроки студента по статусу
   @@index([recurringScheduleId])        // все уроки серии
-  @@index([scheduledAt])                // cron job — найти уроки по времени
+  @@index([scheduledAt])                // cron job - найти уроки по времени
   
   @@map("lessons")
 }
@@ -100,6 +101,22 @@ model LessonMaterial {
 
   @@index([lessonId])  // все материалы урока
   @@map("lesson_materials")
+}
+
+model LessonMaterialChunk {
+  id          String   @id @default(uuid()) @db.Uuid
+  lessonId    String   @db.Uuid @map("lesson_id")
+  materialId  String   @db.Uuid @map("material_id")
+  chunkIndex  Int      @map("chunk_index")
+  content     String   @db.Text
+  metadata    Json?    @default("{}")
+  createdAt   DateTime @default(now()) @db.Timestamptz() @map("created_at")
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
+  @@index([materialId])
+  @@map("lesson_material_chunks")
 }
 
 model LessonTutorReport {
