@@ -1,4 +1,6 @@
 import z from "zod";
+import { Queue } from 'bullmq';
+
 import { SIZE_LIMITS } from "../../../../../domain/entities/file/fileConstants";
 import { CompleteLessonUseCase } from "../../../../../application/usecases/lesson/CompleteLessonUseCase";
 import { PrismaClient } from '@prisma/client';
@@ -42,5 +44,5 @@ export interface LessonHandlerDeps {
   fileStorage:           IFileStorageFactory;
   prisma:                PrismaClient;
   boardSnapshot?: BoardSnapshotService;
-  lessonQueue:    
+  lessonQueue: Queue   
 }

@@ -231,7 +231,7 @@ export const createLessonHandler = (
       });
 
       // Генерируем presigned URL для файлов
-      const historyWithUrls = await Promise.all(history.map(async (msg: {fileKey: string}) => {
+      const historyWithUrls = await Promise.all(history.map(async (msg: {fileKey: string | null}) => {
         if (!msg.fileKey) return msg;
     try {
     const fileUrl = await fileStorage.getPresignedDownloadUrl(msg.fileKey, 3600);
@@ -411,7 +411,7 @@ socket.emit('lesson:chat:history', historyWithUrls);
 await deps.lessonQueue.add(
   JobNames.GENERATE_LESSON_SUMMARY,
   { lessonId: ctx.lessonId, tutorId: ctx.tutorId, clientId: ctx.clientId },
-  { attempts: 2, backoff: { type: 'fixed', delay: 10_000 } },
+  { attempts: 3, backoff: { type: 'exponential', delay: 5_000 } },
 );
 
         if (deps.boardSnapshot) {

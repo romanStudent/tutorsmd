@@ -13,7 +13,7 @@ interface UserProps {
   surname: string;
   username: string;
   email: Email;
-  hashedPassword: string | null;
+  passwordHash: string | null;
   avatarUrl: string | null;
   roles: ReadonlyArray<Role>;
   isEmailVerified: boolean;
@@ -39,7 +39,7 @@ interface CreateUserProps {
   surname: string;
   username: string;
   email: string;
-  hashedPassword: string | null;
+  passwordHash: string | null;
   authProvider: AuthProvider;
   roles: Role[];
   timezone?: string;
@@ -53,7 +53,7 @@ interface RestoreUserProps {
   surname: string;
   username: string;
   email: string;
-  hashedPassword: string | null;
+  passwordHash: string | null;
   avatarUrl: string | null;
   roles: Role[];
   isEmailVerified: boolean;
@@ -80,7 +80,7 @@ export class User {
   get surname(): string { return this.props.surname; }
   get username(): string { return this.props.username; }
   get email(): string { return this.props.email.value; }
-  get hashedPassword(): string | null { return this.props.hashedPassword; }
+  get passwordHash(): string | null { return this.props.passwordHash; }
   get avatarUrl(): string | null { return this.props.avatarUrl; }
   get roles(): ReadonlyArray<Role> { return this.props.roles; }
   get isEmailVerified(): boolean { return this.props.isEmailVerified; }
@@ -152,7 +152,7 @@ export class User {
     }
     return new User({
       ...this.props,
-      hashedPassword: newHash,
+      passwordHash: newHash,
       updatedAt: new Date(),
     });
   }
@@ -246,12 +246,12 @@ export class User {
 
   private static validateAuthProvider(
     authProvider: AuthProvider,
-    hashedPassword: string | null,
+    passwordHash: string | null,
   ): void {
-    if (authProvider === 'local' && !hashedPassword) {
+    if (authProvider === 'local' && !passwordHash) {
       throw new DomainError('Local user must have a password');
     }
-    if (authProvider !== 'local' && hashedPassword) {
+    if (authProvider !== 'local' && passwordHash) {
       throw new DomainError('OAuth user must not have a password');
     }
   }
@@ -259,7 +259,7 @@ export class User {
   // --- Factory methods ---
 
   static create(props: CreateUserProps): User {
-    User.validateAuthProvider(props.authProvider, props.hashedPassword);
+    User.validateAuthProvider(props.authProvider, props.passwordHash);
     const now = new Date();
     return new User({
       id: new UserId(props.id),
@@ -267,7 +267,7 @@ export class User {
       surname: User.validateSurname(props.surname),
       username: User.validateUsername(props.username),
       email: Email.create(props.email),
-      hashedPassword: props.hashedPassword,
+      passwordHash: props.passwordHash,
       avatarUrl: props.avatarUrl ?? null,
       roles: User.validateRoles(props.roles),
       isEmailVerified: false,
@@ -287,7 +287,7 @@ export class User {
       surname: props.surname,
       username: props.username,
       email: Email.fromPersistence(props.email),
-      hashedPassword: props.hashedPassword,
+      passwordHash: props.passwordHash,
       avatarUrl: props.avatarUrl,
       roles: Object.freeze([...new Set(props.roles)]),
       isEmailVerified: props.isEmailVerified,

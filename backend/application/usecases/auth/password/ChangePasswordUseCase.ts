@@ -23,7 +23,7 @@ export class ChangePasswordUseCase {
       throw new DomainError('OAuth users cannot change password');
     }
 
-    const isValid = await this.passwordHasher.compare(oldPassword, user.hashedPassword!);
+    const isValid = await this.passwordHasher.compare(oldPassword, user.passwordHash!);
     if (!isValid) throw new DomainError('Incorrect old password');
 
     Password.validate(newPassword);

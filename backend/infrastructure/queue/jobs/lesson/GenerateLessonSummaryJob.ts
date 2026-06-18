@@ -3,30 +3,46 @@ import { ILessonSummaryService } from '../../../../application/ports/ILessonSumm
 
 export class GenerateLessonSummaryJob {
   constructor(
-    private readonly prisma: PrismaClient,
-    private readonly summaryService: ILessonSummaryService,
+    private readonly prisma:          PrismaClient,
+    private readonly summaryService:  ILessonSummaryService,
   ) {}
 
-  async run(payload: { lessonId: string }): Promise<void> {
-    const messages = await this.prisma.lessonMessage.findMany({
-      where:   { lessonId: payload.lessonId },
+  async run(lessonId: string): Promise<void> {
+    // Проверяем что саммари ещё нет
+    const db: any = this.prisma;
+    const existing = await db.lessonSummary.findUnique({
+      where: { lessonId },
+    });
+    if (existing) return;
+
+    const messages = await db.lessonMessage.findMany({
+      where:   { lessonId },
       orderBy: { createdAt: 'asc' },
       select:  { senderRole: true, text: true },
     });
 
-    const textMessages = messages.filter(m => m.text);
-    if (textMessages.length === 0) return;
+    // Нет сообщений — нечего суммаризировать
+    if (messages.length === 0) return;
 
-    const transcript = textMessages
-      .map(m => `[${m.senderRole}]: ${m.text}`)
+    const transcript = messages
+      .filter((m: {text: string}) => m.text)
+      .map((m: {senderRole: string, text: string}) => `${m.senderRole}: ${m.text}`)
       .join('\n');
 
-    const content = await this.summaryService.generateSummary(transcript);
+    try {
+      const content = await this.summaryService.generateSummary(transcript);
 
-    await this.prisma.lessonSummary.upsert({
-      where:  { lessonId: payload.lessonId },
-      create: { lessonId: payload.lessonId, content, model: 'claude-opus-4-8' },
-      update: { content },
-    });
+      await db.lessonSummary.create({
+        data: {
+          lessonId,
+          content,
+          model: 'claude-opus-4-8',
+        },
+      });
+
+      console.log(`[LessonSummary] итог для урока ${lessonId} создано.`);
+    } catch (err) {
+      console.error(`[LessonSummary] итог для урока ${lessonId}:`, err);
+    }
   }
 }

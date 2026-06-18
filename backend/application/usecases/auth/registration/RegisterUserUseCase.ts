@@ -43,7 +43,7 @@ export class RegisterUserUseCase {
     const profileId = this.idGenerator.generate();
     const username  = await this.generateUniqueUsername(dto.name, dto.surname);
 
-    const hashedPassword = await this.passwordHasher.hash(dto.password);
+    const passwordHash = await this.passwordHasher.hash(dto.password);
 
     // SHA-256 через фабрику — не Argon2
     const verificationToken = this.verificationTokenFactory.generateVerificationToken();
@@ -54,7 +54,7 @@ export class RegisterUserUseCase {
       surname: dto.surname,
       username,
       email: dto.email,
-      hashedPassword,
+      passwordHash,
       authProvider: 'local',
       roles: [this.profileCreator.role],
       timezone: dto.timezone ?? 'UTC',

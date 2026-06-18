@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { CompleteLessonUseCase } from '../../../../application/usecases/lesson/CompleteLessonUseCase';
 import { GenerateNextRegularLessonUseCase } from '../../../../application/usecases/lesson/regular/GenerateNextRegularScheduleUseCase';
-import { LessonSummaryJob } from './LessonSummary';
+import { GenerateLessonSummaryJob } from './GenerateLessonSummaryJob';
 
 export class AutoCompleteLessonsJob {
   constructor(
@@ -9,7 +9,7 @@ export class AutoCompleteLessonsJob {
     private readonly completeLessonUseCase:     CompleteLessonUseCase,
     private readonly generateNextRegularLesson: GenerateNextRegularLessonUseCase,
     private readonly onLessonCompleted:         (lessonId: string) => void,
-    private readonly lessonSummaryJob: LessonSummaryJob,
+    private readonly lessonSummaryJob: GenerateLessonSummaryJob,
   ) {}
 
   async run(): Promise<void> {

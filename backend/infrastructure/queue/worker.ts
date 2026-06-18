@@ -1,5 +1,5 @@
 
-import { Worker, Job } from 'bullmq';
+import { Worker, Job, ConnectionOptions } from 'bullmq';
 import { bullmqConnection } from './bullmq.connection';
 import { JobNames } from './job-names';
 import { AutoCompleteLessonsJob }  from './jobs/lesson/AutoCompleteLessonsJob';
@@ -45,7 +45,7 @@ export const createWorker = (deps: WorkerDeps): Worker => {
       }
     },
     {
-      connection: bullmqConnection,
+      connection: bullmqConnection as ConnectionOptions,
       concurrency: 1, // задачи выполняются последовательно — нет конкурентных проблем
     },
   );

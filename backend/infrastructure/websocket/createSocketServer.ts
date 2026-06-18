@@ -23,6 +23,8 @@ import { createWebRtcHandler }   from "./handlers/web-rtc/WebRtcHandler";
 import redis, { subClient } from "../redis/redisClient";
 import { CompleteLessonUseCase } from "../../application/usecases/lesson/CompleteLessonUseCase";
 import { BoardSnapshotService } from "./handlers/board/BoardSnapshotService";
+import { lessonQueue } from "../../di/container";
+import { Queue } from "bullmq";
 
 // ── Конфиг из env ─────────────────────────────────────────────────────────────
 
@@ -100,7 +102,8 @@ interface SocketServerDeps {
   sendSupportMessage: SendSupportChatMessageUseCase;
   getSupportChatHistory:  GetSupportChatHistoryUseCase;
   completeLessonUseCase:  CompleteLessonUseCase,
-  boardSnapshotService: BoardSnapshotService
+  boardSnapshotService: BoardSnapshotService,
+  lessonQueue: Queue,
 }
 
 // ── Фабрика ───────────────────────────────────────────────────────────────────
@@ -114,7 +117,8 @@ export const createSocketServer = ({
   sendSupportMessage,
   getSupportChatHistory,
   completeLessonUseCase,
-  boardSnapshotService
+  boardSnapshotService,
+  lessonQueue
 }: SocketServerDeps): SocketIOServer => {
   const allowedOrigins = (process.env.CLIENT_URL ?? "")
     .split(",")

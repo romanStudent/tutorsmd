@@ -1,11 +1,11 @@
-import { Queue } from 'bullmq';
+import { ConnectionOptions, Queue } from 'bullmq';
 import { bullmqConnection } from './bullmq.connection';
 import { JobNames } from './job-names';
 
 const QUEUE_NAME = 'lesson-jobs';
 
 export const lessonQueue = new Queue(QUEUE_NAME, {
-  connection: bullmqConnection,
+  connection: bullmqConnection as ConnectionOptions,
   defaultJobOptions: {
     removeOnComplete: 100, // хранить последние 100 выполненных
     removeOnFail: 200, // хранить последние 200 упавших для дебага
