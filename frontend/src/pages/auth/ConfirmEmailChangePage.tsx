@@ -19,7 +19,7 @@ export default function ConfirmEmailChangePage() {
         setStatus('success');
         setMessage('Ihre E-Mail-Adresse wurde erfolgreich geändert.');
       })
-      .catch((err) => {
+      .catch((err: any) => {
         setStatus('error');
         setMessage(err?.data?.message ?? 'Link ungültig oder abgelaufen.');
       });

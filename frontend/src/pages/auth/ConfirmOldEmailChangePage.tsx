@@ -19,7 +19,7 @@ export default function ConfirmOldEmailChangePage() {
         setStatus('success');
         setMessage('Bestätigung erhalten. Die E-Mail-Adresse wird geändert sobald der neue Adresse bestätigt wurde.');
       })
-      .catch((err) => {
+      .catch((err: any) => {
         setStatus('error');
         setMessage(err?.data?.message ?? 'Link ungültig oder abgelaufen.');
       });

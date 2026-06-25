@@ -34,6 +34,25 @@ export class PrismaEmailChangeRepository implements IEmailChangeRepository {
     });
   }
 
+  async findConfirmedBoth(userId: string): Promise<EmailChangeRecord | null> {
+  const record = await this.prisma.emailChange.findUnique({
+    where: { userId },
+  });
+
+  if (!record) return null;
+  if (!record.newEmailConfirmed || !record.oldEmailConfirmed) return null;
+
+  return {
+    id:                record.id,
+    userId:            record.userId,
+    newEmail:          record.newEmail,
+    newEmailConfirmed: record.newEmailConfirmed,
+    oldEmailConfirmed: record.oldEmailConfirmed,
+    expiresAt:         record.expiresAt,
+    createdAt:         record.createdAt,
+  };
+}
+
   // Новый email подтверждает владение — ставим флаг, не удаляем запись
   async consumeToken(tokenHash: string): Promise<EmailChangeRecord | null> {
     const record = await this.prisma.emailChange.findUnique({

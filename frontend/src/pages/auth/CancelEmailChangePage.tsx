@@ -19,7 +19,7 @@ export default function CancelEmailChangePage() {
         setStatus('success');
         setMessage('E-Mail-Änderung wurde erfolgreich abgebrochen.');
       })
-      .catch((err) => {
+      .catch((err: any) => {
         setStatus('error');
         setMessage(err?.data?.message ?? 'Link ungültig oder abgelaufen.');
       });
