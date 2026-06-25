@@ -31,6 +31,8 @@ import {
   RevokeSessionParams,
   ActivateAccountParams,
 } from './auth.schema';
+import { CancelEmailChangeUseCase } from '../../../application/usecases/auth/email/CancelEmailChangeUseCase';
+import { ConfirmOldEmailChangeUseCase } from '../../../application/usecases/auth/email/ConfrimOldEmailChangeUseCase';
 
 
 const REFRESH_COOKIE_OPTIONS = {
@@ -58,7 +60,9 @@ export class AuthController implements IAuthController {
     private readonly revokeAllSessionsUseCase: RevokeAllSessionsUseCase,
     private readonly requestEmailChangeUseCase: RequestEmailChangeUseCase,
     private readonly confirmEmailChangeUseCase: ConfirmEmailChangeUseCase,
-    private readonly resendVerificationUseCase: ResendVerificationUseCase
+    private readonly cancelEmailChangeUseCase: CancelEmailChangeUseCase,
+    private readonly resendVerificationUseCase: ResendVerificationUseCase,
+    private readonly confirmOldEmailChangeUseCase: ConfirmOldEmailChangeUseCase,
   ) {}
 
   
@@ -224,6 +228,20 @@ async confirmEmailChange(req: Request<ActivateAccountParams>, res: Response): Pr
   await this.confirmEmailChangeUseCase.execute(token);
 
   res.status(200).json({ message: 'Email changed successfully.' });
+}
+
+async confirmOldEmailChange(req: Request<ActivateAccountParams>, res: Response): Promise<void> {
+  const { token } = req.params;
+  await this.confirmOldEmailChangeUseCase.execute(token);
+  res.status(200).json({ message: 'Confirmed. Email will be changed' });
+}
+
+async cancelEmailChange(req: Request<ActivateAccountParams>, res: Response): Promise<void> {
+  const { token } = req.params;   
+
+  await this.cancelEmailChangeUseCase.execute(token);
+
+  res.status(200).json({ message: 'Email change cancelled' });
 }
 
 async resendVerification(req: Request<{}, {}, ResendVerificationBody>, res: Response): Promise<void> {

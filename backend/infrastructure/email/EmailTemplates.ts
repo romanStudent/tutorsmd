@@ -48,6 +48,41 @@ const t = {
       ru: 'Если вы не инициировали это изменение, срочно обратитесь в поддержку.',
     },
   },
+
+  emailChangeNotification: {
+    subject: {
+      en: 'Your email is being changed',
+      de: 'Ihre E-Mail-Adresse wird geändert',
+      ru: 'Смена email-адреса',
+    },
+    greeting: {
+      en: 'Security Alert',
+      de: 'Sicherheitshinweis',
+      ru: 'Уведомление безопасности',
+    },
+    instruction: {
+      en: 'A request to change your email address was initiated. If this was you, confirm via the link sent to your new address. If not — contact support immediately.',
+      de: 'Eine Anfrage zur Änderung Ihrer E-Mail-Adresse wurde gestellt. Falls Sie das waren, bestätigen Sie über den Link an Ihre neue Adresse. Falls nicht — kontaktieren Sie sofort den Support.',
+      ru: 'Был отправлен запрос на смену вашего email. Если это были вы — подтвердите по ссылке на новый адрес. Если нет — немедленно обратитесь в поддержку.',
+    },
+    button: {
+      en: 'Contact Support',
+      de: 'Support kontaktieren',
+      ru: 'Связаться с поддержкой',
+    },
+
+    cancelButton: {
+      en: 'Cancel Email Change',
+      de: 'E-Mail-Änderung abbrechen',
+      ru: 'Отменить смену email',
+    },
+    footer: {
+      en: 'If you initiated this change, no action is required on this address.',
+      de: 'Wenn Sie diese Änderung initiiert haben, ist keine Aktion auf dieser Adresse erforderlich.',
+      ru: 'Если вы инициировали это изменение, никаких действий на этом адресе не требуется.',
+    },
+  },
+
   lessonReminder: {
     subject: { en: 'Lesson Reminder', de: 'Unterrichtserinnerung', ru: 'Напоминание об уроке' },
     greeting: { en: 'Hello!', de: 'Hallo!', ru: 'Привет!' },
@@ -174,6 +209,68 @@ export class EmailTemplates {
       }),
     };
   }
+
+   static emailChangeNotification(
+  confirmLink: string,
+  cancelLink:  string,
+  language?:   Lang,
+): { subject: string; html: string } {
+  const lang = getLang(language);
+
+  const confirmBtn = {
+    en: 'Yes, I initiated this',
+    de: 'Ja, ich habe das initiiert',
+    ru: 'Да, это был я',
+  }[lang];
+
+  const cancelBtn = {
+    en: 'Cancel email change',
+    de: 'E-Mail-Änderung abbrechen',
+    ru: 'Отменить смену email',
+  }[lang];
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:20px">
+  <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;
+    overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
+    <div style="background:#2563eb;padding:24px;text-align:center">
+      <h1 style="color:#fff;margin:0;font-size:24px">TutorsMD</h1>
+    </div>
+    <div style="padding:32px">
+      <h2 style="color:#1f2937;margin-top:0">
+        ${tr('emailChangeNotification', 'greeting', language)}
+      </h2>
+      <p style="color:#4b5563;line-height:1.6">
+        ${tr('emailChangeNotification', 'instruction', language)}
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;margin:32px 0;flex-wrap:wrap">
+        <a href="${confirmLink}"
+           style="background:#2563eb;color:#fff;padding:14px 24px;border-radius:6px;
+             text-decoration:none;font-weight:bold;display:inline-block">
+          ${confirmBtn}
+        </a>
+        <a href="${cancelLink}"
+           style="background:#dc2626;color:#fff;padding:14px 24px;border-radius:6px;
+             text-decoration:none;font-weight:bold;display:inline-block">
+          ${cancelBtn}
+        </a>
+      </div>
+      <p style="color:#9ca3af;font-size:13px">
+        ${tr('emailChangeNotification', 'footer', language)}
+      </p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return {
+    subject: tr('emailChangeNotification', 'subject', language),
+    html,
+  };
+}
 
   static lessonReminder(time: string, language?: Lang): { subject: string; html: string } {
     const lang = getLang(language);

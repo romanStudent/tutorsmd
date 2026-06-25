@@ -37,6 +37,7 @@ export class NodemailerEmailService implements IEmailService {
     await this.send(email, subject, html);
   }
 
+  // новый email
   async sendEmailChangeConfirmation(
     email: string,
     link: string,
@@ -45,6 +46,18 @@ export class NodemailerEmailService implements IEmailService {
     const { subject, html } = EmailTemplates.emailChange(link, language);
     await this.send(email, subject, html);
   }
+
+  // старый email
+  async sendEmailChangeNotification(
+    oldEmail: string,
+    confirmLink: string,
+    cancelLink: string,
+    language?: LanguageCode,
+  ): Promise<void> {
+    const { subject, html } = EmailTemplates.emailChangeNotification(confirmLink, cancelLink, language);
+    await this.send(oldEmail, subject, html);
+  }
+
 
   async sendLessonReminder(
     email: string,

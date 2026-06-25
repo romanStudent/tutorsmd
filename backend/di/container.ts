@@ -154,6 +154,7 @@ import { BoardSnapshotService } from '../infrastructure/websocket/handlers/board
 import { GenerateLessonSummaryJob } from '../infrastructure/queue/jobs/lesson/GenerateLessonSummaryJob';
 import { ClaudeSummaryService } from '../infrastructure/ai/ClaudeSummaryService';
 import { anthropic } from '../infrastructure/ai/AnthropicClient';
+import { CancelEmailChangeUseCase } from '../application/usecases/auth/email/CancelEmailChangeUseCase';
 
 
 // ─── Token Infrastructure ─────────────────────────────────────
@@ -322,8 +323,11 @@ const confirmEmailChangeUseCase = new ConfirmEmailChangeUseCase(
   userRepo,
   emailChangeRepo,
   secureTokenFactory,
+  refreshTokenRepo,
   unitOfWork
 );
+
+const cancelEmailChangeUseCase = new CancelEmailChangeUseCase(emailChangeRepo, secureTokenFactory);
 
 
 // LESSON
@@ -529,6 +533,7 @@ const authController = new AuthController(
   revokeAllSessionsUseCase,
   requestEmailChangeUseCase,
   confirmEmailChangeUseCase,
+  cancelEmailChangeUseCase,
   resendVerificationUseCase
 );
 

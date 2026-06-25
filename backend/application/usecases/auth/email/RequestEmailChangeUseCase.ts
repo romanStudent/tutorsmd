@@ -11,7 +11,7 @@ import { IEmailChangeTokenFactory } from '../../../ports/email/IEmailChangeToken
 export interface RequestEmailChangeDto {
   userId: string;
   newEmail: string;
-  password: string;
+  password: string;   // Без пароля злоумышленник вообще не может инициировать смену. Если у него есть только access token - этого недостаточно.
 }
 
 export class RequestEmailChangeUseCase {
@@ -44,16 +44,28 @@ export class RequestEmailChangeUseCase {
     const taken = await this.userRepo.existsByEmail(newEmailVO.value);
     if (taken) throw new ConflictError('Email already in use');
 
-    const { raw, hash } = this.tokenFactory.generateEmailChangeToken();
+   const { raw: confirmRaw, hash: confirmHash } = this.tokenFactory.generateEmailChangeToken();
+   const { raw: oldConfirmRaw, hash: oldConfirmHash } = this.tokenFactory.generateEmailChangeToken();
+   const { raw: cancelRaw,  hash: cancelHash  } = this.tokenFactory.generateEmailChangeToken();
+
 
     await this.emailChangeRepo.upsert({
       userId: dto.userId,
       newEmail: newEmailVO.value,
-      tokenHash: hash,
+      tokenHash: confirmHash,
+      oldConfirmHash: oldConfirmHash,
+      cancelHash: cancelHash,
       expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000), // 48 часов
     });
 
-    const link = `${process.env.CLIENT_URL}/email/change/${raw}`;
-    await this.emailService.sendEmailChangeConfirmation(newEmailVO.value, link, user.languageCode);
+    const confirmLink = `${process.env.CLIENT_URL}/email/change/${confirmRaw}`;
+    const oldConfirmLink = `${process.env.CLIENT_URL}/email/confirm-old/${oldConfirmRaw}`;
+    const cancelLink  = `${process.env.CLIENT_URL}/email/cancel/${cancelRaw}`;
+    // на новый email
+    await this.emailService.sendEmailChangeConfirmation(newEmailVO.value, confirmLink, user.languageCode);
+    // на старый email
+    // cancel link дает окно реакции в случае если пароль тоже скомпрометирован
+    // после смены email отзываем все сессии
+    await this.emailService.sendEmailChangeNotification(user.email, oldConfirmLink, cancelLink, user.languageCode);
   }
 }

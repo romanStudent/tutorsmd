@@ -100,6 +100,10 @@ model EmailChange {
   userId    String   @unique @db.Uuid @map("user_id")
   newEmail  String   @unique @db.VarChar(255) @map("new_email")
   linkHash  String   @unique @db.Text @map("link_hash")
+  oldConfirmHash    String   @unique @db.Text @map("old_confirm_hash")
+  cancelHash   String   @unique @db.Text @map("cancel_hash")
+  newEmailConfirmed Boolean  @default(false) @map("new_email_confirmed")
+  oldEmailConfirmed Boolean  @default(false) @map("old_email_confirmed")
   expiresAt DateTime @db.Timestamptz() @map("expires_at")
   createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
 
