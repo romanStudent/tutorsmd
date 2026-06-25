@@ -24,7 +24,10 @@ export interface IAuthController {
   // Email change
   requestEmailChange(req: Request, res: Response): Promise<void>;
   confirmEmailChange(req: Request, res: Response): Promise<void>;
+  confirmOldEmailChange(req: Request, res: Response): Promise<void>;
+  cancelEmailChange(req: Request, res: Response): Promise<void>;
   resendVerification(req: Request, res: Response): Promise<void>;
+
 
   // Sessions
   getActiveSessions(req: Request, res: Response): Promise<void>;

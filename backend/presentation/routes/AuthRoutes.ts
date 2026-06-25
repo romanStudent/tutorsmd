@@ -115,9 +115,19 @@ export const createAuthRouter = (controller: IAuthController): Router => {
     wrap((req, res) => controller.requestEmailChange(req, res)),
   );
 
-  router.get(
+  router.post(
     '/email/change/:token',
     wrap((req, res) => controller.confirmEmailChange(req, res)),
+  );
+
+  router.post(
+    '/email/confirm-old/:token',
+    wrap((req, res) => controller.confirmOldEmailChange(req, res)),
+  );
+
+  router.post(
+    '/email/cancel/:token',
+    wrap((req, res) => controller.cancelEmailChange(req, res)),
   );
 
   // ─── Sessions ─────────────────────────────────────────────

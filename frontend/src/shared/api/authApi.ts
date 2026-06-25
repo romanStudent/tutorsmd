@@ -170,6 +170,28 @@ export const authApi = baseApi.injectEndpoints({
         }),
     }),
 
+    cancelEmailChange: build.mutation<void, { token: string }>({
+      query: ({ token }) => ({
+        url: `/auth/email/cancel/${token}`,
+        method: 'POST', 
+      }),
+    }),
+
+    confirmEmailChange: build.mutation<void, { token: string }>({
+      query: ({ token }) => ({
+        url: `/auth/email/change/${token}`,
+        method: 'POST',
+      }),
+    }),
+
+    confirmOldEmailChange: build.mutation<void, { token: string }>({
+      query: ({ token }) => ({
+        url: `/auth/email/confirm-old/${token}`,
+        method: 'POST',
+      }),
+    }),
+
+
     // GET /auth/sessions
     getSessions: build.query<{ sessions: Session[] }, void>({
       query: () => '/auth/sessions',
@@ -213,11 +235,16 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useChangePasswordMutation,
+  
   useRequestEmailChangeMutation,
+  useCancelEmailChangeMutation,
+  useConfirmEmailChangeMutation,
+  useConfirmOldEmailChangeMutation,
+
   useSwitchRoleMutation,
   useActivateAccountMutation,
   useGetSessionsQuery,
   useRevokeAllSessionsMutation,
   useRevokeSessionMutation,
-  useResendVerificationMutation
+  useResendVerificationMutation,
 } = authApi;

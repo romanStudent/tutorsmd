@@ -154,6 +154,8 @@ import { BoardSnapshotService } from '../infrastructure/websocket/handlers/board
 import { GenerateLessonSummaryJob } from '../infrastructure/queue/jobs/lesson/GenerateLessonSummaryJob';
 import { ClaudeSummaryService } from '../infrastructure/ai/ClaudeSummaryService';
 import { anthropic } from '../infrastructure/ai/AnthropicClient';
+import { CancelEmailChangeUseCase } from '../application/usecases/auth/email/CancelEmailChangeUseCase';
+import { ConfirmOldEmailChangeUseCase } from '../application/usecases/auth/email/ConfrimOldEmailChangeUseCase';
 
 
 // ─── Token Infrastructure ─────────────────────────────────────
@@ -322,9 +324,18 @@ const confirmEmailChangeUseCase = new ConfirmEmailChangeUseCase(
   userRepo,
   emailChangeRepo,
   secureTokenFactory,
+  refreshTokenRepo,
   unitOfWork
 );
 
+const cancelEmailChangeUseCase = new CancelEmailChangeUseCase(emailChangeRepo, secureTokenFactory);
+const confirmOldEmailChangeUseCase = new ConfirmOldEmailChangeUseCase(
+  userRepo, 
+  emailChangeRepo, 
+  refreshTokenRepo, 
+  secureTokenFactory, 
+  unitOfWork
+);
 
 // LESSON
 const cancelLessonUseCase = new CancelLessonUseCase(lessonRepo);
@@ -529,7 +540,9 @@ const authController = new AuthController(
   revokeAllSessionsUseCase,
   requestEmailChangeUseCase,
   confirmEmailChangeUseCase,
-  resendVerificationUseCase
+  cancelEmailChangeUseCase,
+  resendVerificationUseCase,
+  confirmOldEmailChangeUseCase
 );
 
 const profileController = new ProfileController(getProfileUseCase, updateProfileUseCase);

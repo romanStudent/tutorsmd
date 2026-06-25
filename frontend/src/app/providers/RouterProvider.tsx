@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { createBrowserRouter, RouterProvider as RRProvider, Navigate, Outlet } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { useSessionManager } from '@app/hooks/useSessionManager';
+import ConfirmOldEmailChangePage from '@pages/auth/ConfirmOldEmailChangePage';
 
 const lazyRetry = (fn: () => Promise<any>) =>
   fn().catch(() => { window.location.reload(); throw new Error('chunk_reload'); });
@@ -14,6 +15,8 @@ const ActivatePage           = lazy(() => lazyRetry(() => import('@pages/auth/Ac
 const ResendVerificationPage = lazy(() => lazyRetry(() => import('@pages/auth/ResendVerificationPage')));
 const ForgotPasswordPage     = lazy(() => lazyRetry(() => import('@pages/auth/ForgotPasswordPage')));
 const ResetPasswordPage      = lazy(() => lazyRetry(() => import('@pages/auth/ResetPasswordPage')));
+const CancelEmailChangePage = lazy(() => lazyRetry(() =>  import('@pages/auth/CancelEmailChangePage')));
+const ConfirmEmailChangePage = lazy(() => lazyRetry(() => import('@pages/auth/ConfirmEmailChangePage')));
 
 // PUBLIC
 const HomePage    = lazy(() => lazyRetry(() => import('@pages/home/HomePage')));
@@ -59,6 +62,9 @@ const router = createBrowserRouter([
   { path: '/resend-verification',   element: <ResendVerificationPage /> },
   { path: '/forgot-password',       element: <ForgotPasswordPage /> },
   { path: '/reset-password/:token', element: <ResetPasswordPage /> },
+  { path: '/email/change/:token',     element: <ConfirmEmailChangePage /> },  // подтверждение 
+  { path: '/email/cancel/:token',     element: <CancelEmailChangePage /> },   // отмена смены
+  { path: '/email/confirm-old/:token',  element: <ConfirmOldEmailChangePage /> },
 
   // PRIVATE (любой залогиненный)
   {
