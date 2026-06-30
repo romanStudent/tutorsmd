@@ -13,6 +13,7 @@ import {
   GetTutorReviewsQuerySchema,
 } from '../controllers/review/review.schema';
 import { reviewSubmitLimiter } from '../middlewares/rateLimiter';
+import { wrap } from '../wrapper'; 
 
 export const createReviewRouter = (
   controller: ReviewController,
@@ -35,13 +36,14 @@ export const createReviewRouter = (
     wrap((req, res) => controller.submit(req, res)),
   );
 
+
   // GET /tutors/:tutorId/reviews
   // Public tutor reviews with cursor pagination
   router.get(
     '/tutors/:tutorId/reviews',
     publicYesCache(60),
     validate(GetTutorReviewsQuerySchema, 'query'),
-    wrap((req, res) => controller.getTutorReviews(req as any, res)),
+    wrap((req, res) => controller.getTutorReviews(req, res)),
   );
 
   return router;

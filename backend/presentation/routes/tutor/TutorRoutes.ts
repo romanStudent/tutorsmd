@@ -14,14 +14,14 @@ import { tutorProfileUpdateLimiter, adminTutorActionLimiter } from '../../middle
 export const createTutorRouter = (controller: ITutorController): Router => {
   const router = Router();
 
-  // ─── Tutor ─────────────────────────────────────────────
+  // --- Tutor -----------------------------------------------------------
 
   router.get(
     '/profile',
     requireAuth,
     requireRole('tutor'),
     wrap(async (req, res) => {
-      await controller.getProfile(req as any, res);
+      await controller.getProfile(req, res);
     }),
   );
 
@@ -32,35 +32,35 @@ export const createTutorRouter = (controller: ITutorController): Router => {
     tutorProfileUpdateLimiter,
     validate(UpdateTutorProfileSchema),
     wrap(async (req, res) => {
-      await controller.updateProfile(req as any, res);
+      await controller.updateProfile(req, res);
     }),
   );
 
    // Тьютор подаёт заявку
   router.post('/submit', requireAuth, requireRole('tutor'),
-    wrap(async (req, res) => controller.submit(req as any, res)));
+    wrap(async (req, res) => controller.submit(req, res)));
 
-  // ─── Admin ─────────────────────────────────────────────
+  // --- Admin --------------------------------------------------------
 
   router.get(
     '/admin/pending',
     requireAuth,
     requireRole('admin'),
     wrap(async (req, res) => {
-      await controller.getPendingTutors(req as any, res);
+      await controller.getPendingTutors(req, res);
     }),
   );
 
     // Полный профиль для админа
   router.get('/:tutorId/admin/review', requireAuth, requireRole('admin'),
     validate(TutorIdParamsSchema, 'params'),
-    wrap(async (req, res) => controller.getReviewProfile(req as any, res)));
+    wrap(async (req, res) => controller.getReviewProfile(req, res)));
 
       // Начать проверку
   router.post('/:tutorId/admin/start-review', requireAuth, requireRole('admin'),
     adminTutorActionLimiter,
     validate(TutorIdParamsSchema, 'params'),
-    wrap(async (req, res) => controller.startReview(req as any, res)));
+    wrap(async (req, res) => controller.startReview(req, res)));
 
   router.post(
     '/:tutorId/admin/approve',
@@ -69,7 +69,7 @@ export const createTutorRouter = (controller: ITutorController): Router => {
     adminTutorActionLimiter,
     validate(TutorIdParamsSchema, 'params'),
     wrap(async (req, res) => {
-      await controller.approve(req as any, res);
+      await controller.approve(req, res);
     }),
   );
 
@@ -81,12 +81,12 @@ export const createTutorRouter = (controller: ITutorController): Router => {
     validate(TutorIdParamsSchema, 'params'),
     validate(RejectTutorSchema),
     wrap(async (req, res) => {
-      await controller.reject(req as any, res);
+      await controller.reject(req, res);
     }),
   );
 
   router.put('/subjects', requireAuth, requireRole('tutor'),
-  wrap(async (req, res) => controller.updateSubjects(req as any, res)));
+  wrap(async (req, res) => controller.updateSubjects(req, res)));
 
   return router;
 };

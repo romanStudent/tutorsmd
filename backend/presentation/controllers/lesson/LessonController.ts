@@ -354,7 +354,7 @@ export class LessonController implements ILessonController {
 
     await this.cancelRegularScheduleUseCase.execute({
       scheduleId,
-      cancelledByUserId, // ← поле из use case
+      cancelledByUserId,
       role,
     });
     res.status(200).json({ message: 'Regular schedule cancelled.' });

@@ -5,6 +5,7 @@ import { requireRole } from '../middlewares/auth/requireRole';
 import { validate } from '../middlewares/validate';
 import { CreateAvailableSlotSchema } from '../controllers/available-slot/available-slot.schema';
 import { slotCreateLimiter, slotDeleteLimiter } from '../middlewares/rateLimiter';
+import { wrap } from './wrapper';
 
 export const createAvailableSlotRouter = (controller: IAvailableSlotController): Router => {
   const router = Router();
@@ -12,7 +13,7 @@ export const createAvailableSlotRouter = (controller: IAvailableSlotController):
   // GET /slots/tutor/:tutorId — публичное расписание тьютора (без авторизации)
   router.get(
     '/tutor/:tutorId',
-    (req, res) => controller.getPublicSlots(req, res),
+    wrap((req, res) => controller.getPublicSlots(req, res)),
   );
 
   // GET /slots/me — тьютор смотрит свои слоты (включая неактивные)
@@ -20,7 +21,7 @@ export const createAvailableSlotRouter = (controller: IAvailableSlotController):
     '/me',
     requireAuth,
     requireRole('tutor'),
-    (req, res) => controller.getOwnSlots(req, res),
+    wrap((req, res) => controller.getOwnSlots(req, res)),
   );
 
   // POST /slots — тьютор создаёт слот
@@ -30,7 +31,7 @@ export const createAvailableSlotRouter = (controller: IAvailableSlotController):
     requireRole('tutor'),
     slotCreateLimiter,
     validate(CreateAvailableSlotSchema),
-    (req, res) => controller.createSlot(req, res),
+    wrap((req, res) => controller.createSlot(req, res)),
   );
 
   // DELETE /slots/:slotId — тьютор удаляет слот
@@ -39,7 +40,7 @@ export const createAvailableSlotRouter = (controller: IAvailableSlotController):
     requireAuth,
     requireRole('tutor'),
     slotDeleteLimiter,
-    (req, res) => controller.deleteSlot(req, res),
+    wrap((req, res) => controller.deleteSlot(req, res)),
   );
 
   return router;

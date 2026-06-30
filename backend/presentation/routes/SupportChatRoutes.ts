@@ -58,7 +58,7 @@ router.get(
     validate(ChatIdParamsSchema, 'params'),
     validate(GetSupportHistoryQuerySchema, 'query'),
     wrap(async (req, res) => {
-      await controller.getHistory(req as any, res);
+      await controller.getHistory(req, res);
     })
   );
 
@@ -69,7 +69,7 @@ router.get(
     validate(ChatIdParamsSchema, 'params'),
     validate(SendSupportChatMessageSchema),
     wrap(async (req, res) => {
-      await controller.sendMessage(req as any, res);
+      await controller.sendMessage(req, res);
     })
   );
 

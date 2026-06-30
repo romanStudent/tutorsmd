@@ -3,6 +3,7 @@ import { ILessonController }   from '../controllers/lesson/ILessonController';
 import { requireAuth }         from '../middlewares/auth/requireAuth';
 import { requireRole }         from '../middlewares/auth/requireRole';
 import { validate }            from '../middlewares/validate';
+import { wrap } from './wrapper';
 import {
   CreateTrialLessonSchema,
   CreateRegularScheduleSchema,
@@ -24,24 +25,24 @@ import {
 export const createLessonRouter = (controller: ILessonController): Router => {
   const router = Router();
 
-  // ─── Trial ────────────────────────────────────────────────────
+  // --- Trial ----------------------------------------------------------
   router.post(
     '/trial',
     requireAuth,
     requireRole('client'),
     lessonActionLimiter,
     validate(CreateTrialLessonSchema),
-    (req, res) => controller.createTrial(req as any, res),
+    wrap((req, res) => controller.createTrial(req, res)),
   );
 
-  // ─── Regular schedule ─────────────────────────────────────────
+  // --- Regular schedule --------------------------------------------------
   router.post(
     '/regular',
     requireAuth,
     requireRole('client'),
     lessonActionLimiter,
     validate(CreateRegularScheduleSchema),
-    (req, res) => controller.createRegularSchedule(req as any, res),
+    wrap((req, res) => controller.createRegularSchedule(req, res)),
   );
 
   router.delete(
@@ -49,32 +50,32 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     requireAuth,
     lessonActionLimiter,
     validate(ScheduleIdParamsSchema, 'params'),
-    (req, res) => controller.cancelRegularSchedule(req as any, res),
+    wrap((req, res) => controller.cancelRegularSchedule(req, res)),
   );
 
-  // GET /lessons — список уроков текущего пользователя
+  // GET /lessons - список уроков текущего пользователя
   router.get(
     '/',
     requireAuth,
-    (req, res) => controller.getUserLessons(req as any, res),
+    wrap((req, res) => controller.getUserLessons(req, res)),
   );
 
-  // ─── Get lesson ───────────────────────────────────────────────
+  // --- Get lesson -------------------------------------------------
   router.get(
     '/:lessonId',
     requireAuth,
     validate(LessonIdParamsSchema, 'params'),
-    (req, res) => controller.getLesson(req as any, res),
+    wrap((req, res) => controller.getLesson(req, res)),
   );
 
-  // ─── Tutor actions ────────────────────────────────────────────
+  // --- Tutor actions ----------------------------------------------------
   router.post(
     '/:lessonId/confirm',
     requireAuth,
     requireRole('tutor'),
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
-    (req, res) => controller.confirm(req as any, res),
+    wrap((req, res) => controller.confirm(req, res)),
   );
 
   router.post(
@@ -83,7 +84,7 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     requireRole('tutor'),
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
-    (req, res) => controller.reject(req as any, res),
+    wrap((req, res) => controller.reject(req, res)),
   );
 
   router.post(
@@ -93,7 +94,7 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     lessonStartLimiter,
     validate(LessonIdParamsSchema, 'params'),
     validate(StartLessonSchema),
-    (req, res) => controller.start(req as any, res),
+    wrap((req, res) => controller.start(req, res)),
   );
 
   router.post(
@@ -102,10 +103,11 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     requireRole('tutor'),
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
-    (req, res) => controller.complete(req as any, res),
+    wrap((req, res) => controller.complete(req, res)),
   );
 
-  // ─── Cancel ───────────────────────────────────────────────────
+
+
   router.post(
     '/:lessonId/cancel/client',
     requireAuth,
@@ -113,7 +115,7 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
     validate(CancelLessonSchema),
-    (req, res) => controller.cancelByClient(req as any, res),
+    wrap((req, res) => controller.cancelByClient(req, res)),
   );
 
   router.post(
@@ -123,7 +125,7 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
     validate(CancelLessonSchema),
-    (req, res) => controller.cancelByTutor(req as any, res),
+    wrap((req, res) => controller.cancelByTutor(req, res)),
   );
 
   router.post(
@@ -132,10 +134,10 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
     validate(CancelLessonSchema),
-    (req, res) => controller.cancelSingleLesson(req as any, res),
+    wrap((req, res) => controller.cancelSingleLesson(req, res)),
   );
 
-  // ─── Reschedule ───────────────────────────────────────────────
+  // --- Reschedule ---------------------------------------------------------
   router.post(
     '/:lessonId/reschedule/propose',
     requireAuth,
@@ -143,7 +145,7 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
     validate(ProposeRescheduleSchema),
-    (req, res) => controller.proposeReschedule(req as any, res),
+    wrap((req, res) => controller.proposeReschedule(req, res)),
   );
 
   router.post(
@@ -152,7 +154,7 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     requireRole('client'),
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
-    (req, res) => controller.acceptReschedule(req as any, res),
+    wrap((req, res) => controller.acceptReschedule(req, res)),
   );
 
   router.post(
@@ -161,7 +163,7 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     requireRole('client'),
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
-    (req, res) => controller.declineReschedule(req as any, res),
+    wrap((req, res) => controller.declineReschedule(req, res)),
   );
 
   router.post(
@@ -171,17 +173,17 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
     validate(RescheduleByClientSchema),
-    (req, res) => controller.rescheduleByClient(req as any, res),
+    wrap((req, res) => controller.rescheduleByClient(req, res)),
   );
 
-  // ─── No-show ──────────────────────────────────────────────────
+  // --- No-show ----------------------------------------------------
   router.post(
     '/:lessonId/no-show/client',
     requireAuth,
     requireRole('tutor'),
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
-    (req, res) => controller.markNoShowClient(req as any, res),
+    wrap((req, res) => controller.markNoShowClient(req, res)),
   );
 
   router.post(
@@ -190,24 +192,24 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     requireRole('admin'),
     lessonActionLimiter,
     validate(LessonIdParamsSchema, 'params'),
-    (req, res) => controller.markNoShowTutor(req as any, res),
+    wrap((req, res) => controller.markNoShowTutor(req, res)),
   );
 
-  // ─── Materials ────────────────────────────────────────────────
+  // --- Materials ----------------------------------------------------
   router.post(
     '/:lessonId/materials',
     requireAuth,
     lessonMaterialLimiter,
     validate(LessonIdParamsSchema, 'params'),
     validate(UploadMaterialSchema),
-    (req, res) => controller.uploadMaterial(req as any, res),
+    wrap((req, res) => controller.uploadMaterial(req, res)),
   );
 
   router.get(
     '/:lessonId/materials',
     requireAuth,
     validate(LessonIdParamsSchema, 'params'),
-    (req, res) => controller.getMaterials(req as any, res),
+    wrap((req, res) => controller.getMaterials(req, res)),
   );
 
   router.delete(
@@ -215,7 +217,7 @@ export const createLessonRouter = (controller: ILessonController): Router => {
     requireAuth,
     lessonMaterialLimiter,
     validate(MaterialIdParamsSchema, 'params'),
-    (req, res) => controller.deleteMaterial(req as any, res),
+    wrap((req, res) => controller.deleteMaterial(req, res)),
   );
 
   return router;

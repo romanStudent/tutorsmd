@@ -3,6 +3,7 @@ import { requireAuth } from '../middlewares/auth/requireAuth';
 import { validate } from '../middlewares/validate';
 import { SubmitFeedbackSchema } from '../controllers/feedback/feedback.schema';
 import { feedbackLimiter } from '../middlewares/rateLimiter';
+import { wrap } from './wrapper';
 
 export const createFeedbackRouter = (controller: any): Router => {
   const router = Router();
@@ -13,7 +14,7 @@ export const createFeedbackRouter = (controller: any): Router => {
     requireAuth, 
     feedbackLimiter,
     validate(SubmitFeedbackSchema), 
-    (req, res) => controller.submitFeedback(req, res)
+    wrap((req, res) => controller.submitFeedback(req, res))
   );
 
   return router;

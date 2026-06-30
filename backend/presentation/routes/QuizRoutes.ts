@@ -30,7 +30,7 @@ export const createQuizRouter = (
     requireRole('tutor'),
     quizCreateLimiter,
     validate(CreateQuizSchema),
-    (req, res) => controller.createQuiz(req as any, res),
+    wrap((req, res) => controller.createQuiz(req, res)),
   );
 
   // POST /quizzes/:quizId/questions
@@ -41,7 +41,7 @@ export const createQuizRouter = (
     requireRole('tutor'),
     quizCreateLimiter,
     validate(AddQuizQuestionSchema),
-    (req, res) => controller.addQuestion(req as any, res),
+    wrap((req, res) => controller.addQuestion(req, res)),
   );
 
   // ───────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ export const createQuizRouter = (
     requireRole('tutor'),
     quizCreateLimiter,
     validate(AssignQuizToLessonSchema),
-    (req, res) => controller.assignToLesson(req as any, res),
+    wrap((req, res) => controller.assignToLesson(req, res)),
   );
 
   // ───────────────────────────────────────────────────────────
@@ -71,7 +71,7 @@ export const createQuizRouter = (
     requireRole('client'),
     quizAttemptLimiter,
     validate(StartQuizAttemptSchema),
-    (req, res) => controller.startAttempt(req as any, res),
+    (req, res) => controller.startAttempt(req, res),
   );
 
   // POST /quizzes/attempts/:attemptId/submit
@@ -82,7 +82,7 @@ export const createQuizRouter = (
     requireRole('client'),
     quizSubmitLimiter,
     validate(SubmitQuizAttemptSchema),
-    (req, res) => controller.submitAttempt(req as any, res),
+    (req, res) => controller.submitAttempt(req, res),
   );
 
   // ───────────────────────────────────────────────────────────
@@ -97,7 +97,7 @@ export const createQuizRouter = (
     requireRole('tutor'),
     quizCreateLimiter,
     validate(ProvideAnswerFeedbackSchema),
-    (req, res) => controller.provideAnswerFeedback(req as any, res),
+    (req, res) => controller.provideAnswerFeedback(req, res),
   );
 
   return router;

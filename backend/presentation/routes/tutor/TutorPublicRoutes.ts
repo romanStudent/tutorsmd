@@ -18,7 +18,7 @@ export const createTutorPublicRouter = (
     publicYesCache(60),
     validate(TutorListQuerySchema, 'query'),
     wrap(async (req, res) => {
-      await controller.getPublicList(req as any, res);
+      await controller.getPublicList(req, res);
     }),
   );
 
@@ -27,7 +27,7 @@ export const createTutorPublicRouter = (
     publicYesCache(60),
     validate(TutorIdParamsSchema, 'params'),
     wrap(async (req, res) => {
-      await controller.getPublicProfile(req as any, res);
+      await controller.getPublicProfile(req, res);
     }),
   );
 
