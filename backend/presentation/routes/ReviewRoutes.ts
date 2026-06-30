@@ -13,7 +13,7 @@ import {
   GetTutorReviewsQuerySchema,
 } from '../controllers/review/review.schema';
 import { reviewSubmitLimiter } from '../middlewares/rateLimiter';
-import { wrap } from '../wrapper'; 
+import { wrap } from './wrapper'; 
 
 export const createReviewRouter = (
   controller: ReviewController,
