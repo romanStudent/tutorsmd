@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ITutorPublicController } from '../../controllers/tutor/public/ITutorPublicController';
 import { validate } from '../../middlewares/validate';
+import { publicCache } from '../../middlewares/cacheControl';
 import { wrap } from '../wrapper';
 import {
   TutorListQuerySchema,
@@ -14,6 +15,7 @@ export const createTutorPublicRouter = (
 
   router.get(
     '/',
+    publicYesCache(60),
     validate(TutorListQuerySchema, 'query'),
     wrap(async (req, res) => {
       await controller.getPublicList(req as any, res);
@@ -22,6 +24,7 @@ export const createTutorPublicRouter = (
 
   router.get(
     '/:tutorId',
+    publicYesCache(60),
     validate(TutorIdParamsSchema, 'params'),
     wrap(async (req, res) => {
       await controller.getPublicProfile(req as any, res);

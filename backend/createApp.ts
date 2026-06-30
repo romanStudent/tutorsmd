@@ -6,10 +6,11 @@ import compression    from "compression";
 import type { IncomingMessage, ServerResponse } from "http";
 import type { Request }                          from "express";
 
-import { errorMiddleware } from "./presentation/middlewares/errorMiddleware";
-import { apiLimiter }      from "./presentation/middlewares/rateLimiter";
+import { errorMiddleware }                from "./presentation/middlewares/errorMiddleware";
+import { apiLimiter }                     from "./presentation/middlewares/rateLimiter";
+import { privateNoCache, publicYesCache } from "./presentation/middlewares/cacheControl";
 
-// Роутеры — фабрики, принимают controller из DI
+
 import { createAuthRouter }        from "./presentation/routes/AuthRoutes";
 import { createTutorRouter }       from "./presentation/routes/tutor/TutorRoutes";
 import { createTutorPublicRouter } from "./presentation/routes/tutor/TutorPublicRoutes";
@@ -91,25 +92,26 @@ export const createApp = () => {
   app.use("/api", apiLimiter);
 
   // ── Routes ────────────────────────────────────────────────────────────────
-  app.use("/api/auth",    createAuthRouter(authController));
-  app.use("/api/tutors",  createTutorPublicRouter(tutorPublicController));
-  app.use("/api/tutors",  createTutorRouter(tutorController));
+  app.use("/api/auth", privateNoCache, createAuthRouter(authController));
+  app.use("/api/tutors", publicYesCache(60), createTutorPublicRouter(tutorPublicController));
+  app.use("/api/tutors", privateNoCache, createTutorRouter(tutorController));
   // app.use("/api/clients", createClientRouter(clientController));
   // app.use("/api/admin",   createAdminRouter(adminController));
-  app.use("/api/profile",   createProfileRouter(profileController));
-  app.use("/api/reviews", createReviewRouter(reviewController));
+  app.use("/api/profile", privateNoCache,   createProfileRouter(profileController));
+  app.use("/api/reviews", publicYesCache(60), createReviewRouter(reviewController));
  
 
 
-  app.use("/api/support", createSupportChatRouter(supportChatController));
-  app.use("/api/lessons", createLessonRouter(lessonController));
-  app.use("/api/quizzes", createQuizRouter(quizController));
-  app.use("/api/slots",   createAvailableSlotRouter(availableSlotController));
-  app.use("/api/appeals", createAppealRouter(appealController));
-  app.use("/api/feedback", createFeedbackRouter(feedbackController));
+    app.use("/api/support",  privateNoCache, createSupportChatRouter(supportChatController));
+    app.use("/api/lessons",  privateNoCache, createLessonRouter(lessonController));
+    app.use("/api/quizzes",  privateNoCache, createQuizRouter(quizController));
+    app.use("/api/slots",    privateNoCache, createAvailableSlotRouter(availableSlotController));
+    app.use("/api/appeals",  privateNoCache, createAppealRouter(appealController));
+    app.use("/api/feedback", privateNoCache, createFeedbackRouter(feedbackController));
 
   // ── Health ────────────────────────────────────────────────────────────────
   app.get("/api/health", (_req, res) => {
+    res.set('Cache-Control', 'no-store');
     res.status(200).json({ status: "ok", ts: new Date().toISOString() });
   });
 

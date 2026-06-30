@@ -3,6 +3,8 @@ import { Router } from 'express';
 import { requireAuth } from '../middlewares/auth/requireAuth';
 import { requireRole } from '../middlewares/auth/requireRole';
 import { validate } from '../middlewares/validate';
+import { privateNoCache, publicYesCache } from "../middlewares/cacheControl";
+
 
 import { ReviewController } from '../controllers/review/ReviewController';
 
@@ -25,19 +27,21 @@ export const createReviewRouter = (
   // Client submits review for completed lesson
   router.post(
     '/',
+    privateNoCache,
     requireAuth,
     requireRole('client'),
     reviewSubmitLimiter,
     validate(SubmitReviewSchema),
-    (req, res) => controller.submit(req, res),
+    wrap((req, res) => controller.submit(req, res)),
   );
 
   // GET /tutors/:tutorId/reviews
   // Public tutor reviews with cursor pagination
   router.get(
     '/tutors/:tutorId/reviews',
+    publicYesCache(60),
     validate(GetTutorReviewsQuerySchema, 'query'),
-    (req, res) => controller.getTutorReviews(req as any, res),
+    wrap((req, res) => controller.getTutorReviews(req as any, res)),
   );
 
   return router;
