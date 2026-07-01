@@ -142,7 +142,7 @@ jobs:
             git pull origin main
 
             echo "→ Rebuilding containers..."
-            docker compose up -d --build tutors-backend tutors-frontend tutors-ai
+            docker compose up -d --build --wait tutors-backend tutors-frontend tutors-ai
 
             echo "→ Running migrations..."
             docker compose exec -T tutors-backend npx prisma migrate deploy
