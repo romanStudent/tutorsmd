@@ -7,11 +7,9 @@ import { GetTutorReviewsUseCase } from '../../../application/usecases/reviews/Ge
 import {
   SubmitReviewBody,
   GetTutorReviewsQueryDto,
+  TutorIdParams
 } from './review.schema';
 
-type TutorIdParams = {
-  tutorId: string;
-};
 
 export class ReviewController {
   constructor(
@@ -44,7 +42,8 @@ export class ReviewController {
   }
 
   async getTutorReviews(
-    req: Request<
+    req: Request
+    <
       TutorIdParams,
       {},
       {},
