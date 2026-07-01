@@ -22,3 +22,5 @@ export const GetTutorReviewsQuerySchema = z.object({
 
 export type SubmitReviewBody = z.infer<typeof SubmitReviewSchema>;
 export type GetTutorReviewsQueryDto = z.infer<typeof GetTutorReviewsQuerySchema>;
+
+export type TutorIdParams = { tutorId: string };

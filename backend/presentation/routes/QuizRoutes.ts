@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { requireAuth } from '../middlewares/auth/requireAuth';
 import { requireRole } from '../middlewares/auth/requireRole';
 import { validate } from '../middlewares/validate';
+import { wrap } from './wrapper';
 
 import {
   CreateQuizSchema,
@@ -11,6 +12,10 @@ import {
   StartQuizAttemptSchema,
   SubmitQuizAttemptSchema,
   ProvideAnswerFeedbackSchema,
+  QuizQuestionParams,
+  LessonIdParams,
+  QuizIdParams,
+  AttemptIdParams,
 } from '../controllers/quiz/quiz.schema';
 
 import { QuizController } from '../controllers/quiz/QuizController';
@@ -30,7 +35,7 @@ export const createQuizRouter = (
     requireRole('tutor'),
     quizCreateLimiter,
     validate(CreateQuizSchema),
-    (req, res) => controller.createQuiz(req as any, res),
+    wrap((req, res) => controller.createQuiz(req, res)),
   );
 
   // POST /quizzes/:quizId/questions
@@ -41,7 +46,7 @@ export const createQuizRouter = (
     requireRole('tutor'),
     quizCreateLimiter,
     validate(AddQuizQuestionSchema),
-    (req, res) => controller.addQuestion(req as any, res),
+    wrap<QuizQuestionParams>((req, res) => controller.addQuestion(req, res)),
   );
 
   // ───────────────────────────────────────────────────────────
@@ -56,7 +61,7 @@ export const createQuizRouter = (
     requireRole('tutor'),
     quizCreateLimiter,
     validate(AssignQuizToLessonSchema),
-    (req, res) => controller.assignToLesson(req as any, res),
+    wrap<LessonIdParams, {}, { quizId: string }>((req, res) => controller.assignToLesson(req, res)),
   );
 
   // ───────────────────────────────────────────────────────────
@@ -71,7 +76,7 @@ export const createQuizRouter = (
     requireRole('client'),
     quizAttemptLimiter,
     validate(StartQuizAttemptSchema),
-    (req, res) => controller.startAttempt(req as any, res),
+    wrap<QuizIdParams, {}, { lessonId?: string | null }>((req, res) => controller.startAttempt(req, res)),
   );
 
   // POST /quizzes/attempts/:attemptId/submit
@@ -82,7 +87,7 @@ export const createQuizRouter = (
     requireRole('client'),
     quizSubmitLimiter,
     validate(SubmitQuizAttemptSchema),
-    (req, res) => controller.submitAttempt(req as any, res),
+    wrap<AttemptIdParams, {}, { answers: { questionId: string; answer?: string | null; selectedOptions?: string[] }[] }>((req, res) => controller.submitAttempt(req, res)),
   );
 
   // ───────────────────────────────────────────────────────────
@@ -97,7 +102,7 @@ export const createQuizRouter = (
     requireRole('tutor'),
     quizCreateLimiter,
     validate(ProvideAnswerFeedbackSchema),
-    (req, res) => controller.provideAnswerFeedback(req as any, res),
+    wrap<AttemptIdParams, {}, { answerId: string; comment?: string | null; isCorrect?: boolean | null; earnedPoints?: number | null }>((req, res) => controller.provideAnswerFeedback(req, res)),
   );
 
   return router;

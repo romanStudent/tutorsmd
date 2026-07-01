@@ -16,23 +16,12 @@ import {
   StartQuizAttemptDto,
   SubmitQuizAttemptDto,
   ProvideAnswerFeedbackDto,
+  QuizIdParams,
+  LessonIdParams,
+  AttemptIdParams,
+  QuizQuestionParams,
 } from './quiz.schema';
 
-type QuizIdParams = {
-  quizId: string;
-};
-
-type LessonIdParams = {
-  lessonId: string;
-};
-
-type AttemptIdParams = {
-  attemptId: string;
-};
-
-type QuizQuestionParams = {
-  quizId: string;
-};
 
 export class QuizController implements IQuizController {
   constructor(

@@ -50,3 +50,8 @@ export type AssignQuizToLessonDto    = z.infer<typeof AssignQuizToLessonSchema>;
 export type StartQuizAttemptDto      = z.infer<typeof StartQuizAttemptSchema>;
 export type SubmitQuizAttemptDto     = z.infer<typeof SubmitQuizAttemptSchema>;
 export type ProvideAnswerFeedbackDto = z.infer<typeof ProvideAnswerFeedbackSchema>;
+
+export type QuizIdParams        = { quizId: string };
+export type LessonIdParams      = { lessonId: string };
+export type AttemptIdParams     = { attemptId: string };
+export type QuizQuestionParams  = { quizId: string };
