@@ -3,7 +3,7 @@ import { ITutorController } from '../../controllers/tutor/ITutorController';
 import { requireAuth } from '../../middlewares/auth/requireAuth';
 import { requireRole } from '../../middlewares/auth/requireRole';
 import { validate } from '../../middlewares/validate';
-import { wrap } from '../../wrapper';
+import { wrap } from '../wrapper';
 import {
   UpdateTutorProfileSchema,
   RejectTutorSchema,
