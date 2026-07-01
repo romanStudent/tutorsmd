@@ -19,7 +19,7 @@ GENERATION - LLM генерирует ответ на основе этого к
 from fastapi import APIRouter, Depends, HTTPException
 from schemas.requests import IngestDocumentRequest, AskRequest
 from services.retrieval import ingest_document, search_similar_chunks
-from services.anthropic_client import answer_with_context
+from services.anthropic_client import chat_with_rag
 from auth import verify_jwt
 
 router = APIRouter()
@@ -74,7 +74,7 @@ async def ask(
             ])
 
         # 3. Claude отвечает с контекстом
-        answer = await answer_with_context(body.question, context)
+        answer = await chat_with_rag(body.question, context)
 
         return {
             "answer":  answer,
