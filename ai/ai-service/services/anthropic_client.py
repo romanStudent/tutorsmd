@@ -3,7 +3,7 @@ import os
 
 api_key=os.getenv("ANTHROPIC_API_KEY")
 
-client = anthropic.Anthropic(api_key)
+client = anthropic.Anthropic(api_key=api_key)
 
 async def generate_summary(transcript: str) -> str:
     response = client.messages.create(
