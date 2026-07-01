@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 import httpx
 import base64
-from services.anthropic import explain_image
+from services.anthropic_client import explain_image
 from auth import verify_jwt 
 
 router = APIRouter()
